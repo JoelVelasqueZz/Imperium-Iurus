@@ -66,7 +66,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="es" className={`${trajanPro.variable} ${cinzel.variable} ${montserrat.variable}`}>
-      <body className="bg-primary font-montserrat text-text-light antialiased">
+      <body className="bg-primary font-montserrat text-text-light antialiased" suppressHydrationWarning>
         <Navbar />
         {children}
         <Footer />
