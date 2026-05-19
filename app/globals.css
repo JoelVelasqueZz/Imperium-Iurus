@@ -1,0 +1,49 @@
+/* IMPERIUM IURIS — T01 Estilos globales */
+/* Módulo: M1 — Sitio Web Público */
+/* RF: RF-01, RF-02 */
+/* Desarrollado: 2026-05-19 */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+  background: #1a1a2e;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+::selection {
+  background: #b8860b;
+  color: #1a1a2e;
+}
+
+.premium-surface {
+  background:
+    radial-gradient(circle at top left, rgba(201, 168, 76, 0.12), transparent 34rem),
+    linear-gradient(145deg, rgba(26, 26, 46, 0.95), rgba(15, 15, 35, 0.98));
+}
+
+.focus-gold {
+  @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-primary;
+}
+
+.text-balance {
+  text-wrap: balance;
+}
+
+.input-dark {
+  @apply focus-gold w-full border border-border bg-primary px-4 py-4 font-montserrat text-sm text-text-light placeholder-transparent transition-colors focus:border-gold;
+}
