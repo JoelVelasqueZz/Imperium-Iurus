@@ -1,17 +1,19 @@
 // IMPERIUM IURIS — T05 Equipo multidisciplinario
 // Módulo: M1 — Sitio Web Público
 // RF: RF-43, RF-44, RF-45
-// Desarrollado: 2026-05-19
 import { UserRound } from 'lucide-react'
 import SectionHeader from '@/components/ui/SectionHeader'
 import Reveal from '@/components/ui/Reveal'
-import { specialists } from '@/lib/constants'
+import { NOSOTROS, specialists } from '@/lib/constants'
 
 export default function EquipoSection() {
   return (
     <section className="bg-primary px-4 py-24 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
-        <SectionHeader title="Casos complejos requieren multiples especialistas" subtitle="Nuestro modelo integra profesionales de distintas areas para construir defensas mas solidas." />
+        <SectionHeader
+          title={NOSOTROS.equipo.title}
+          subtitle={NOSOTROS.equipo.subtitle}
+        />
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {specialists.map((name, index) => (
             <Reveal key={name} delay={index * 0.04}>
@@ -24,7 +26,9 @@ export default function EquipoSection() {
             </Reveal>
           ))}
         </div>
-        <p className="mt-12 text-center font-cinzel text-xl font-semibold tracking-wide text-gold-light">Una sola perspectiva nunca resuelve crisis complejas.</p>
+        <p className="mt-12 text-center font-cinzel text-xl font-semibold tracking-wide text-gold-light">
+          {NOSOTROS.equipo.closing}
+        </p>
       </div>
     </section>
   )

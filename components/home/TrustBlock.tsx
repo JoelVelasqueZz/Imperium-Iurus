@@ -3,19 +3,18 @@
 // IMPERIUM IURIS — T03 Desarrollo bloque principal y CTAs
 // Módulo: M1 — Sitio Web Público
 // RF: RF-01, RF-03, RF-04
-// Desarrollado: 2026-05-19
 import { motion } from 'framer-motion'
 import SectionHeader from '@/components/ui/SectionHeader'
-import { trustCards } from '@/lib/constants'
+import { HOME, trustCards } from '@/lib/constants'
 
 export default function TrustBlock() {
   return (
     <section className="bg-primary px-4 py-24 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
         <SectionHeader
-          eyebrow="Confianza inmediata"
-          title="Solidez, confidencialidad y capacidad real"
-          subtitle="Una estructura juridica diseñada para intervenir en escenarios donde la improvisacion no es una opcion."
+          eyebrow={HOME.trust.eyebrow}
+          title={HOME.trust.title}
+          subtitle={HOME.trust.subtitle}
         />
         <motion.div
           className="grid gap-5 md:grid-cols-2 lg:grid-cols-3"
