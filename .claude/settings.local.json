@@ -7,7 +7,15 @@
       "Bash(Format-Table -AutoSize)",
       "Bash(npm install *)",
       "Bash(npx tsc *)",
-      "Bash(npx next *)"
+      "Bash(npx next *)",
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\ASUS TUF F15\\\\Desktop\\\\7MO SEMESTRE\\\\PPL\\\\Imperium-Iurus\" -Force)",
+      "Bash(Select-Object Name, Mode)",
+      "PowerShell(Get-ChildItem -Path \"C:\\\\Users\\\\ASUS TUF F15\\\\Desktop\\\\7MO SEMESTRE\\\\PPL\\\\Imperium-Iurus\\\\app\" -Recurse | Where-Object { $_.PSIsContainer -eq $false } | Select-Object FullName | ForEach-Object { $_.FullName.Replace\\(\"C:\\\\Users\\\\ASUS TUF F15\\\\Desktop\\\\7MO SEMESTRE\\\\PPL\\\\Imperium-Iurus\\\\\", \"\"\\) })",
+      "PowerShell(Get-ChildItem -Path \"C:\\\\Users\\\\ASUS TUF F15\\\\Desktop\\\\7MO SEMESTRE\\\\PPL\\\\Imperium-Iurus\\\\components\" -Recurse | Where-Object { $_.PSIsContainer -eq $false } | Select-Object FullName | ForEach-Object { $_.FullName.Replace\\(\"C:\\\\Users\\\\ASUS TUF F15\\\\Desktop\\\\7MO SEMESTRE\\\\PPL\\\\Imperium-Iurus\\\\\", \"\"\\) })",
+      "PowerShell(Get-ChildItem -Path \"C:\\\\Users\\\\ASUS TUF F15\\\\Desktop\\\\7MO SEMESTRE\\\\PPL\\\\Imperium-Iurus\\\\lib\" -Recurse | Where-Object { $_.PSIsContainer -eq $false } | Select-Object FullName | ForEach-Object { $_.FullName.Replace\\(\"C:\\\\Users\\\\ASUS TUF F15\\\\Desktop\\\\7MO SEMESTRE\\\\PPL\\\\Imperium-Iurus\\\\\", \"\"\\) })",
+      "Bash(git add *)",
+      "Bash(git ls-files *)",
+      "Bash(git check-ignore *)"
     ]
   }
 }

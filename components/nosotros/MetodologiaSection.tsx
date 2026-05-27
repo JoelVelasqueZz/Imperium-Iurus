@@ -1,13 +1,12 @@
-// IMPERIUM IURIS — T05 Metodología de trabajo
-// Módulo: M1 — Sitio Web Público
-// RF: RF-43, RF-44, RF-45
+'use client'
+
 import SectionHeader from '@/components/ui/SectionHeader'
 import Reveal from '@/components/ui/Reveal'
 import { NOSOTROS, methodologySteps } from '@/lib/constants'
 
 export default function MetodologiaSection() {
   return (
-    <section className="bg-secondary px-4 py-24 sm:px-6 lg:px-8">
+    <section className="bg-primary px-4 py-24 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-4xl">
         <SectionHeader
           title={NOSOTROS.metodologia.title}
@@ -25,7 +24,7 @@ export default function MetodologiaSection() {
                       Paso {index + 1}
                     </p>
                     <h3 className="mt-3 font-cinzel text-xl font-semibold text-text-light">{title}</h3>
-                    <p className="mt-3 text-sm font-light text-text-muted">{text}</p>
+                    <p className="mt-3 font-inter text-sm font-light text-text-muted">{text}</p>
                   </div>
                 </article>
               </Reveal>

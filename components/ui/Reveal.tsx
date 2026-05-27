@@ -1,16 +1,7 @@
 'use client'
 
-// IMPERIUM IURIS — T03 Animación scroll reusable
-// Módulo: M1 — Sitio Web Público
-// RF: RF-01, RF-03
-// Desarrollado: 2026-05-19
-import { motion, useInView, type Variants } from 'framer-motion'
+import { motion, useInView } from 'framer-motion'
 import { useRef, type ReactNode } from 'react'
-
-const variants: Variants = {
-  hidden: { opacity: 0, y: 28 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: 'easeOut' } },
-}
 
 export default function Reveal({
   children,
@@ -28,10 +19,9 @@ export default function Reveal({
     <motion.div
       ref={ref}
       className={className}
-      variants={variants}
-      initial="hidden"
-      animate={isInView ? 'show' : 'hidden'}
-      transition={{ delay }}
+      initial={{ opacity: 0, y: 28 }}
+      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 28 }}
+      transition={{ duration: 0.6, ease: 'easeOut', delay }}
     >
       {children}
     </motion.div>

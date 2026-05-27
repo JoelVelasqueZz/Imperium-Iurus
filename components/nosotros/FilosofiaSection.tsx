@@ -1,6 +1,5 @@
-// IMPERIUM IURIS — T05 Filosofía
-// Módulo: M1 — Sitio Web Público
-// RF: RF-43, RF-44, RF-45
+'use client'
+
 import SectionHeader from '@/components/ui/SectionHeader'
 import Reveal from '@/components/ui/Reveal'
 import { NOSOTROS, philosophyPillars } from '@/lib/constants'
@@ -19,12 +18,12 @@ export default function FilosofiaSection() {
               <article className="h-full border border-border bg-card-bg p-7">
                 <p className="font-trajan text-4xl font-bold text-gold">{pillar.roman}</p>
                 <h3 className="mt-5 font-cinzel text-xl font-semibold text-text-light">{pillar.title}</h3>
-                <p className="mt-4 text-sm font-light leading-7 text-text-muted">{pillar.text}</p>
+                <p className="mt-4 font-inter text-sm font-light leading-7 text-text-muted">{pillar.text}</p>
               </article>
             </Reveal>
           ))}
         </div>
-        <p className="mt-12 text-center font-cinzel text-xl font-semibold tracking-wide text-gold-light">
+        <p className="mt-12 text-center font-cinzel text-xl font-semibold tracking-wide text-gold">
           {NOSOTROS.filosofia.closing}
         </p>
       </div>

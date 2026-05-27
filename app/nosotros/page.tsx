@@ -6,6 +6,7 @@ import AperturaSection from '@/components/nosotros/AperturaSection'
 import FilosofiaSection from '@/components/nosotros/FilosofiaSection'
 import PorQueSection from '@/components/nosotros/PorQueSection'
 import EquipoSection from '@/components/nosotros/EquipoSection'
+import FirmaGallery from '@/components/nosotros/FirmaGallery'
 import MetodologiaSection from '@/components/nosotros/MetodologiaSection'
 import ConfidencialidadSection from '@/components/nosotros/ConfidencialidadSection'
 import VisionSection from '@/components/nosotros/VisionSection'
@@ -18,6 +19,7 @@ export default function NosotrosPage() {
       <FilosofiaSection />
       <PorQueSection />
       <EquipoSection />
+      <FirmaGallery />
       <MetodologiaSection />
       <ConfidencialidadSection />
       <VisionSection />

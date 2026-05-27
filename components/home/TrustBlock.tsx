@@ -1,8 +1,5 @@
 'use client'
 
-// IMPERIUM IURIS — T03 Desarrollo bloque principal y CTAs
-// Módulo: M1 — Sitio Web Público
-// RF: RF-01, RF-03, RF-04
 import { motion } from 'framer-motion'
 import SectionHeader from '@/components/ui/SectionHeader'
 import { HOME, trustCards } from '@/lib/constants'
@@ -31,8 +28,8 @@ export default function TrustBlock() {
             >
               <Icon className="mb-5 text-gold" size={32} aria-hidden="true" />
               <h3 className="font-cinzel text-lg font-semibold tracking-wide text-text-light">{title}</h3>
-              <p className="mt-4 font-montserrat text-sm font-light leading-7 text-text-muted">{body}</p>
-              <p className="mt-5 border-t border-border pt-4 font-montserrat text-xs font-medium uppercase tracking-widest text-gold-light">{sub}</p>
+              <p className="mt-4 font-inter text-sm font-light leading-7 text-text-muted">{body}</p>
+              <p className="mt-5 border-t border-border pt-4 font-inter text-xs font-medium uppercase tracking-widest text-gold">{sub}</p>
             </motion.article>
           ))}
         </motion.div>

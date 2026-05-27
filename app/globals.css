@@ -1,14 +1,10 @@
-/* IMPERIUM IURIS — T01 Estilos globales */
-/* Módulo: M1 — Sitio Web Público */
-/* RF: RF-01, RF-02 */
-/* Desarrollado: 2026-05-19 */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
   color-scheme: dark;
-  background: #1a1a2e;
+  background: #101a2d; /* Azul Imperial Profundo */
 }
 
 * {
@@ -26,14 +22,14 @@ body {
 }
 
 ::selection {
-  background: #b8860b;
-  color: #1a1a2e;
+  background: #c9a646; /* Dorado Cepillado */
+  color: #101a2d;
 }
 
 .premium-surface {
   background:
-    radial-gradient(circle at top left, rgba(201, 168, 76, 0.12), transparent 34rem),
-    linear-gradient(145deg, rgba(26, 26, 46, 0.95), rgba(15, 15, 35, 0.98));
+    radial-gradient(circle at top left, rgba(201, 166, 70, 0.12), transparent 34rem),
+    linear-gradient(145deg, rgba(16, 26, 45, 0.95), rgba(15, 17, 21, 0.98));
 }
 
 .focus-gold {
@@ -45,5 +41,11 @@ body {
 }
 
 .input-dark {
-  @apply focus-gold w-full border border-border bg-primary px-4 py-4 font-montserrat text-sm text-text-light placeholder-transparent transition-colors focus:border-gold;
+  @apply focus-gold w-full border border-border bg-primary px-4 py-4 font-inter text-sm text-text-light placeholder-transparent transition-colors focus:border-gold;
+}
+
+/* Cormorant Garamond — uso semántico para frases institucionales */
+.font-institutional {
+  font-family: var(--font-cormorant);
+  font-style: italic;
 }
