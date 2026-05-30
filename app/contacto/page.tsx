@@ -14,8 +14,6 @@ import SectionHeader from '@/components/ui/SectionHeader'
 import { CONTACT, contactTypes } from '@/lib/constants'
 import { contactSchema, type ContactFormData } from '@/lib/schemas'
 
-// Componente headless: lee ?tipo= de la URL y sincroniza con el formulario.
-// Necesita Suspense porque useSearchParams suspende en el servidor.
 function TipoConsultaSync({ setValue }: { setValue: UseFormSetValue<ContactFormData> }) {
   const searchParams = useSearchParams()
   useEffect(() => {
@@ -63,12 +61,14 @@ export default function ContactoPage() {
   )
 
   return (
-    <main className="bg-primary px-4 pb-24 pt-32 sm:px-6 lg:px-8">
+    <main className="relative bg-[#F5F3EE] px-4 pb-24 pt-60 sm:px-6 lg:px-8">
+      <div className="absolute inset-x-0 top-0 h-32 bg-primary -z-10" />
       <div className="mx-auto max-w-7xl">
         <SectionHeader
           eyebrow="Contacto"
           title="Consulta confidencial"
           subtitle="Comparta la información esencial de su caso para activar una evaluación jurídica inicial."
+          invert
         />
 
         <Suspense fallback={null}>
@@ -76,19 +76,20 @@ export default function ContactoPage() {
         </Suspense>
 
         <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
-          <form onSubmit={onSubmit} className="border border-border bg-card-bg p-6 md:p-8">
+          {/* ─── Formulario — fondo marfil ─── */}
+          <form onSubmit={onSubmit} className="border border-gold/20 bg-[#F5F3EE] p-6 md:p-8">
             <div className="grid gap-5 md:grid-cols-2">
               <Field label="Nombre completo" error={errors.nombre?.message}>
-                <input {...register('nombre')} className="input-dark" placeholder=" " />
+                <input {...register('nombre')} className="input-light" placeholder=" " />
               </Field>
               <Field label="Correo electrónico" error={errors.correo?.message}>
-                <input {...register('correo')} type="email" className="input-dark" placeholder=" " />
+                <input {...register('correo')} type="email" className="input-light" placeholder=" " />
               </Field>
               <Field label="Teléfono" error={errors.telefono?.message}>
-                <input {...register('telefono')} className="input-dark" placeholder=" " />
+                <input {...register('telefono')} className="input-light" placeholder=" " />
               </Field>
               <Field label="Tipo de consulta" error={errors.tipoConsulta?.message}>
-                <select {...register('tipoConsulta')} className="input-dark">
+                <select {...register('tipoConsulta')} className="input-light">
                   {contactTypes.map((type) => (
                     <option key={type.value} value={type.value}>
                       {type.label}
@@ -103,17 +104,17 @@ export default function ContactoPage() {
                 {...register('mensaje')}
                 rows={6}
                 maxLength={500}
-                className="input-dark resize-none"
+                className="input-light resize-none"
                 placeholder=" "
               />
             </Field>
 
-            <label className="mt-5 flex gap-3 text-sm font-light text-text-muted">
+            <label className="mt-5 flex gap-3 text-sm font-light text-primary/70">
               <input {...register('confidencial')} type="checkbox" className="mt-1 accent-gold" defaultChecked />
               Entiendo que mi consulta es estrictamente confidencial.
             </label>
             {errors.confidencial ? (
-              <p className="mt-2 text-sm text-red-300">{errors.confidencial.message}</p>
+              <p className="mt-2 text-sm text-red-600">{errors.confidencial.message}</p>
             ) : null}
 
             <Button type="submit" className="mt-7 w-full" disabled={isSubmitting}>
@@ -121,22 +122,23 @@ export default function ContactoPage() {
             </Button>
 
             {serverError ? (
-              <p className="mt-5 border border-red-500/50 bg-primary p-4 text-sm text-red-300">
+              <p className="mt-5 border border-red-400/50 bg-red-50 p-4 text-sm text-red-600">
                 {serverError}
               </p>
             ) : null}
 
             {sent ? (
-              <p className="mt-5 border border-gold/50 bg-primary p-4 text-sm text-gold-light">
+              <p className="mt-5 border border-gold/50 bg-gold/10 p-4 text-sm text-primary">
                 Consulta recibida. Le confirmaremos por correo electrónico en breve.
               </p>
             ) : null}
           </form>
 
+          {/* ─── Aside — fondo marfil ─── */}
           <aside className="space-y-6">
-            <div className="border border-border bg-card-bg p-7">
+            <div className="border border-gold/20 bg-[#F5F3EE] p-7">
               <h2 className="font-cinzel text-2xl font-semibold text-gold">Información de contacto</h2>
-              <div className="mt-6 space-y-4 text-sm font-light text-text-muted">
+              <div className="mt-6 space-y-4 text-sm font-light text-primary/70">
                 <Info icon={MapPin} text={CONTACT.address} />
                 <Info icon={Phone} text={CONTACT.phone} />
                 <Info icon={Mail} text={CONTACT.email} />
@@ -146,18 +148,18 @@ export default function ContactoPage() {
                 {CONTACT.social.map((item) => (
                   <span
                     key={item}
-                    className="border border-border px-4 py-2 text-xs uppercase tracking-widest text-gold-light"
+                    className="border border-gold/40 px-4 py-2 text-xs uppercase tracking-widest text-gold"
                   >
                     {item}
                   </span>
                 ))}
               </div>
             </div>
-            <div className="overflow-hidden border border-border bg-card-bg">
+            <div className="overflow-hidden border border-gold/20 bg-[#F5F3EE]">
               <iframe
                 title="Mapa Guayaquil Imperium Iuris"
                 src={mapUrl}
-                className="h-80 w-full grayscale invert"
+                className="h-80 w-full grayscale"
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
               />
@@ -182,9 +184,9 @@ function Field({
 }) {
   return (
     <label className={`block ${className}`}>
-      <span className="mb-2 block font-montserrat text-sm font-medium text-text-light">{label}</span>
+      <span className="mb-2 block font-montserrat text-sm font-medium text-primary">{label}</span>
       {children}
-      {error ? <span className="mt-2 block text-sm text-red-300">{error}</span> : null}
+      {error ? <span className="mt-2 block text-sm text-red-600">{error}</span> : null}
     </label>
   )
 }
@@ -193,7 +195,7 @@ function Info({ icon: Icon, text }: { icon: typeof MapPin; text: string }) {
   return (
     <p className="flex gap-3">
       <Icon size={18} className="mt-0.5 shrink-0 text-gold" aria-hidden="true" />
-      <span>{text}</span>
+      <span className="text-primary/80">{text}</span>
     </p>
   )
 }

@@ -49,3 +49,7 @@ body {
   font-family: var(--font-cormorant);
   font-style: italic;
 }
+
+.input-light {
+  @apply focus-gold w-full border border-gold/30 bg-white px-4 py-4 font-inter text-sm text-primary placeholder-transparent transition-colors focus:border-gold;
+}

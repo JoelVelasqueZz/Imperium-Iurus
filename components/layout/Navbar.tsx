@@ -20,15 +20,15 @@ export default function Navbar() {
 
   return (
     <header
-      className={`fixed inset-x-0 top-0 z-50 border-b transition-all duration-300 ${
+      className={`fixed inset-x-0 top-0 z-50 border-b backdrop-blur-xl transition-all duration-500 ${
         scrolled
-          ? 'border-gold/50 bg-primary/90 shadow-lg shadow-black/30 backdrop-blur-xl'
-          : 'border-transparent bg-primary/30 backdrop-blur-sm'
+          ? 'border-gold/30 bg-[#0D1624]/97 shadow-xl shadow-black/40'
+          : 'border-white/10 bg-[#0D1624]/40'
       }`}
     >
       <nav
-        className={`mx-auto flex max-w-7xl items-center justify-between px-4 transition-all duration-300 sm:px-6 lg:px-8 ${
-          scrolled ? 'py-4' : 'py-6'
+        className={`mx-auto flex w-full max-w-[1400px] items-center justify-between px-6 transition-all duration-300 lg:px-12 ${
+          scrolled ? 'py-3' : 'py-6'
         }`}
       >
         {/* Logo */}
@@ -36,25 +36,25 @@ export default function Navbar() {
           <Image
             src="/logo-imperium.png"
             alt="Logo dorado de Imperium Iuris"
-            width={64}
-            height={58}
+            width={72}
+            height={65}
             className={`w-auto object-contain mix-blend-screen brightness-110 transition-all duration-300 ${
-              scrolled ? 'h-12' : 'h-16'
+              scrolled ? 'h-11' : 'h-16'
             }`}
             priority
           />
-          <span className="hidden font-trajan text-lg font-bold uppercase tracking-[0.15em] text-gold sm:block">
+          <span className="hidden font-trajan text-base font-bold uppercase tracking-[0.18em] text-gold sm:block">
             {BRAND.name}
           </span>
         </Link>
 
         {/* Nav links */}
-        <div className="hidden items-center gap-7 md:flex">
+        <div className="hidden items-center gap-9 md:flex">
           {NAV_LINKS.map((link) => (
             <Link
               key={link.href}
               href={link.href}
-              className="focus-gold font-cinzel text-xs font-medium uppercase tracking-widest text-text-light transition-colors hover:text-gold"
+              className="focus-gold relative font-cinzel text-[11px] font-medium uppercase tracking-[0.2em] text-gold/90 transition-colors duration-200 hover:text-gold after:absolute after:-bottom-1 after:left-0 after:h-px after:w-0 after:bg-gold after:transition-all after:duration-300 hover:after:w-full"
             >
               {link.label}
             </Link>
@@ -63,37 +63,37 @@ export default function Navbar() {
 
         {/* CTA */}
         <div className="hidden md:block">
-          <Button href={`tel:${CONTACT.phone}`} variant="danger" className="px-4 py-3">
-            <Phone size={16} /> Urgencia 24/7
+          <Button href={`tel:${CONTACT.phone}`} variant="danger" className="px-5 py-3 text-xs tracking-widest">
+            <Phone size={14} /> Urgencia 24/7
           </Button>
         </div>
 
         {/* Hamburger */}
         <button
-          className="focus-gold inline-flex h-11 w-11 items-center justify-center border border-gold/50 text-gold md:hidden"
+          className="focus-gold inline-flex h-10 w-10 items-center justify-center border border-gold/40 text-gold transition-colors hover:border-gold hover:bg-gold/10 md:hidden"
           onClick={() => setOpen((v) => !v)}
           aria-label={open ? 'Cerrar menú' : 'Abrir menú'}
           aria-expanded={open}
         >
-          {open ? <X size={22} /> : <Menu size={22} />}
+          {open ? <X size={20} /> : <Menu size={20} />}
         </button>
       </nav>
 
       {/* Menú móvil */}
       {open ? (
-        <div className="border-t border-border bg-primary/95 px-4 pb-6 pt-2 backdrop-blur-xl md:hidden">
-          <div className="flex flex-col gap-2">
+        <div className="border-t border-border bg-[#0D1624]/98 px-6 pb-8 pt-3 backdrop-blur-xl md:hidden">
+          <div className="flex flex-col gap-1">
             {NAV_LINKS.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className="focus-gold border-b border-border py-4 font-cinzel text-sm font-medium uppercase tracking-widest text-text-light"
+                className="focus-gold border-b border-border/50 py-4 font-cinzel text-sm font-medium uppercase tracking-widest text-gold/90 transition-colors hover:text-gold"
                 onClick={() => setOpen(false)}
               >
                 {link.label}
               </Link>
             ))}
-            <Button href={`tel:${CONTACT.phone}`} variant="danger" className="mt-4 w-full">
+            <Button href={`tel:${CONTACT.phone}`} variant="danger" className="mt-5 w-full">
               <Phone size={16} /> Urgencia 24/7
             </Button>
           </div>

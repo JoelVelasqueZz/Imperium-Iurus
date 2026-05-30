@@ -12,6 +12,8 @@ const item = {
   show: { opacity: 1, y: 0 },
 }
 
+// Revisa que estas imágenes no estén en blanco en /public
+// Si alguna sale blanca, elimínala de este array
 const bgImages = ['/IMG1.jpeg', '/IMG6.jpeg', '/IMG7.jpeg']
 
 export default function HeroSection() {
@@ -25,39 +27,44 @@ export default function HeroSection() {
   }, [])
 
   return (
-    <section className="relative isolate flex min-h-screen items-center overflow-hidden bg-primary px-4 pt-24 sm:px-6 lg:px-8">
-      {/* Carousel background images — crossfade via opacity transition */}
+    <section className="relative isolate flex min-h-screen items-center overflow-hidden bg-[#0F1115] px-4 pt-24 sm:px-6 lg:px-8">
+
+      {/* ─── Carousel de fondos ─────────────────────────────── */}
       {bgImages.map((src, i) => (
         <div
           key={src}
           className="absolute inset-0 -z-30 transition-opacity duration-1000 ease-in-out"
           style={{ opacity: i === current ? 1 : 0 }}
         >
-          <Image src={src} alt="" fill sizes="100vw" className="object-cover" priority={i === 0} />
+          <Image
+            src={src}
+            alt=""
+            fill
+            sizes="100vw"
+            className="object-cover"
+            priority={i === 0}
+          />
+          {/* Desenfoque suave sobre cada imagen — efecto glass leve */}
+          <div className="absolute inset-0 backdrop-blur-[2px]" />
         </div>
       ))}
 
-      <div className="absolute inset-0 -z-20 bg-[radial-gradient(circle_at_50%_25%,rgba(184,134,11,0.22),transparent_28rem),linear-gradient(135deg,#1A1A2E_0%,#0A0A1A_72%)]" />
-      <div className="absolute inset-0 -z-10 bg-primary/80" />
+      {/* ─── Overlay degradado — más suave para ver las imágenes ── */}
+      <div className="absolute inset-0 -z-20 bg-[radial-gradient(circle_at_50%_30%,rgba(201,166,70,0.08),transparent_40rem),linear-gradient(160deg,rgba(13,22,36,0.65)_0%,rgba(15,17,21,0.75)_100%)]" />
+      <div className="absolute inset-0 -z-10 bg-[#0F1115]/30" />
 
+      {/* ─── Contenido Hero ─────────────────────────────────── */}
       <motion.div
-        className="mx-auto max-w-5xl text-center"
+        className="relative mx-auto max-w-5xl text-center"
         initial="hidden"
         animate="show"
         transition={{ staggerChildren: 0.2 }}
       >
-        <motion.div variants={item} transition={{ duration: 0.7, delay: 0.2 }} className="mb-8 flex justify-center">
-          <Image
-            src="/logo-imperium.png"
-            alt="Logo Imperium Iuris"
-            width={156}
-            height={142}
-            className="h-28 w-auto object-contain md:h-36"
-            priority
-          />
-        </motion.div>
-
-        <motion.p variants={item} transition={{ duration: 0.7 }} className="mb-4 font-cinzel text-xs font-semibold uppercase tracking-[0.35em] text-gold-light">
+        <motion.p
+          variants={item}
+          transition={{ duration: 0.7 }}
+          className="mb-5 font-cinzel text-xs font-semibold uppercase tracking-[0.35em] text-gold-light"
+        >
           {BRAND.location}
         </motion.p>
 
@@ -71,15 +78,26 @@ export default function HeroSection() {
           {HOME.hero.titleAfter}
         </motion.h1>
 
+        {/* Línea divisoria dorada bajo el título */}
+        <motion.div
+          variants={item}
+          transition={{ duration: 0.7 }}
+          className="mx-auto mt-6 h-px w-24 bg-gradient-to-r from-transparent via-gold to-transparent"
+        />
+
         <motion.p
           variants={item}
           transition={{ duration: 0.7 }}
-          className="mx-auto mt-7 max-w-3xl font-montserrat text-lg font-light leading-8 text-text-muted md:text-xl"
+          className="mx-auto mt-7 max-w-2xl font-montserrat text-lg font-light leading-8 text-text-muted md:text-xl"
         >
           {HOME.hero.subtitle}
         </motion.p>
 
-        <motion.p variants={item} transition={{ duration: 0.7 }} className="mt-5 font-montserrat text-base italic text-gold-light">
+        <motion.p
+          variants={item}
+          transition={{ duration: 0.7 }}
+          className="mt-5 font-montserrat text-base italic text-gold-light/80"
+        >
           {HOME.hero.emotional}
         </motion.p>
 
@@ -97,7 +115,7 @@ export default function HeroSection() {
           </Button>
         </motion.div>
 
-        {/* Carousel dots */}
+        {/* Dots del carousel */}
         <motion.div variants={item} transition={{ duration: 0.7 }} className="mt-10 flex justify-center gap-2">
           {bgImages.map((_, i) => (
             <button
