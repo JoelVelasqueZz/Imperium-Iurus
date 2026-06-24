@@ -4,7 +4,7 @@ import { Inter, Cormorant_Garamond } from 'next/font/google'
 import './globals.css'
 import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
-import WhatsAppButton from '@/components/shared/WhatsAppButton'
+import UrgencyFloatingButton from '@/components/shared/UrgencyFloatingButton'
 import { BRAND } from '@/lib/constants'
 
 const trajanPro = localFont({
@@ -89,7 +89,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <Navbar />
         {children}
         <Footer />
-        <WhatsAppButton />
+        <UrgencyFloatingButton />
       </body>
     </html>
   )
