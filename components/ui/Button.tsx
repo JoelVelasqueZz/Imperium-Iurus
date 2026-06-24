@@ -10,6 +10,8 @@ type ButtonProps = {
   variant?: 'primary' | 'secondary' | 'tertiary' | 'danger'
   children: ReactNode
   className?: string
+  target?: string
+  rel?: string
 } & ComponentPropsWithoutRef<'button'>
 
 const variants = {
@@ -19,12 +21,20 @@ const variants = {
   danger: 'border-gold-bright bg-red-950/80 text-gold-bright hover:bg-gold-bright hover:text-primary',
 }
 
-export default function Button({ href, variant = 'primary', children, className = '', ...props }: ButtonProps) {
+export default function Button({
+  href,
+  variant = 'primary',
+  children,
+  className = '',
+  target,
+  rel,
+  ...props
+}: ButtonProps) {
   const classes = `focus-gold inline-flex items-center justify-center gap-2 border px-7 py-4 text-center font-montserrat text-xs font-bold uppercase tracking-widest transition-all duration-300 ${variants[variant]} ${className}`
 
   if (href) {
     return (
-      <Link href={href} className={classes}>
+      <Link href={href} className={classes} target={target} rel={rel}>
         {children}
       </Link>
     )

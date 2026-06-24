@@ -4,7 +4,7 @@ import { ArrowRight } from 'lucide-react'
 import Button from '@/components/ui/Button'
 import SectionHeader from '@/components/ui/SectionHeader'
 import Reveal from '@/components/ui/Reveal'
-import { HOME, urgencyCases } from '@/lib/constants'
+import { HOME, getWhatsAppUrl, urgencyCases } from '@/lib/constants'
 
 export default function UrgencyBlock() {
   return (
@@ -30,7 +30,13 @@ export default function UrgencyBlock() {
                     <li key={listItem} className="border-l border-gold/40 pl-3">{listItem}</li>
                   ))}
                 </ul>
-                <Button href="/contacto?tipo=urgencia" variant="secondary" className="mt-7 w-full px-4">
+                <Button
+                  href={getWhatsAppUrl()}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  variant="secondary"
+                  className="mt-7 w-full px-4"
+                >
                   {item.button}
                 </Button>
               </article>

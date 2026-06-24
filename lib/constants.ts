@@ -29,6 +29,17 @@ export const CONTACT = {
   social: ['LinkedIn', 'Instagram', 'Facebook'],
 }
 
+// ─── WhatsApp 24/7 ────────────────────────────────────────────────────────────
+// El número real vive en NEXT_PUBLIC_WHATSAPP_NUMBER (.env.local) para poder
+// cambiarlo sin tocar código.
+
+export const WHATSAPP_EMERGENCY_MESSAGE = 'Hola, necesito asistencia legal urgente de IMPERIUM IURIS'
+
+export function getWhatsAppUrl(message: string = WHATSAPP_EMERGENCY_MESSAGE) {
+  const number = (process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || CONTACT.whatsapp).replace(/\D/g, '')
+  return `https://wa.me/${number}?text=${encodeURIComponent(message)}`
+}
+
 export const BRAND = {
   name: 'IMPERIUM IURIS',
   tagline: 'Defensa Penal Estratégica de Alto Nivel',
