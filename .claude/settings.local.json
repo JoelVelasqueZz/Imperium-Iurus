@@ -25,7 +25,8 @@
       "Bash(npx --yes playwright install chromium)",
       "Bash(:)",
       "Bash(npm init *)",
-      "Bash(node verify_urgency_button.js)"
+      "Bash(node verify_urgency_button.js)",
+      "Bash(git restore *)"
     ]
   }
 }

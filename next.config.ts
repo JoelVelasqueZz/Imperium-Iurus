@@ -16,9 +16,6 @@ const securityHeaders = [
 const nextConfig: NextConfig = {
   images: {
     formats: ['image/avif', 'image/webp'],
-    // Cachea las imágenes optimizadas por 1 año en el CDN de Vercel.
-    // Default es 60s — sin esto, visitas recurrentes vuelven a descargar.
-    minimumCacheTTL: 60 * 60 * 24 * 365,
   },
   async headers() {
     return [

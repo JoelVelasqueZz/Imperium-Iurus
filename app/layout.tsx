@@ -26,6 +26,7 @@ const cinzel = localFont({
   ],
   variable: '--font-cinzel',
   display: 'swap',
+  // Next.js solo preloads el primer archivo del array — Cinzel-Regular
   preload: true,
   adjustFontFallback: false,
 })

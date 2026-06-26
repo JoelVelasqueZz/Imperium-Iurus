@@ -18,12 +18,8 @@ const bgImages = ['/IMG1.jpeg', '/IMG6.jpeg', '/IMG7.jpeg']
 
 export default function HeroSection() {
   const [current, setCurrent] = useState(0)
-  // Slides 1 y 2 se montan solo después de hidratación — evita 3 descargas
-  // simultáneas en el LCP inicial (el browser compite por ancho de banda)
-  const [slidesReady, setSlidesReady] = useState(false)
 
   useEffect(() => {
-    setSlidesReady(true)
     const timer = setInterval(() => {
       setCurrent((prev) => (prev + 1) % bgImages.length)
     }, 5000)
@@ -40,19 +36,16 @@ export default function HeroSection() {
           className="absolute inset-0 -z-30 transition-opacity duration-1000 ease-in-out"
           style={{ opacity: i === current ? 1 : 0 }}
         >
-          {/* Slide 0: siempre en DOM (es el LCP). Slides 1-2: se montan tras hidratación */}
-          {(i === 0 || slidesReady) && (
-            <Image
-              src={src}
-              alt=""
-              fill
-              sizes="100vw"
-              className="object-cover"
-              priority={i === 0}
-              loading={i === 0 ? 'eager' : 'lazy'}
-              quality={50}
-            />
-          )}
+          <Image
+            src={src}
+            alt=""
+            fill
+            sizes="100vw"
+            className="object-cover"
+            priority={i === 0}
+            loading={i === 0 ? 'eager' : 'lazy'}
+            quality={75}
+          />
           {/* Desenfoque suave sobre cada imagen — efecto glass leve */}
           <div className="absolute inset-0 backdrop-blur-[2px]" />
         </div>
