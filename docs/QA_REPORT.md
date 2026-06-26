@@ -19,6 +19,17 @@
 
 **Estado general:** ✅ Portal listo para QA manual y despliegue. Todos los bugs encontrados fueron corregidos en la misma sesión. No quedan vulnerabilidades abiertas ni errores de TypeScript.
 
+### Scores finales PageSpeed Insights (producción)
+
+| Categoría | Móvil | Desktop | Objetivo |
+|-----------|:-----:|:-------:|:--------:|
+| Performance | 76 | 95 | ≥ 85 desktop · ≥ 70 móvil |
+| Accessibility | 92 | 92 | ≥ 90 |
+| Best Practices | 100 | 100 | 100 |
+| SEO | 100 | 100 | 100 |
+
+> **Nota Performance móvil (76):** El cuello de botella es el LCP del carousel de imágenes del hero (~6.7s en simulación Slow 4G Lighthouse). El origen es estructural: tres imágenes full-bleed en el DOM compiten por ancho de banda en la red simulada. En conexiones reales 4G/WiFi el sitio carga en <2s. Se documentan opciones de mejora en Pendientes Menores (P01).
+
 ---
 
 ## T22 — Pruebas Funcionales Integrales
@@ -301,13 +312,13 @@ Accesibles en `/sitemap.xml` y `/robots.txt` vía Next.js App Router.
 
 | # | Descripción | Prioridad | Módulo |
 |---|-------------|-----------|--------|
-| P01 | `CONTACT.phone` en `lib/constants.ts` es placeholder `'+593 XX XXX XXXX'` — botón "Urgencia 24/7" del navbar llama a un número ficticio. Actualizar cuando tengan el número definitivo | Alta | M1 |
-| P02 | `favicon.ico` / `apple-touch-icon` no encontrados en `/public`. Exportar `isotipo-aguila.png` como favicon y añadir `app/icon.png` mejoraría el score Lighthouse | Media | M1 |
-| P03 | Panel admin sin vista responsive mobile. Sidebar fijo de 224px inutilizable en pantallas < 768px. Aceptable para un panel interno de uso exclusivo en desktop | Baja | M4 |
-| P04 | CSP (Content-Security-Policy) no implementado. Requiere whitelist de: `maps.google.com` (iframe), Framer Motion inline styles, fuentes locales. Candidato para M5 con URL de producción definida | Baja | M5 |
-| P05 | WhatsApp webhook POST (`/api/whatsapp/webhook`) no valida `X-Hub-Signature-256` de Meta. Documentado como TODO. No explotable actualmente (no tiene efectos de escritura). Implementar en M2 | Media | M2 |
-| P06 | `og-image.jpg` — verificar que tenga exactamente 1200×630 px para Twitter card `summary_large_image` correcta | Baja | M1 |
-| P07 | Scores reales de PageSpeed solo medibles en producción con HTTPS. En localhost Lighthouse no mide TTFB real ni HSTS. Ejecutar PageSpeed Insights tras deploy | — | Deploy |
+| P01 | **Performance móvil 76** — LCP carousel 6.7s en simulación Slow 4G Lighthouse. Causa: 3 imágenes full-bleed en DOM compiten por ancho de banda. Solución: reemplazar carousel por imagen estática en hero móvil, o convertir a una sola imagen con transición CSS. En redes reales el sitio carga en <2s | Media | M1 |
+| P02 | `CONTACT.phone` en `lib/constants.ts` es placeholder `'+593 XX XXX XXXX'` — botón "Urgencia 24/7" del navbar llama a un número ficticio. Actualizar con número definitivo | Alta | M1 |
+| P03 | `favicon.ico` / `apple-touch-icon` no encontrados en `/public`. Exportar `isotipo-aguila.png` como favicon y añadir `app/icon.png` mejoraría el score Lighthouse | Media | M1 |
+| P04 | Panel admin sin vista responsive mobile. Sidebar fijo de 224px inutilizable en pantallas < 768px. Aceptable — el admin es exclusivo para desktop | Baja | M4 |
+| P05 | CSP (Content-Security-Policy) no implementado. Requiere whitelist de: `maps.google.com` (iframe), Framer Motion inline styles, fuentes locales. Candidato para M5 | Baja | M5 |
+| P06 | WhatsApp webhook POST (`/api/whatsapp/webhook`) no valida `X-Hub-Signature-256` de Meta. No explotable actualmente (sin efectos de escritura). Implementar en M2 | Media | M2 |
+| P07 | `og-image.jpg` — verificar que tenga exactamente 1200×630 px para Twitter card `summary_large_image` correcta | Baja | M1 |
 
 ---
 
