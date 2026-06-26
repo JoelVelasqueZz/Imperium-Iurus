@@ -43,6 +43,8 @@ export default function HeroSection() {
             sizes="100vw"
             className="object-cover"
             priority={i === 0}
+            loading={i === 0 ? 'eager' : 'lazy'}
+            quality={75}
           />
           {/* Desenfoque suave sobre cada imagen — efecto glass leve */}
           <div className="absolute inset-0 backdrop-blur-[2px]" />

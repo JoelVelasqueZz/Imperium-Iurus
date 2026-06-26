@@ -51,7 +51,7 @@ export default function DifferentialBlock() {
     <section className="relative overflow-hidden bg-text-light px-4 py-24 sm:px-6 lg:px-8">
       {/* IMG4 como textura de fondo de sección con overlay claro */}
       <div className="absolute inset-0 -z-20">
-        <Image src="/IMG4.jpeg" alt="" fill sizes="100vw" className="object-cover" />
+        <Image src="/IMG4.jpeg" alt="" fill sizes="100vw" className="object-cover" quality={60} loading="lazy" />
       </div>
       <div className="absolute inset-0 -z-10 bg-text-light/92" />
 

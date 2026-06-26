@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import Button from '@/components/ui/Button'
@@ -5,6 +6,32 @@ import { supabase } from '@/lib/supabase'
 import { sanitizeBlogHtml } from '@/lib/sanitize'
 
 export const dynamic = 'force-dynamic'
+
+export async function generateMetadata(
+  { params }: { params: Promise<{ slug: string }> }
+): Promise<Metadata> {
+  const { slug } = await params
+  const { data } = await supabase
+    .from('articulos')
+    .select('titulo, resumen, categoria, slug')
+    .eq('slug', slug)
+    .eq('publicado', true)
+    .single()
+
+  if (!data) return { title: 'Artículo no encontrado' }
+
+  return {
+    title: data.titulo,
+    description: data.resumen ?? `${data.categoria} — Imperium Iuris`,
+    alternates: { canonical: `https://imperiumiuris.ec/blog/${data.slug}` },
+    openGraph: {
+      title: data.titulo,
+      description: data.resumen ?? undefined,
+      url: `https://imperiumiuris.ec/blog/${data.slug}`,
+      type: 'article',
+    },
+  }
+}
 
 type Articulo = {
   id: string

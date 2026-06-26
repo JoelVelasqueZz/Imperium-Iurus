@@ -1,8 +1,16 @@
-// IMPERIUM IURIS — T05 Sección Nosotros + perfiles equipo
-// Módulo: M1 — Sitio Web Público
-// RF: RF-43, RF-44, RF-45
-// Desarrollado: 2026-05-19
+import type { Metadata } from 'next'
 import AperturaSection from '@/components/nosotros/AperturaSection'
+
+export const metadata: Metadata = {
+  title: 'Nosotros',
+  description: 'Conozca al equipo de Imperium Iuris — firma jurídica de defensa penal estratégica en Guayaquil. Experiencia, metodología y compromiso con cada caso.',
+  alternates: { canonical: 'https://imperiumiuris.ec/nosotros' },
+  openGraph: {
+    title: 'Nosotros | Imperium Iuris',
+    description: 'Equipo de abogados penalistas con experiencia en casos complejos en Ecuador.',
+    url: 'https://imperiumiuris.ec/nosotros',
+  },
+}
 import FilosofiaSection from '@/components/nosotros/FilosofiaSection'
 import PorQueSection from '@/components/nosotros/PorQueSection'
 import EquipoSection from '@/components/nosotros/EquipoSection'

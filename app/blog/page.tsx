@@ -1,7 +1,19 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
 import SectionHeader from '@/components/ui/SectionHeader'
 import { supabase } from '@/lib/supabase'
+
+export const metadata: Metadata = {
+  title: 'Blog Jurídico',
+  description: 'Artículos de derecho penal ecuatoriano — guías prácticas para actuar ante una detención, investigación fiscal o riesgo empresarial.',
+  alternates: { canonical: 'https://imperiumiuris.ec/blog' },
+  openGraph: {
+    title: 'Blog Jurídico | Imperium Iuris',
+    description: 'Contenido jurídico de autoridad para decisiones urgentes en Ecuador.',
+    url: 'https://imperiumiuris.ec/blog',
+  },
+}
 
 export const dynamic = 'force-dynamic'
 

@@ -26,7 +26,9 @@ const cinzel = localFont({
   ],
   variable: '--font-cinzel',
   display: 'swap',
+  // Next.js solo preloads el primer archivo del array — Cinzel-Regular
   preload: true,
+  adjustFontFallback: false,
 })
 
 // Montserrat mantenido como fuente local — disponible vía font-montserrat
@@ -66,15 +68,31 @@ const cormorantGaramond = Cormorant_Garamond({
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://imperiumiuris.ec'),
-  title: `${BRAND.name} | ${BRAND.tagline}`,
-  description: 'Firma juridica penal estrategica en Guayaquil con cobertura nacional.',
+  title: {
+    default: `${BRAND.name} | ${BRAND.tagline}`,
+    template: `%s | ${BRAND.name}`,
+  },
+  description: 'Firma jurídica de defensa penal estratégica en Guayaquil con cobertura nacional. Protegemos su libertad, patrimonio y reputación.',
+  keywords: ['abogado penal Guayaquil', 'defensa penal Ecuador', 'firma jurídica penal', 'abogado penalista', 'Imperium Iuris'],
+  authors: [{ name: BRAND.name }],
+  creator: BRAND.name,
+  robots: { index: true, follow: true },
   openGraph: {
     title: `${BRAND.name} | ${BRAND.tagline}`,
-    description: 'Defensa penal estrategica para escenarios complejos.',
-    images: ['/og-image.jpg'],
+    description: 'Defensa penal estratégica para escenarios complejos. Protegemos su libertad, patrimonio y reputación.',
+    url: 'https://imperiumiuris.ec',
+    siteName: BRAND.name,
+    images: [{ url: '/og-image.jpg', width: 1200, height: 630, alt: `${BRAND.name} — Defensa Penal Estratégica` }],
     locale: 'es_EC',
     type: 'website',
   },
+  twitter: {
+    card: 'summary_large_image',
+    title: `${BRAND.name} | ${BRAND.tagline}`,
+    description: 'Defensa penal estratégica en Guayaquil, Ecuador.',
+    images: ['/og-image.jpg'],
+  },
+  alternates: { canonical: 'https://imperiumiuris.ec' },
 }
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
@@ -84,6 +102,36 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       className={`${trajanPro.variable} ${cinzel.variable} ${montserrat.variable} ${inter.variable} ${cormorantGaramond.variable}`}
     >
       <body className="bg-primary font-inter text-text-light antialiased" suppressHydrationWarning>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'LegalService',
+              name: 'Imperium Iuris',
+              description: 'Firma jurídica de defensa penal estratégica en Guayaquil, Ecuador.',
+              url: 'https://imperiumiuris.ec',
+              telephone: '+593-985-222-635',
+              email: 'contacto@imperiumiuris.ec',
+              address: {
+                '@type': 'PostalAddress',
+                addressLocality: 'Guayaquil',
+                addressRegion: 'Guayas',
+                addressCountry: 'EC',
+              },
+              geo: { '@type': 'GeoCoordinates', latitude: -2.1894, longitude: -79.8891 },
+              openingHoursSpecification: {
+                '@type': 'OpeningHoursSpecification',
+                dayOfWeek: ['Monday','Tuesday','Wednesday','Thursday','Friday'],
+                opens: '08:00',
+                closes: '18:00',
+              },
+              priceRange: '$$',
+              areaServed: { '@type': 'Country', name: 'Ecuador' },
+              hasMap: 'https://maps.google.com/?q=Guayaquil+Ecuador',
+            }),
+          }}
+        />
         <PublicShell>{children}</PublicShell>
       </body>
     </html>
