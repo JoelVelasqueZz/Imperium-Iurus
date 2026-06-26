@@ -21,7 +21,7 @@ import {
 
 export const CONTACT = {
   phone: '+593 XX XXX XXXX',
-  whatsapp: '+593XXXXXXXXX',
+  whatsapp: '+593 985 222 635',
   email: 'contacto@imperiumiuris.ec',
   address: 'Guayaquil, Ecuador',
   hours: 'Lun-Vie 08:00-18:00',

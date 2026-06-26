@@ -27,12 +27,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Stack técnico.md",
+                "file": "WIREFRAME_HOME.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Stack técnico"
+              "title": "WIREFRAME_HOME"
             }
           }
         ],
@@ -198,12 +198,12 @@
       "bases:Crear nueva base": false
     }
   },
-  "active": "d8084ecc63d60515",
+  "active": "221b190eaf8d183e",
   "lastOpenFiles": [
-    "Avance módulos.md",
     "Stack técnico.md",
-    "Pendientes del cliente.md",
     "QA_M1.md",
+    "Avance módulos.md",
+    "Pendientes del cliente.md",
     "WIREFRAME_HOME.md"
   ]
 }

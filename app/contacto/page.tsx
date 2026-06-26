@@ -33,6 +33,7 @@ export default function ContactoPage() {
     register,
     handleSubmit,
     setValue,
+    reset,
     formState: { errors, isSubmitting },
   } = useForm<ContactFormData>({
     resolver: zodResolver(contactSchema),
@@ -50,6 +51,7 @@ export default function ContactoPage() {
       })
       if (!res.ok) throw new Error()
       setSent(true)
+      reset()
     } catch {
       setServerError('Error al enviar la consulta. Por favor inténtelo nuevamente o contáctenos por teléfono.')
     }
