@@ -11,7 +11,6 @@ export type Cita = {
   tipo_consulta: string
   fecha: string
   hora: string
-  duracion_minutos: number
   mensaje: string | null
   estado: CitaEstado
   created_at: string

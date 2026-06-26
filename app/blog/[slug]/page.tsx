@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import Button from '@/components/ui/Button'
 import { supabase } from '@/lib/supabase'
+import { sanitizeBlogHtml } from '@/lib/sanitize'
 
 export const dynamic = 'force-dynamic'
 
@@ -60,7 +61,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
           <p className="font-montserrat text-xs font-medium uppercase tracking-[0.25em] text-gold-light">{art.categoria} · {fmtDate(art.created_at)} · {art.tiempo_lectura}</p>
           <h1 className="mt-5 font-cinzel text-4xl font-bold tracking-wide text-text-light md:text-5xl">{art.titulo}</h1>
           <div className="mt-10 max-w-none space-y-6 font-montserrat text-lg font-light leading-9 text-text-muted [&_h2]:font-cinzel [&_h2]:text-2xl [&_h2]:font-semibold [&_h2]:text-gold [&_p]:mb-6"
-            dangerouslySetInnerHTML={{ __html: art.contenido }} />
+            dangerouslySetInnerHTML={{ __html: sanitizeBlogHtml(art.contenido) }} />
           {related.length > 0 && (
             <div className="mt-12 border-t border-border pt-8">
               <h2 className="font-cinzel text-2xl font-semibold text-gold">Articulos relacionados</h2>

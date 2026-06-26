@@ -76,6 +76,10 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 
 // ─── Emails ───────────────────────────────────────────────────────────────────
 
+function esc(str: string): string {
+  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
+}
+
 function fmtFecha(fecha: string, hora: string): string {
   const [y, mo, d] = fecha.split('-')
   const date = new Date(`${fecha}T${hora}:00`)
@@ -96,15 +100,15 @@ function emailAbogadoCita(data: AppointmentFormData): string {
         <tr><td style="padding:10px 0;border-bottom:1px solid #f0f0f0;font-weight:600;width:160px;color:#555">Tipo</td>
             <td style="padding:10px 0;border-bottom:1px solid #f0f0f0">${data.tipoConsulta === 'urgencia' ? `<strong style="color:#dc2626">${TIPO_LABEL[data.tipoConsulta]}</strong>` : TIPO_LABEL[data.tipoConsulta]}</td></tr>
         <tr><td style="padding:10px 0;border-bottom:1px solid #f0f0f0;font-weight:600;color:#555">Nombre</td>
-            <td style="padding:10px 0;border-bottom:1px solid #f0f0f0">${data.nombre}</td></tr>
+            <td style="padding:10px 0;border-bottom:1px solid #f0f0f0">${esc(data.nombre)}</td></tr>
         <tr><td style="padding:10px 0;border-bottom:1px solid #f0f0f0;font-weight:600;color:#555">Correo</td>
-            <td style="padding:10px 0;border-bottom:1px solid #f0f0f0"><a href="mailto:${data.correo}" style="color:#1a1a2e">${data.correo}</a></td></tr>
+            <td style="padding:10px 0;border-bottom:1px solid #f0f0f0"><a href="mailto:${esc(data.correo)}" style="color:#1a1a2e">${esc(data.correo)}</a></td></tr>
         <tr><td style="padding:10px 0;border-bottom:1px solid #f0f0f0;font-weight:600;color:#555">Teléfono</td>
-            <td style="padding:10px 0;border-bottom:1px solid #f0f0f0"><a href="tel:${data.telefono}" style="color:#1a1a2e">${data.telefono}</a></td></tr>
+            <td style="padding:10px 0;border-bottom:1px solid #f0f0f0"><a href="tel:${esc(data.telefono)}" style="color:#1a1a2e">${esc(data.telefono)}</a></td></tr>
         <tr><td style="padding:10px 0;border-bottom:1px solid #f0f0f0;font-weight:600;color:#555">Fecha y hora</td>
             <td style="padding:10px 0;border-bottom:1px solid #f0f0f0"><strong>${fechaDisplay}</strong></td></tr>
         ${data.mensaje ? `<tr><td style="padding:14px 0 0;font-weight:600;color:#555;vertical-align:top">Mensaje</td>
-            <td style="padding:14px 0 0;line-height:1.6;white-space:pre-wrap">${data.mensaje}</td></tr>` : ''}
+            <td style="padding:14px 0 0;line-height:1.6;white-space:pre-wrap">${esc(data.mensaje)}</td></tr>` : ''}
       </table>
       <div style="margin-top:24px;padding:14px;background:#fafafa;border-left:3px solid #c9a96e;font-size:13px;color:#666">
         Agendado el ${new Date().toLocaleString('es-EC', { timeZone: 'America/Guayaquil', dateStyle: 'full', timeStyle: 'short' })}
@@ -122,7 +126,7 @@ function emailClienteCita(data: AppointmentFormData): string {
       <p style="color:#a0aec0;margin:6px 0 0;font-size:13px">Defensa Penal Estratégica — Guayaquil, Ecuador</p>
     </div>
     <div style="background:#fff;padding:32px;border:1px solid #e5e7eb;border-top:none;border-radius:0 0 8px 8px">
-      <p style="font-size:16px;margin:0 0 16px">Estimado/a <strong>${data.nombre}</strong>,</p>
+      <p style="font-size:16px;margin:0 0 16px">Estimado/a <strong>${esc(data.nombre)}</strong>,</p>
       <p style="line-height:1.7;color:#444;margin:0 0 20px">
         Su cita de <strong>${TIPO_LABEL[data.tipoConsulta]}</strong> ha sido agendada exitosamente.
       </p>
@@ -135,7 +139,7 @@ function emailClienteCita(data: AppointmentFormData): string {
         Nuestro equipo se pondrá en contacto para confirmar la cita. Si necesita reprogramar o tiene alguna consulta urgente, contáctenos por WhatsApp al
         <a href="https://wa.me/593985222635" style="color:#1a1a2e;font-weight:600">+593 985 222 635</a>.
       </p>
-      ${data.mensaje ? `<div style="background:#f5f5f5;border-radius:4px;padding:14px;margin-bottom:20px;font-size:13px;color:#555;border-left:3px solid #ccc"><strong>Su mensaje:</strong><br>${data.mensaje}</div>` : ''}
+      ${data.mensaje ? `<div style="background:#f5f5f5;border-radius:4px;padding:14px;margin-bottom:20px;font-size:13px;color:#555;border-left:3px solid #ccc"><strong>Su mensaje:</strong><br>${esc(data.mensaje)}</div>` : ''}
       <p style="margin:24px 0 0;font-size:12px;color:#888;border-top:1px solid #f0f0f0;padding-top:18px">
         Correo automático de confirmación — no responder.<br>
         <strong style="color:#1a1a2e">Imperium Iuris</strong> · Guayaquil, Ecuador

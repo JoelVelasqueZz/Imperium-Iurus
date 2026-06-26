@@ -5,6 +5,10 @@ import { supabase } from '@/lib/supabase'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
+function esc(str: string): string {
+  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
+}
+
 const TIPO_LABEL: Record<ContactFormData['tipoConsulta'], string> = {
   personal:     'Defensa Personal',
   empresarial:  'Asesoría Empresarial',
@@ -29,15 +33,15 @@ function emailAbogado(data: ContactFormData): string {
           </tr>
           <tr>
             <td style="padding:10px 0;border-bottom:1px solid #f0f0f0;font-weight:600;color:#555">Nombre</td>
-            <td style="padding:10px 0;border-bottom:1px solid #f0f0f0">${data.nombre}</td>
+            <td style="padding:10px 0;border-bottom:1px solid #f0f0f0">${esc(data.nombre)}</td>
           </tr>
           <tr>
             <td style="padding:10px 0;border-bottom:1px solid #f0f0f0;font-weight:600;color:#555">Correo</td>
-            <td style="padding:10px 0;border-bottom:1px solid #f0f0f0"><a href="mailto:${data.correo}" style="color:#1a1a2e">${data.correo}</a></td>
+            <td style="padding:10px 0;border-bottom:1px solid #f0f0f0"><a href="mailto:${esc(data.correo)}" style="color:#1a1a2e">${esc(data.correo)}</a></td>
           </tr>
           <tr>
             <td style="padding:10px 0;border-bottom:1px solid #f0f0f0;font-weight:600;color:#555">Teléfono</td>
-            <td style="padding:10px 0;border-bottom:1px solid #f0f0f0"><a href="tel:${data.telefono}" style="color:#1a1a2e">${data.telefono}</a></td>
+            <td style="padding:10px 0;border-bottom:1px solid #f0f0f0"><a href="tel:${esc(data.telefono)}" style="color:#1a1a2e">${esc(data.telefono)}</a></td>
           </tr>
           <tr>
             <td style="padding:10px 0;border-bottom:1px solid #f0f0f0;font-weight:600;color:#555">Confidencial</td>
@@ -45,7 +49,7 @@ function emailAbogado(data: ContactFormData): string {
           </tr>
           <tr>
             <td style="padding:14px 0 0;font-weight:600;color:#555;vertical-align:top">Mensaje</td>
-            <td style="padding:14px 0 0;line-height:1.6;white-space:pre-wrap">${data.mensaje}</td>
+            <td style="padding:14px 0 0;line-height:1.6;white-space:pre-wrap">${esc(data.mensaje)}</td>
           </tr>
         </table>
         <div style="margin-top:28px;padding:16px;background:#fafafa;border-left:3px solid #c9a96e;font-size:13px;color:#666">
@@ -64,7 +68,7 @@ function emailCliente(data: ContactFormData): string {
         <p style="color:#a0aec0;margin:6px 0 0;font-size:13px">Defensa Penal Estratégica — Guayaquil, Ecuador</p>
       </div>
       <div style="background:#ffffff;padding:32px;border:1px solid #e5e7eb;border-top:none;border-radius:0 0 8px 8px">
-        <p style="font-size:16px;margin:0 0 16px">Estimado/a <strong>${data.nombre}</strong>,</p>
+        <p style="font-size:16px;margin:0 0 16px">Estimado/a <strong>${esc(data.nombre)}</strong>,</p>
         <p style="line-height:1.7;color:#444;margin:0 0 16px">
           Hemos recibido su consulta de tipo <strong>${TIPO_LABEL[data.tipoConsulta]}</strong>.
           Nuestro equipo la revisará con la confidencialidad y seriedad que merece,
@@ -76,7 +80,7 @@ function emailCliente(data: ContactFormData): string {
         </p>
         <div style="background:#f8f4ee;border-radius:6px;padding:20px;border:1px solid #e8d9c0">
           <p style="margin:0 0 8px;font-size:13px;font-weight:600;color:#8a6a2e;letter-spacing:.5px">SU CONSULTA</p>
-          <p style="margin:0;line-height:1.6;color:#555;white-space:pre-wrap;font-size:14px">${data.mensaje}</p>
+          <p style="margin:0;line-height:1.6;color:#555;white-space:pre-wrap;font-size:14px">${esc(data.mensaje)}</p>
         </div>
         <p style="margin:28px 0 0;font-size:13px;color:#888;border-top:1px solid #f0f0f0;padding-top:20px">
           Este es un correo automático de confirmación. Por favor no responda a este mensaje.<br>
@@ -126,9 +130,6 @@ export async function POST(request: NextRequest): Promise<NextResponse<ApiRespon
   })
   if (dbError) console.error('[contact] Supabase error:', dbError.message)
 
-  console.log('[contact] RESEND_TO_EMAIL:', toEmail)
-  console.log('[contact] cliente correo:', data.correo)
-
   const [notif, confirm] = await Promise.allSettled([
     resend.emails.send({
       from:    'Imperium Iuris <onboarding@resend.dev>',
@@ -146,19 +147,12 @@ export async function POST(request: NextRequest): Promise<NextResponse<ApiRespon
   ])
 
   // Resend SDK resuelve siempre (no lanza), errores vienen en .value.error
-  const notifErr  = notif.status  === 'rejected' ? notif.reason  : notif.value.error
+  const notifErr   = notif.status   === 'rejected' ? notif.reason   : notif.value.error
   const confirmErr = confirm.status === 'rejected' ? confirm.reason : confirm.value.error
-
-  console.log('[contact] notif  →', notif.status  === 'fulfilled' ? notif.value  : notif.reason)
-  console.log('[contact] confirm →', confirm.status === 'fulfilled' ? confirm.value : confirm.reason)
-
   if (notifErr || confirmErr) {
+    // La consulta ya está guardada en DB — solo se loguea, no se falla la respuesta
     console.error('[contact] Resend error:', { notifErr, confirmErr })
-    return NextResponse.json({ success: false, error: 'Error al enviar el correo. Intente nuevamente.' }, { status: 502 })
   }
-
-  // TODO M3: guardar consulta en Supabase (tabla: consultas)
-  // TODO M2: si es urgencia, notificar por WhatsApp Business API
 
   return NextResponse.json({ success: true, data: null })
 }

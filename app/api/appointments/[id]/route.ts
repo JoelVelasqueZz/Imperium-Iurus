@@ -1,14 +1,18 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import { citaEstadoSchema, type ApiResponse } from '@/lib/schemas'
 import { supabase } from '@/lib/supabase'
+import { getUser } from '@/lib/supabase-server'
 
 type RouteParams = { params: Promise<{ id: string }> }
 
-// GET — Detalle de una cita
+// GET — Detalle de una cita (admin only)
 export async function GET(
   _request: NextRequest,
   { params }: RouteParams,
 ): Promise<NextResponse> {
+  const user = await getUser()
+  if (!user) return NextResponse.json({ success: false, error: 'No autorizado' }, { status: 401 })
+
   const { id } = await params
   const { data, error } = await supabase.from('citas').select('*').eq('id', id).maybeSingle()
   if (error || !data) {
@@ -17,11 +21,14 @@ export async function GET(
   return NextResponse.json({ success: true, data })
 }
 
-// PATCH — Cambiar estado (admin)
+// PATCH — Cambiar estado (admin only)
 export async function PATCH(
   request: NextRequest,
   { params }: RouteParams,
 ): Promise<NextResponse<ApiResponse<{ id: string } | null>>> {
+  const user = await getUser()
+  if (!user) return NextResponse.json({ success: false, error: 'No autorizado' }, { status: 401 })
+
   const { id } = await params
 
   let body: unknown
@@ -52,11 +59,14 @@ export async function PATCH(
   return NextResponse.json({ success: true, data: { id } })
 }
 
-// DELETE — Cancelar cita (marca como cancelada, no borra)
+// DELETE — Cancelar cita (admin only, marca como cancelada, no borra)
 export async function DELETE(
   _request: NextRequest,
   { params }: RouteParams,
 ): Promise<NextResponse<ApiResponse>> {
+  const user = await getUser()
+  if (!user) return NextResponse.json({ success: false, error: 'No autorizado' }, { status: 401 })
+
   const { id } = await params
   const { error } = await supabase
     .from('citas')
