@@ -2,9 +2,7 @@ import type { Metadata } from 'next'
 import localFont from 'next/font/local'
 import { Inter, Cormorant_Garamond } from 'next/font/google'
 import './globals.css'
-import Navbar from '@/components/layout/Navbar'
-import Footer from '@/components/layout/Footer'
-import UrgencyFloatingButton from '@/components/shared/UrgencyFloatingButton'
+import PublicShell from '@/components/layout/PublicShell'
 import { BRAND } from '@/lib/constants'
 
 const trajanPro = localFont({
@@ -86,10 +84,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       className={`${trajanPro.variable} ${cinzel.variable} ${montserrat.variable} ${inter.variable} ${cormorantGaramond.variable}`}
     >
       <body className="bg-primary font-inter text-text-light antialiased" suppressHydrationWarning>
-        <Navbar />
-        {children}
-        <Footer />
-        <UrgencyFloatingButton />
+        <PublicShell>{children}</PublicShell>
       </body>
     </html>
   )

@@ -1,6 +1,7 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import { Resend } from 'resend'
 import { contactSchema, type ApiResponse, type ContactFormData } from '@/lib/schemas'
+import { supabase } from '@/lib/supabase'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
@@ -112,6 +113,18 @@ export async function POST(request: NextRequest): Promise<NextResponse<ApiRespon
   if (!toEmail) {
     return NextResponse.json({ success: false, error: 'Configuración de email incompleta' }, { status: 500 })
   }
+
+  // Guardar consulta en Supabase
+  const { error: dbError } = await supabase.from('consultas').insert({
+    nombre:        data.nombre,
+    correo:        data.correo,
+    telefono:      data.telefono,
+    tipo_consulta: data.tipoConsulta,
+    mensaje:       data.mensaje,
+    confidencial:  data.confidencial,
+    estado:        'nuevo',
+  })
+  if (dbError) console.error('[contact] Supabase error:', dbError.message)
 
   console.log('[contact] RESEND_TO_EMAIL:', toEmail)
   console.log('[contact] cliente correo:', data.correo)

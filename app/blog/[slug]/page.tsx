@@ -1,21 +1,52 @@
-// IMPERIUM IURIS — T06 Artículo individual
-// Módulo: M1 — Sitio Web Público
-// RF: RF-48, RF-49
-// Desarrollado: 2026-05-19
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import Button from '@/components/ui/Button'
-import { blogPosts } from '@/lib/blog-data'
+import { supabase } from '@/lib/supabase'
 
-export function generateStaticParams() {
-  return blogPosts.map((post) => ({ slug: post.slug }))
+export const dynamic = 'force-dynamic'
+
+type Articulo = {
+  id: string
+  titulo: string
+  slug: string
+  categoria: string
+  resumen: string
+  contenido: string
+  tiempo_lectura: string
+  created_at: string
+}
+
+async function getArticulo(slug: string): Promise<Articulo | null> {
+  const { data } = await supabase
+    .from('articulos')
+    .select('*')
+    .eq('slug', slug)
+    .eq('publicado', true)
+    .single()
+  return data as Articulo | null
+}
+
+async function getRelated(slug: string, categoria: string): Promise<Articulo[]> {
+  const { data } = await supabase
+    .from('articulos')
+    .select('id, titulo, slug, categoria')
+    .eq('publicado', true)
+    .neq('slug', slug)
+    .eq('categoria', categoria)
+    .limit(2)
+  return (data ?? []) as Articulo[]
+}
+
+function fmtDate(iso: string) {
+  return new Date(iso).toLocaleDateString('es-EC', { timeZone: 'America/Guayaquil', year: 'numeric', month: 'long', day: 'numeric' })
 }
 
 export default async function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
-  const post = blogPosts.find((item) => item.slug === slug)
-  if (!post) notFound()
-  const related = blogPosts.filter((item) => item.slug !== post.slug).slice(0, 2)
+  const art = await getArticulo(slug)
+  if (!art) notFound()
+
+  const related = await getRelated(slug, art.categoria)
 
   return (
     <main className="bg-primary px-4 pb-24 pt-32 sm:px-6 lg:px-8">
@@ -24,22 +55,25 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
           <nav className="mb-8 text-sm text-text-muted">
             <Link href="/blog" className="focus-gold hover:text-gold">Blog</Link>
             <span className="mx-2">/</span>
-            <span>{post.category}</span>
+            <span>{art.categoria}</span>
           </nav>
-          <p className="font-montserrat text-xs font-medium uppercase tracking-[0.25em] text-gold-light">{post.category} · {post.date} · {post.readTime}</p>
-          <h1 className="mt-5 font-cinzel text-4xl font-bold tracking-wide text-text-light md:text-5xl">{post.title}</h1>
-          <div className="mt-10 max-w-none space-y-6 font-montserrat text-lg font-light leading-9 text-text-muted [&_h2]:font-cinzel [&_h2]:text-2xl [&_h2]:font-semibold [&_h2]:text-gold [&_p]:mb-6" dangerouslySetInnerHTML={{ __html: post.content }} />
-          <div className="mt-12 border-t border-border pt-8">
-            <h2 className="font-cinzel text-2xl font-semibold text-gold">Articulos relacionados</h2>
-            <div className="mt-5 grid gap-4 md:grid-cols-2">
-              {related.map((item) => (
-                <Link key={item.slug} href={`/blog/${item.slug}`} className="focus-gold border border-border bg-card-bg p-5 hover:border-gold">
-                  <span className="text-xs uppercase tracking-widest text-gold-light">{item.category}</span>
-                  <span className="mt-2 block font-cinzel text-lg text-text-light">{item.title}</span>
-                </Link>
-              ))}
+          <p className="font-montserrat text-xs font-medium uppercase tracking-[0.25em] text-gold-light">{art.categoria} · {fmtDate(art.created_at)} · {art.tiempo_lectura}</p>
+          <h1 className="mt-5 font-cinzel text-4xl font-bold tracking-wide text-text-light md:text-5xl">{art.titulo}</h1>
+          <div className="mt-10 max-w-none space-y-6 font-montserrat text-lg font-light leading-9 text-text-muted [&_h2]:font-cinzel [&_h2]:text-2xl [&_h2]:font-semibold [&_h2]:text-gold [&_p]:mb-6"
+            dangerouslySetInnerHTML={{ __html: art.contenido }} />
+          {related.length > 0 && (
+            <div className="mt-12 border-t border-border pt-8">
+              <h2 className="font-cinzel text-2xl font-semibold text-gold">Articulos relacionados</h2>
+              <div className="mt-5 grid gap-4 md:grid-cols-2">
+                {related.map((item) => (
+                  <Link key={item.slug} href={`/blog/${item.slug}`} className="focus-gold border border-border bg-card-bg p-5 hover:border-gold">
+                    <span className="text-xs uppercase tracking-widest text-gold-light">{item.categoria}</span>
+                    <span className="mt-2 block font-cinzel text-lg text-text-light">{item.titulo}</span>
+                  </Link>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
         </article>
         <aside className="h-fit border border-gold/40 bg-card-bg p-7 lg:sticky lg:top-28">
           <h2 className="font-cinzel text-xl font-semibold tracking-wide text-text-light">¿Tiene una situacion similar?</h2>
