@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
-import { ArticuloFormFields } from '../../nuevo/page'
+import { ArticuloFormFields } from '@/components/admin/ArticuloFormFields'
 
 export default function EditarArticuloPage() {
   const { id }  = useParams<{ id: string }>()
