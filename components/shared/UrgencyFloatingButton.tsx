@@ -6,7 +6,7 @@
 import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { AnimatePresence, motion } from 'framer-motion'
-import { FileText, Phone, Siren, X } from 'lucide-react'
+import { Clock, FileText, Phone, Siren, X } from 'lucide-react'
 import { CONTACT, getWhatsAppUrl } from '@/lib/constants'
 
 const itemVariants = {
@@ -17,13 +17,21 @@ const itemVariants = {
 const itemClass =
   'focus-gold flex items-center gap-3 whitespace-nowrap rounded-full border border-gold-bright bg-card-bg px-4 py-3 pr-5 font-montserrat text-xs font-bold uppercase tracking-widest text-text-light shadow-xl shadow-black/40 transition-colors hover:bg-gold hover:text-primary'
 
+// Lun-Vie 08:00-18:00 hora Ecuador (America/Guayaquil, UTC-5, sin DST)
+function checkOfficeHours(): boolean {
+  const now = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Guayaquil' }))
+  const day = now.getDay()   // 0 Dom … 6 Sáb
+  const hour = now.getHours()
+  return day >= 1 && day <= 5 && hour >= 8 && hour < 18
+}
+
 export default function UrgencyFloatingButton() {
   const [open, setOpen] = useState(false)
+  const [isOfficeHours, setIsOfficeHours] = useState<boolean | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (!open) return
-
     function handleOutside(e: MouseEvent) {
       if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
         setOpen(false)
@@ -39,6 +47,11 @@ export default function UrgencyFloatingButton() {
       document.removeEventListener('keydown', handleEscape)
     }
   }, [open])
+
+  const toggle = () => {
+    if (!open) setIsOfficeHours(checkOfficeHours())
+    setOpen(v => !v)
+  }
 
   const close = () => setOpen(false)
 
@@ -74,9 +87,28 @@ export default function UrgencyFloatingButton() {
             animate="visible"
             exit="hidden"
           >
+            {/* Banner de horario — primer ítem del menú */}
+            <motion.div
+              variants={itemVariants}
+              transition={{ duration: 0.22, ease: 'easeOut' }}
+              className={`flex max-w-[230px] items-start gap-2.5 rounded-2xl border px-4 py-3 text-right text-xs font-light leading-snug shadow-xl shadow-black/40 ${
+                isOfficeHours
+                  ? 'border-emerald-500/30 bg-card-bg text-emerald-400'
+                  : 'border-gold/30 bg-card-bg text-gold/90'
+              }`}
+            >
+              <Clock size={14} className="mt-0.5 shrink-0 opacity-70" aria-hidden="true" />
+              <span>
+                {isOfficeHours
+                  ? <>Disponibles ahora<br /><span className="opacity-60">Lun–Vie 08:00–18:00</span></>
+                  : 'Estamos fuera de horario, pero para emergencias penales puede contactarnos por WhatsApp'
+                }
+              </span>
+            </motion.div>
+
             {options.map((opt, i) => {
               const Icon = opt.icon
-              const transition = { duration: 0.22, delay: i * 0.05, ease: 'easeOut' as const }
+              const transition = { duration: 0.22, delay: (i + 1) * 0.05, ease: 'easeOut' as const }
 
               return (
                 <motion.div key={opt.label} variants={itemVariants} transition={transition} role="none">
@@ -107,7 +139,7 @@ export default function UrgencyFloatingButton() {
 
       <button
         type="button"
-        onClick={() => setOpen((v) => !v)}
+        onClick={toggle}
         aria-expanded={open}
         aria-haspopup="menu"
         aria-label="Abrir opciones de contacto urgente 24/7"
