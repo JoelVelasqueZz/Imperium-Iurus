@@ -93,7 +93,7 @@ export default function TestimoniosAdmin({ testimonios: initial }: { testimonios
               </div>
 
               {/* Texto */}
-              <p className="flex-1 text-sm font-light italic leading-relaxed text-text-muted">"{t.texto}"</p>
+              <p className="flex-1 text-sm font-light italic leading-relaxed text-text-muted">&quot;{t.texto}&quot;</p>
 
               {/* Footer */}
               <div className="mt-4 flex items-center justify-between border-t border-border pt-3">
