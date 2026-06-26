@@ -110,7 +110,7 @@ export default function HeroSection() {
           <Button href="/contacto?tipo=urgencia" variant="secondary">
             <Phone size={16} /> {HOME.hero.ctas.urgent}
           </Button>
-          <Button href="/contacto" variant="tertiary">
+          <Button href="/agenda" variant="tertiary">
             {HOME.hero.ctas.tertiary} <ArrowRight size={16} />
           </Button>
         </motion.div>

@@ -51,6 +51,7 @@ export const NAV_LINKS = [
   { href: '/', label: 'Inicio' },
   { href: '/nosotros', label: 'Nosotros' },
   { href: '/servicios', label: 'Servicios' },
+  { href: '/agenda', label: 'Agenda' },
   { href: '/blog', label: 'Blog' },
   { href: '/contacto', label: 'Contacto' },
 ]
@@ -70,7 +71,7 @@ export const HOME = {
     ctas: {
       primary: 'Solicitar consulta confidencial',
       urgent: 'Atención inmediata 24/7',
-      tertiary: 'Evaluación legal estratégica',
+      tertiary: 'Agendar cita',
     },
   },
   trust: {

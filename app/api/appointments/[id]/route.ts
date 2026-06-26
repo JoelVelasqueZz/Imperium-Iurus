@@ -1,26 +1,27 @@
 import { type NextRequest, NextResponse } from 'next/server'
-import { type ApiResponse } from '@/lib/schemas'
+import { citaEstadoSchema, type ApiResponse } from '@/lib/schemas'
+import { supabase } from '@/lib/supabase'
 
 type RouteParams = { params: Promise<{ id: string }> }
 
-// GET — Obtener detalle de una cita por ID
+// GET — Detalle de una cita
 export async function GET(
   _request: NextRequest,
   { params }: RouteParams,
 ): Promise<NextResponse> {
   const { id } = await params
-
-  // TODO M4: consultar cita en Supabase por ID
-  // TODO M4: verificar que pertenece al solicitante (auth / token en query param)
-
-  return NextResponse.json({ success: true, data: { appointment: null, id } })
+  const { data, error } = await supabase.from('citas').select('*').eq('id', id).maybeSingle()
+  if (error || !data) {
+    return NextResponse.json({ success: false, error: 'Cita no encontrada' }, { status: 404 })
+  }
+  return NextResponse.json({ success: true, data })
 }
 
-// PATCH — Reprogramar cita (nueva fecha/hora)
+// PATCH — Cambiar estado (admin)
 export async function PATCH(
   request: NextRequest,
   { params }: RouteParams,
-): Promise<NextResponse<ApiResponse<{ appointmentId: string } | null>>> {
+): Promise<NextResponse<ApiResponse<{ id: string } | null>>> {
   const { id } = await params
 
   let body: unknown
@@ -30,40 +31,40 @@ export async function PATCH(
     return NextResponse.json({ success: false, error: 'Body inválido' }, { status: 400 })
   }
 
-  // TODO M4: validar nueva fecha/hora con appointmentSchema.pick({ fecha: true })
-  // TODO M4: verificar disponibilidad del nuevo slot
+  const parsed = citaEstadoSchema.safeParse(body)
+  if (!parsed.success) {
+    return NextResponse.json(
+      { success: false, error: 'Estado inválido', issues: parsed.error.flatten().fieldErrors as Record<string, string[]> },
+      { status: 422 },
+    )
+  }
 
-  // TODO M4: actualizar evento en Cal.com
-  //   → PATCH https://api.cal.com/v1/bookings/{externalId}
+  const { error } = await supabase
+    .from('citas')
+    .update({ estado: parsed.data.estado })
+    .eq('id', id)
 
-  // TODO M3: actualizar registro en Supabase
+  if (error) {
+    console.error('[appointments/id] Supabase error:', error)
+    return NextResponse.json({ success: false, error: 'Error al actualizar la cita.' }, { status: 502 })
+  }
 
-  // TODO M2: enviar email de reprogramación via Resend
-  //   → asunto: 'Su cita ha sido reprogramada — Imperium Iuris'
-
-  // TODO M2: notificar reprogramación por WhatsApp
-
-  void body
-
-  return NextResponse.json({ success: true, data: { appointmentId: id } })
+  return NextResponse.json({ success: true, data: { id } })
 }
 
-// DELETE — Cancelar cita
+// DELETE — Cancelar cita (marca como cancelada, no borra)
 export async function DELETE(
   _request: NextRequest,
   { params }: RouteParams,
 ): Promise<NextResponse<ApiResponse>> {
   const { id } = await params
+  const { error } = await supabase
+    .from('citas')
+    .update({ estado: 'cancelada' })
+    .eq('id', id)
 
-  // TODO M4: cancelar evento en Cal.com
-  //   → DELETE https://api.cal.com/v1/bookings/{externalId}
-
-  // TODO M3: marcar como cancelada en Supabase (no borrar — auditoría)
-  //   → UPDATE citas SET estado='cancelada', canceladaAt=now() WHERE id=id
-
-  // TODO M2: enviar email de cancelación via Resend
-
-  // TODO M2: notificar cancelación por WhatsApp
-
+  if (error) {
+    return NextResponse.json({ success: false, error: 'Error al cancelar la cita.' }, { status: 502 })
+  }
   return NextResponse.json({ success: true, data: null })
 }

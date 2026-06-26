@@ -15,9 +15,14 @@ export default function FinalCTA() {
         <p className="mx-auto mt-7 max-w-2xl text-lg font-light leading-8 text-text-muted">
           {HOME.finalCta.subtitle}
         </p>
-        <Button href="/contacto" className="mt-9 px-12 py-5 text-sm">
-          {HOME.finalCta.cta}
-        </Button>
+        <div className="mt-9 flex flex-col items-center justify-center gap-4 sm:flex-row">
+          <Button href="/contacto" className="px-12 py-5 text-sm">
+            {HOME.finalCta.cta}
+          </Button>
+          <Button href="/agenda" variant="secondary" className="px-12 py-5 text-sm">
+            Agendar cita
+          </Button>
+        </div>
       </div>
     </section>
   )
