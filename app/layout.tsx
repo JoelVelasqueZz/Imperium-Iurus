@@ -26,8 +26,10 @@ const cinzel = localFont({
   ],
   variable: '--font-cinzel',
   display: 'swap',
-  // Next.js solo preloads el primer archivo del array — Cinzel-Regular
-  preload: true,
+  // preload: false — Cinzel se usa en títulos de sección (below the fold en mobile).
+  // Con preload: true Next.js añade un <link rel="preload"> por cada archivo del array
+  // (6 peticiones), bloqueando la pintura inicial. Se carga on-demand via @font-face.
+  preload: false,
   adjustFontFallback: false,
 })
 
