@@ -26,7 +26,8 @@
       "Bash(:)",
       "Bash(npm init *)",
       "Bash(node verify_urgency_button.js)",
-      "Bash(git restore *)"
+      "Bash(git restore *)",
+      "Bash(node *)"
     ]
   }
 }

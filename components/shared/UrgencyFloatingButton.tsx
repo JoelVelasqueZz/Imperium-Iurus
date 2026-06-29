@@ -19,10 +19,16 @@ const itemClass =
 
 // Lun-Vie 08:00-18:00 hora Ecuador (America/Guayaquil, UTC-5, sin DST)
 function checkOfficeHours(): boolean {
-  const now = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Guayaquil' }))
-  const day = now.getDay()   // 0 Dom … 6 Sáb
-  const hour = now.getHours()
-  return day >= 1 && day <= 5 && hour >= 8 && hour < 18
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'America/Guayaquil',
+    weekday: 'short',
+    hour: '2-digit',
+    hour12: false,
+  }).formatToParts(new Date())
+  const weekday = parts.find(p => p.type === 'weekday')?.value ?? ''
+  const hour = parseInt(parts.find(p => p.type === 'hour')?.value ?? '-1', 10)
+  const workdays = new Set(['Mon', 'Tue', 'Wed', 'Thu', 'Fri'])
+  return workdays.has(weekday) && hour >= 8 && hour < 18
 }
 
 export default function UrgencyFloatingButton() {
@@ -65,7 +71,7 @@ export default function UrgencyFloatingButton() {
     {
       label: 'Llamada directa',
       icon: () => <Phone size={18} aria-hidden="true" />,
-      href: `tel:${CONTACT.phone.replace(/\s/g, '')}`,
+      href: 'tel:0985222635',
       type: 'tel' as const,
     },
     {
