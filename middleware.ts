@@ -26,21 +26,41 @@ export async function middleware(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser()
 
   const pathname = request.nextUrl.pathname
-  const isLoginPage = pathname === '/admin/login'
 
-  if (!user && !isLoginPage) {
-    const url = new URL('/admin/login', request.url)
-    url.searchParams.set('redirect', pathname)
-    return NextResponse.redirect(url)
+  // ── Rutas admin ────────────────────────────────────────────────────────
+  if (pathname.startsWith('/admin')) {
+    const isLoginPage = pathname === '/admin/login'
+    // Admin = role 'admin' en app_metadata O email coincide con ADMIN_EMAIL
+    const isAdmin =
+      !!user &&
+      (user.app_metadata?.role === 'admin' ||
+        (!!process.env.ADMIN_EMAIL && user.email === process.env.ADMIN_EMAIL))
+
+    if (!isAdmin && !isLoginPage) {
+      const url = new URL('/admin/login', request.url)
+      url.searchParams.set('redirect', pathname)
+      return NextResponse.redirect(url)
+    }
+    if (isAdmin && isLoginPage) {
+      return NextResponse.redirect(new URL('/admin/agenda', request.url))
+    }
+    return supabaseResponse
   }
 
-  if (user && isLoginPage) {
-    return NextResponse.redirect(new URL('/admin/agenda', request.url))
+  // ── Portal de clientes ─────────────────────────────────────────────────
+  if (pathname.startsWith('/chat')) {
+    if (!user) return NextResponse.redirect(new URL('/login', request.url))
+    return supabaseResponse
+  }
+
+  if (pathname === '/login') {
+    if (user) return NextResponse.redirect(new URL('/chat', request.url))
+    return supabaseResponse
   }
 
   return supabaseResponse
 }
 
 export const config = {
-  matcher: ['/admin/:path*'],
+  matcher: ['/admin/:path*', '/chat', '/login'],
 }

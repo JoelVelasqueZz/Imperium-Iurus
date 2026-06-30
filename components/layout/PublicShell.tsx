@@ -8,8 +8,9 @@ import UrgencyFloatingButton from '@/components/shared/UrgencyFloatingButton'
 export default function PublicShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const isAdmin  = pathname.startsWith('/admin')
+  const isPortal = pathname.startsWith('/login') || pathname.startsWith('/chat') || pathname.startsWith('/auth')
 
-  if (isAdmin) return <>{children}</>
+  if (isAdmin || isPortal) return <>{children}</>
 
   return (
     <>

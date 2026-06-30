@@ -2,12 +2,13 @@
 
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { CalendarDays, FileText, LogOut, MessageSquare, Newspaper, Star } from 'lucide-react'
+import { CalendarDays, LogOut, MessageCircle, MessageSquare, Newspaper, Star } from 'lucide-react'
 import { createSupabaseBrowserClient } from '@/lib/supabase-browser'
 
 const NAV = [
   { href: '/admin/agenda',      label: 'Agenda',      icon: CalendarDays },
   { href: '/admin/contacto',    label: 'Consultas',   icon: MessageSquare },
+  { href: '/admin/chats',       label: 'Chats',       icon: MessageCircle },
   { href: '/admin/blog',        label: 'Blog',        icon: Newspaper },
   { href: '/admin/testimonios', label: 'Testimonios', icon: Star },
 ]
