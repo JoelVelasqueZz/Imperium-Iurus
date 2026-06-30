@@ -1,9 +1,6 @@
 'use client'
 
-// IMPERIUM IURIS — T07 Formulario de contacto + mapa
-// Módulo: M1 — Sitio Web Público
-// RF: RF-52, RF-53, RF-54
-import { Suspense, useEffect, useMemo, useState } from 'react'
+import { Suspense, useCallback, useEffect, useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useSearchParams } from 'next/navigation'
@@ -11,6 +8,9 @@ import type { UseFormSetValue } from 'react-hook-form'
 import { Clock, Mail, MapPin, Phone } from 'lucide-react'
 import Button from '@/components/ui/Button'
 import SectionHeader from '@/components/ui/SectionHeader'
+import ChatInviteBanner from '@/components/shared/ChatInviteBanner'
+import LoginModal from '@/components/shared/LoginModal'
+import { createSupabaseBrowserClient } from '@/lib/supabase-browser'
 import { CONTACT, contactTypes } from '@/lib/constants'
 import { contactSchema, type ContactFormData } from '@/lib/schemas'
 
@@ -26,8 +26,13 @@ function TipoConsultaSync({ setValue }: { setValue: UseFormSetValue<ContactFormD
 }
 
 export default function ContactoPage() {
-  const [sent, setSent] = useState(false)
-  const [serverError, setServerError] = useState<string | null>(null)
+  const supabase = createSupabaseBrowserClient()
+
+  const [sent, setSent]                   = useState(false)
+  const [serverError, setServerError]     = useState<string | null>(null)
+  const [isLoggedIn, setIsLoggedIn]       = useState<boolean | null>(null)
+  const [showLoginModal, setShowLoginModal] = useState(false)
+  const [pendingData, setPendingData]     = useState<ContactFormData | null>(null)
 
   const {
     register,
@@ -40,7 +45,7 @@ export default function ContactoPage() {
     defaultValues: { tipoConsulta: 'personal', confidencial: true },
   })
 
-  const onSubmit = handleSubmit(async (data) => {
+  const submitFormData = useCallback(async (data: ContactFormData) => {
     setServerError(null)
     setSent(false)
     try {
@@ -49,12 +54,44 @@ export default function ContactoPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
       })
-      if (!res.ok) throw new Error()
+      if (!res.ok) {
+        setServerError('Error al enviar la consulta. Por favor inténtelo nuevamente o contáctenos por teléfono.')
+        reset(data)
+        return
+      }
       setSent(true)
       reset()
     } catch {
       setServerError('Error al enviar la consulta. Por favor inténtelo nuevamente o contáctenos por teléfono.')
+      reset(data)
     }
+  }, [reset])
+
+  // Verificar sesión al montar + auto-enviar si hay datos pendientes de antes del login OAuth
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      setIsLoggedIn(!!user)
+      if (!user) return
+
+      const saved = sessionStorage.getItem('pending_contacto')
+      if (!saved) return
+      try {
+        const data = JSON.parse(saved) as ContactFormData
+        sessionStorage.removeItem('pending_contacto')
+        submitFormData(data)
+      } catch {
+        sessionStorage.removeItem('pending_contacto')
+      }
+    })
+  }, [supabase, submitFormData])
+
+  const onSubmit = handleSubmit(async (data) => {
+    if (!isLoggedIn) {
+      setPendingData(data)
+      setShowLoginModal(true)
+      return
+    }
+    await submitFormData(data)
   })
 
   const mapUrl = useMemo(
@@ -130,9 +167,12 @@ export default function ContactoPage() {
             ) : null}
 
             {sent ? (
-              <p className="mt-5 border border-gold/50 bg-gold/10 p-4 text-sm text-primary">
-                Consulta recibida. Le confirmaremos por correo electrónico en breve.
-              </p>
+              <>
+                <p className="mt-5 border border-gold/50 bg-gold/10 p-4 text-sm text-primary">
+                  Consulta recibida. Le confirmaremos por correo electrónico en breve.
+                </p>
+                <ChatInviteBanner />
+              </>
             ) : null}
           </form>
 
@@ -169,6 +209,18 @@ export default function ContactoPage() {
           </aside>
         </div>
       </div>
+
+      <LoginModal
+        open={showLoginModal}
+        storageKey="pending_contacto"
+        formData={pendingData}
+        returnPath="/contacto"
+        onClose={() => setShowLoginModal(false)}
+        onContinue={() => {
+          setShowLoginModal(false)
+          if (pendingData) submitFormData(pendingData)
+        }}
+      />
     </main>
   )
 }

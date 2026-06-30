@@ -6,6 +6,7 @@ import { Menu, Phone, X } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { BRAND, CONTACT, NAV_LINKS } from '@/lib/constants'
 import Button from '@/components/ui/Button'
+import NavAuthButton from '@/components/shared/NavAuthButton'
 
 export default function Navbar() {
   const [open, setOpen] = useState(false)
@@ -61,8 +62,9 @@ export default function Navbar() {
           ))}
         </div>
 
-        {/* CTA */}
-        <div className="hidden md:block">
+        {/* Auth + CTA */}
+        <div className="hidden items-center gap-4 md:flex">
+          <NavAuthButton />
           <Button href={`tel:${CONTACT.phone}`} variant="danger" className="px-5 py-3 text-xs tracking-widest">
             <Phone size={14} /> Urgencia 24/7
           </Button>
@@ -93,6 +95,7 @@ export default function Navbar() {
                 {link.label}
               </Link>
             ))}
+            <NavAuthButton mobile />
             <Button href={`tel:${CONTACT.phone}`} variant="danger" className="mt-5 w-full">
               <Phone size={16} /> Urgencia 24/7
             </Button>

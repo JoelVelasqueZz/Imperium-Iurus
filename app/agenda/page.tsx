@@ -1,13 +1,14 @@
 'use client'
 
-// IMPERIUM IURIS — Agenda de Citas Online
-// Módulo: M3 — Supabase + Agenda propia
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { CalendarDays, Clock, Loader2 } from 'lucide-react'
 import Button from '@/components/ui/Button'
 import SectionHeader from '@/components/ui/SectionHeader'
+import ChatInviteBanner from '@/components/shared/ChatInviteBanner'
+import LoginModal from '@/components/shared/LoginModal'
+import { createSupabaseBrowserClient } from '@/lib/supabase-browser'
 import { appointmentSchema, type AppointmentFormData } from '@/lib/schemas'
 
 const TIPOS = [
@@ -31,12 +32,17 @@ function Field({
 }
 
 export default function AgendaPage() {
-  const [todayStr, setTodayStr]     = useState('')
-  const [slots, setSlots]           = useState<string[]>([])
-  const [loadingSlots, setLoading]  = useState(false)
-  const [slotsMsg, setSlotsMsg]     = useState<string | null>(null)
-  const [sent, setSent]             = useState(false)
-  const [serverError, setServerError] = useState<string | null>(null)
+  const supabase = createSupabaseBrowserClient()
+
+  const [todayStr, setTodayStr]         = useState('')
+  const [slots, setSlots]               = useState<string[]>([])
+  const [loadingSlots, setLoading]      = useState(false)
+  const [slotsMsg, setSlotsMsg]         = useState<string | null>(null)
+  const [sent, setSent]                 = useState(false)
+  const [serverError, setServerError]   = useState<string | null>(null)
+  const [isLoggedIn, setIsLoggedIn]     = useState<boolean | null>(null)
+  const [showLoginModal, setShowLoginModal] = useState(false)
+  const [pendingData, setPendingData]   = useState<AppointmentFormData | null>(null)
 
   useEffect(() => {
     setTodayStr(new Date().toLocaleDateString('en-CA', { timeZone: 'America/Guayaquil' }))
@@ -56,7 +62,6 @@ export default function AgendaPage() {
     setSlotsMsg(null)
     setSlots([])
 
-    // Validar fin de semana en cliente
     const day = new Date(fechaValue + 'T12:00:00').getDay()
     if (day === 0 || day === 6) {
       setSlotsMsg('Los sábados y domingos no hay atención. Seleccione un día hábil.')
@@ -69,16 +74,14 @@ export default function AgendaPage() {
       .then((json) => {
         if (json.success) {
           setSlots(json.data.slots)
-          if (json.data.slots.length === 0) {
-            setSlotsMsg('No hay horarios disponibles para este día.')
-          }
+          if (json.data.slots.length === 0) setSlotsMsg('No hay horarios disponibles para este día.')
         }
       })
       .catch(() => setSlotsMsg('Error al cargar horarios. Intente nuevamente.'))
       .finally(() => setLoading(false))
   }, [fechaValue])
 
-  const onSubmit = handleSubmit(async (data) => {
+  const submitFormData = useCallback(async (data: AppointmentFormData) => {
     setServerError(null)
     setSent(false)
     try {
@@ -90,6 +93,7 @@ export default function AgendaPage() {
       const json = await res.json()
       if (!res.ok) {
         setServerError(json.error ?? 'Error al agendar. Intente nuevamente.')
+        reset(data)
         return
       }
       setSent(true)
@@ -98,7 +102,35 @@ export default function AgendaPage() {
       setSlotsMsg(null)
     } catch {
       setServerError('Error de conexión. Por favor inténtelo nuevamente.')
+      reset(data)
     }
+  }, [reset])
+
+  // Verificar sesión al montar + auto-enviar si hay datos pendientes de antes del login OAuth
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      setIsLoggedIn(!!user)
+      if (!user) return
+
+      const saved = sessionStorage.getItem('pending_agenda')
+      if (!saved) return
+      try {
+        const data = JSON.parse(saved) as AppointmentFormData
+        sessionStorage.removeItem('pending_agenda')
+        submitFormData(data)
+      } catch {
+        sessionStorage.removeItem('pending_agenda')
+      }
+    })
+  }, [supabase, submitFormData])
+
+  const onSubmit = handleSubmit(async (data) => {
+    if (!isLoggedIn) {
+      setPendingData(data)
+      setShowLoginModal(true)
+      return
+    }
+    await submitFormData(data)
   })
 
   return (
@@ -130,6 +162,7 @@ export default function AgendaPage() {
                 >
                   Agendar otra cita
                 </button>
+                <ChatInviteBanner />
               </div>
             ) : (
               <>
@@ -257,6 +290,18 @@ export default function AgendaPage() {
           </aside>
         </div>
       </div>
+
+      <LoginModal
+        open={showLoginModal}
+        storageKey="pending_agenda"
+        formData={pendingData}
+        returnPath="/agenda"
+        onClose={() => setShowLoginModal(false)}
+        onContinue={() => {
+          setShowLoginModal(false)
+          if (pendingData) submitFormData(pendingData)
+        }}
+      />
     </main>
   )
 }

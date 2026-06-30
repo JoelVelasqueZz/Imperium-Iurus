@@ -2,6 +2,7 @@ import { type NextRequest, NextResponse } from 'next/server'
 import { Resend } from 'resend'
 import { appointmentSchema, type ApiResponse, type AppointmentFormData } from '@/lib/schemas'
 import { supabase } from '@/lib/supabase'
+import { createSupabaseServerClient } from '@/lib/supabase-server'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
@@ -167,6 +168,10 @@ export async function POST(request: NextRequest): Promise<NextResponse<ApiRespon
 
   const data = parsed.data
 
+  // Obtener usuario si hay sesión activa (para vincular cliente_id)
+  const serverClient = await createSupabaseServerClient()
+  const { data: { user: sessionUser } } = await serverClient.auth.getUser()
+
   if (isWeekend(data.fecha)) {
     return NextResponse.json({ success: false, error: 'Solo se pueden agendar citas de lunes a viernes.' }, { status: 422 })
   }
@@ -196,6 +201,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<ApiRespon
       hora:          data.hora,
       mensaje:       data.mensaje ?? null,
       estado:        'pendiente',
+      cliente_id:    sessionUser?.id ?? null,
     })
     .select('id')
     .single()

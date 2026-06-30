@@ -48,13 +48,13 @@ export async function middleware(request: NextRequest) {
   }
 
   // ── Portal de clientes ─────────────────────────────────────────────────
-  if (pathname.startsWith('/chat')) {
+  if (pathname.startsWith('/chat') || pathname.startsWith('/mis-citas')) {
     if (!user) return NextResponse.redirect(new URL('/login', request.url))
     return supabaseResponse
   }
 
   if (pathname === '/login') {
-    if (user) return NextResponse.redirect(new URL('/chat', request.url))
+    if (user) return NextResponse.redirect(new URL('/', request.url))
     return supabaseResponse
   }
 
@@ -62,5 +62,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/admin/:path*', '/chat', '/login'],
+  matcher: ['/admin/:path*', '/chat', '/mis-citas', '/login'],
 }

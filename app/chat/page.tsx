@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createSupabaseBrowserClient } from '@/lib/supabase-browser'
-import { LogOut, Send } from 'lucide-react'
+import { ArrowLeft, LogOut, Send } from 'lucide-react'
 import type { User } from '@supabase/supabase-js'
 
 type Mensaje = {
@@ -132,14 +132,21 @@ export default function ChatClientePage() {
             Imperium Iuris
           </p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           <span className="hidden font-montserrat text-xs text-text-muted sm:block">{nombre}</span>
+          <a
+            href="/"
+            className="flex items-center gap-1.5 rounded border border-border px-3 py-1.5 font-montserrat text-[10px] uppercase tracking-widest text-text-muted transition-colors hover:border-gold/40 hover:text-gold"
+          >
+            <ArrowLeft size={12} />
+            <span className="hidden sm:inline">Inicio</span>
+          </a>
           <button
             onClick={cerrarSesion}
             className="flex items-center gap-1.5 rounded border border-border px-3 py-1.5 font-montserrat text-[10px] uppercase tracking-widest text-text-muted transition-colors hover:border-red-500/40 hover:text-red-400"
           >
             <LogOut size={12} />
-            Salir
+            <span className="hidden sm:inline">Salir</span>
           </button>
         </div>
       </header>
