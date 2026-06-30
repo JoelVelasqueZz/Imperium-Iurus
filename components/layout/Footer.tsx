@@ -57,8 +57,32 @@ export default function Footer() {
         </div>
       </div>
 
-      <div className="border-t border-gold/10 px-4 py-5 text-center text-xs font-light uppercase tracking-[0.2em] text-text-muted">
-        © 2026 {BRAND.name}. Todos los derechos reservados.
+      <div className="border-t border-gold/10 px-4 py-5">
+        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 sm:flex-row">
+          <span className="text-xs font-light uppercase tracking-[0.2em] text-text-muted">
+            © 2026 {BRAND.name}. Todos los derechos reservados.
+          </span>
+          <div className="flex flex-wrap justify-center gap-x-6 gap-y-1">
+            <Link
+              href="/legal/terminos"
+              className="text-xs font-light text-text-muted transition-colors hover:text-gold focus-gold"
+            >
+              Términos y Condiciones
+            </Link>
+            <Link
+              href="/legal/privacidad"
+              className="text-xs font-light text-text-muted transition-colors hover:text-gold focus-gold"
+            >
+              Política de Privacidad
+            </Link>
+            <Link
+              href="/legal/cookies"
+              className="text-xs font-light text-text-muted transition-colors hover:text-gold focus-gold"
+            >
+              Política de Cookies
+            </Link>
+          </div>
+        </div>
       </div>
     </footer>
   )
