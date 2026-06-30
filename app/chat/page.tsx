@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { createSupabaseBrowserClient } from '@/lib/supabase-browser'
 import { ArrowLeft, LogOut, Send } from 'lucide-react'
 import type { User } from '@supabase/supabase-js'
@@ -134,13 +135,13 @@ export default function ChatClientePage() {
         </div>
         <div className="flex items-center gap-2">
           <span className="hidden font-montserrat text-xs text-text-muted sm:block">{nombre}</span>
-          <a
+          <Link
             href="/"
             className="flex items-center gap-1.5 rounded border border-border px-3 py-1.5 font-montserrat text-[10px] uppercase tracking-widest text-text-muted transition-colors hover:border-gold/40 hover:text-gold"
           >
             <ArrowLeft size={12} />
             <span className="hidden sm:inline">Inicio</span>
-          </a>
+          </Link>
           <button
             onClick={cerrarSesion}
             className="flex items-center gap-1.5 rounded border border-border px-3 py-1.5 font-montserrat text-[10px] uppercase tracking-widest text-text-muted transition-colors hover:border-red-500/40 hover:text-red-400"

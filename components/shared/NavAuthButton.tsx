@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { createSupabaseBrowserClient } from '@/lib/supabase-browser'
 import { CalendarDays, LogOut, MessageCircle, User } from 'lucide-react'
@@ -84,7 +85,7 @@ export default function NavAuthButton({ mobile = false }: { mobile?: boolean }) 
       <div className="border-b border-border/50 py-4">
         <div className="mb-3 flex items-center gap-3">
           {avatar ? (
-            <img src={avatar} alt="" className="h-8 w-8 rounded-full object-cover" />
+            <Image src={avatar} alt="" width={32} height={32} className="h-8 w-8 rounded-full object-cover" />
           ) : (
             <div className="flex h-8 w-8 items-center justify-center rounded-full border border-gold/40 bg-gold/10">
               <User size={14} className="text-gold" />
@@ -128,7 +129,7 @@ export default function NavAuthButton({ mobile = false }: { mobile?: boolean }) 
         className="focus-gold flex items-center gap-2 rounded-full border border-gold/30 py-1 pl-1 pr-3 transition-colors hover:border-gold/60 hover:bg-gold/5"
       >
         {avatar ? (
-          <img src={avatar} alt="" className="h-7 w-7 rounded-full object-cover" />
+          <Image src={avatar} alt="" width={28} height={28} className="h-7 w-7 rounded-full object-cover" />
         ) : (
           <div className="flex h-7 w-7 items-center justify-center rounded-full border border-gold/40 bg-gold/10">
             <User size={13} className="text-gold" />

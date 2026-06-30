@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, useTransition } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { createSupabaseBrowserClient } from '@/lib/supabase-browser'
 import { ArrowLeft, Send } from 'lucide-react'
 import { enviarMensajeAdmin } from './actions'
@@ -88,7 +89,7 @@ export default function ChatAdmin({ clienteId, cliente, mensajesIniciales }: Pro
 
         <div className="flex items-center gap-3">
           {cliente.avatar ? (
-            <img src={cliente.avatar} alt="" className="h-7 w-7 rounded-full object-cover" />
+            <Image src={cliente.avatar} alt="" width={28} height={28} className="h-7 w-7 rounded-full object-cover" />
           ) : (
             <div className="flex h-7 w-7 items-center justify-center rounded-full border border-border bg-white/5 font-montserrat text-xs text-text-muted">
               {(cliente.nombre ?? cliente.email).charAt(0).toUpperCase()}

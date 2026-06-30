@@ -1,5 +1,6 @@
 import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
+import Image from 'next/image'
 import { MessageSquare, User } from 'lucide-react'
 
 export const dynamic = 'force-dynamic'
@@ -117,9 +118,11 @@ export default async function AdminChatsPage() {
               >
                 {/* Avatar */}
                 {c.avatar ? (
-                  <img
+                  <Image
                     src={c.avatar}
                     alt=""
+                    width={40}
+                    height={40}
                     className="h-10 w-10 shrink-0 rounded-full object-cover"
                   />
                 ) : (
