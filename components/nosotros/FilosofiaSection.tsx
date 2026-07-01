@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import SectionHeader from '@/components/ui/SectionHeader'
 import Reveal from '@/components/ui/Reveal'
-import { NOSOTROS, philosophyPillars } from '@/lib/constants'
+import { philosophyPillars } from '@/lib/constants'
 import { useSiteConfig, useUpdateConfig } from '@/components/providers/ConfigProvider'
 import EditableSection from '@/components/admin/EditableSection'
 import SectionEditModal from '@/components/admin/SectionEditModal'
@@ -21,8 +21,8 @@ export default function FilosofiaSection() {
     <section className="bg-primary px-4 py-24 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
         <SectionHeader
-          title={NOSOTROS.filosofia.title}
-          subtitle={NOSOTROS.filosofia.subtitle}
+          title={nosotros_page.filosofia_titulo}
+          subtitle={nosotros_page.filosofia_subtitulo}
         />
         <div className="grid gap-6 md:grid-cols-4">
           {nosotros_page.pilares.map((pillar, index) => (
@@ -36,7 +36,7 @@ export default function FilosofiaSection() {
           ))}
         </div>
         <p className="mt-12 text-center font-cinzel text-xl font-semibold tracking-wide text-gold">
-          {NOSOTROS.filosofia.closing}
+          {nosotros_page.filosofia_closing}
         </p>
       </div>
     </section>
@@ -51,32 +51,45 @@ export default function FilosofiaSection() {
       onSaved={(v) => updateConfig('nosotros_page', v)}
     >
       {(draft, setDraft) => (
-        <div className="grid gap-4 md:grid-cols-2">
-          {draft.pilares.map((pilar, i) => (
-            <div key={i} className="space-y-2 border border-border bg-card-bg p-4">
-              <p className="font-cinzel text-xs font-bold text-gold">{ROMANOS[i]}</p>
-              <Field label="Título del pilar">
-                <Input
-                  value={pilar.title}
-                  onChange={(e) => setDraft((p) => ({
-                    ...p,
-                    pilares: p.pilares.map((x, idx) => (idx === i ? { ...x, title: e.target.value } : x)),
-                  }))}
-                />
-              </Field>
-              <Field label="Texto del pilar">
-                <Textarea
-                  rows={2}
-                  value={pilar.text}
-                  onChange={(e) => setDraft((p) => ({
-                    ...p,
-                    pilares: p.pilares.map((x, idx) => (idx === i ? { ...x, text: e.target.value } : x)),
-                  }))}
-                />
-              </Field>
-            </div>
-          ))}
-        </div>
+        <>
+          <div className="grid gap-5 md:grid-cols-2">
+            <Field label="Título de la sección">
+              <Input value={draft.filosofia_titulo} onChange={(e) => setDraft((p) => ({ ...p, filosofia_titulo: e.target.value }))} />
+            </Field>
+            <Field label="Subtítulo de la sección">
+              <Input value={draft.filosofia_subtitulo} onChange={(e) => setDraft((p) => ({ ...p, filosofia_subtitulo: e.target.value }))} />
+            </Field>
+          </div>
+          <div className="grid gap-4 md:grid-cols-2">
+            {draft.pilares.map((pilar, i) => (
+              <div key={i} className="space-y-2 border border-border bg-card-bg p-4">
+                <p className="font-cinzel text-xs font-bold text-gold">{ROMANOS[i]}</p>
+                <Field label="Título del pilar">
+                  <Input
+                    value={pilar.title}
+                    onChange={(e) => setDraft((p) => ({
+                      ...p,
+                      pilares: p.pilares.map((x, idx) => (idx === i ? { ...x, title: e.target.value } : x)),
+                    }))}
+                  />
+                </Field>
+                <Field label="Texto del pilar">
+                  <Textarea
+                    rows={2}
+                    value={pilar.text}
+                    onChange={(e) => setDraft((p) => ({
+                      ...p,
+                      pilares: p.pilares.map((x, idx) => (idx === i ? { ...x, text: e.target.value } : x)),
+                    }))}
+                  />
+                </Field>
+              </div>
+            ))}
+          </div>
+          <Field label="Frase de cierre">
+            <Input value={draft.filosofia_closing} onChange={(e) => setDraft((p) => ({ ...p, filosofia_closing: e.target.value }))} />
+          </Field>
+        </>
       )}
     </SectionEditModal>
     </>

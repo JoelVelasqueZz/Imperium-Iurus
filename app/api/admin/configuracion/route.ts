@@ -13,12 +13,20 @@ const CLAVES_VALIDAS = [
   'hero',
   'redes_sociales',
   'agenda_page',
+  'contacto_page',
   'nosotros_page',
   'trust_block',
   'services_block',
   'urgency_block',
   'differential_block',
   'final_cta',
+  'testimonials_block',
+  'footer',
+  'por_que_block',
+  'equipo_block',
+  'metodologia_block',
+  'confidencialidad_block',
+  'cta_nosotros',
   'imagenes',
 ] as const
 
@@ -51,9 +59,15 @@ export async function PATCH(request: NextRequest) {
 
   const { clave, valor } = parsed.data
 
-  const { error } = await supabase
+  console.log('[PATCH /api/admin/configuracion] clave:', clave)
+  console.log('[PATCH /api/admin/configuracion] valor:', JSON.stringify(valor, null, 2))
+
+  const { data, error } = await supabase
     .from('configuracion')
     .upsert({ clave, valor }, { onConflict: 'clave' })
+    .select()
+
+  console.log('[PATCH /api/admin/configuracion] supabase response:', { data, error })
 
   if (error) return NextResponse.json({ error: error.message }, { status: 502 })
 

@@ -30,8 +30,8 @@ export default function TrustBlock() {
           viewport={{ once: true, margin: '-100px' }}
           variants={{ show: { transition: { staggerChildren: 0.1 } }, hidden: {} }}
         >
-          {trustCards.map(({ icon: Icon, sub }, index) => {
-            const { title, body } = trust_block.tarjetas[index] ?? trustCards[index]
+          {trustCards.map(({ icon: Icon }, index) => {
+            const { title, body, sub } = trust_block.tarjetas[index] ?? trustCards[index]
             return (
               <motion.article
                 key={title}
@@ -86,6 +86,14 @@ export default function TrustBlock() {
                   onChange={(e) => setDraft((p) => ({
                     ...p,
                     tarjetas: p.tarjetas.map((t, idx) => (idx === i ? { ...t, body: e.target.value } : t)),
+                  }))}
+                />
+                <Input
+                  value={tarjeta.sub}
+                  placeholder="Línea de impacto (dorada)"
+                  onChange={(e) => setDraft((p) => ({
+                    ...p,
+                    tarjetas: p.tarjetas.map((t, idx) => (idx === i ? { ...t, sub: e.target.value } : t)),
                   }))}
                 />
               </div>

@@ -11,17 +11,9 @@ import { useSiteConfig, useUpdateConfig } from '@/components/providers/ConfigPro
 import EditableSection from '@/components/admin/EditableSection'
 import SectionEditModal from '@/components/admin/SectionEditModal'
 import { Field, Input, Textarea } from '@/components/admin/ConfigFormControls'
+import ImageUploadField from '@/components/admin/ImageUploadField'
+import type { ImagenesConfig } from '@/lib/config-utils'
 
-const slideImages = [
-  '/IMG1.jpeg', // Diagnóstico Estratégico
-  '/IMG5.jpeg', // Defensa Multidisciplinaria
-  '/IMG2.jpeg', // Máxima Confidencialidad
-  '/IMG6.jpeg', // Litigación de Alto Impacto
-  '/IMG7.jpeg', // Protección Reputacional
-  '/IMG8.jpeg', // Tecnología Legal Avanzada
-]
-
-// Definido fuera del componente — referencia estable, framer-motion no re-registra
 const slideVariants = {
   enter:  (d: number) => ({ opacity: 0, x: d * 50 }),
   center: { opacity: 1, x: 0 },
@@ -33,9 +25,11 @@ const total = differentialItems.length
 export default function DifferentialBlock() {
   const [current, setCurrent] = useState(0)
   const [direction, setDirection] = useState(1)
-  const [modalOpen, setModalOpen] = useState(false)
-  const { differential_block } = useSiteConfig()
+  const [textModalOpen, setTextModalOpen] = useState(false)
+  const [imagesModalOpen, setImagesModalOpen] = useState(false)
+  const { differential_block, imagenes } = useSiteConfig()
   const updateConfig = useUpdateConfig()
+  const slideImages = imagenes.diferencial_carousel
 
   const prev = useCallback(() => {
     setDirection(-1)
@@ -57,7 +51,7 @@ export default function DifferentialBlock() {
 
   return (
     <>
-    <EditableSection onEdit={() => setModalOpen(true)}>
+    <EditableSection onEdit={() => setTextModalOpen(true)} label="Editar textos">
     <section className="relative overflow-hidden bg-text-light px-4 py-24 sm:px-6 lg:px-8">
       {/* IMG4 como textura de fondo de sección con overlay claro */}
       <div className="absolute inset-0 -z-20">
@@ -93,7 +87,7 @@ export default function DifferentialBlock() {
             <ChevronRight size={20} aria-hidden="true" />
           </button>
 
-          {/* Slides — todas las imágenes preloadadas en el DOM, solo la activa visible */}
+          {/* Slides */}
           <div className="overflow-hidden">
             <AnimatePresence mode="wait" custom={direction}>
               <motion.article
@@ -108,7 +102,7 @@ export default function DifferentialBlock() {
               >
                 {/* Imagen de fondo del slide actual */}
                 <Image
-                  src={slideImages[current]}
+                  src={slideImages[current] ?? '/IMG1.jpeg'}
                   alt=""
                   fill
                   sizes="(min-width: 1280px) 1280px, 100vw"
@@ -160,12 +154,13 @@ export default function DifferentialBlock() {
     </section>
     </EditableSection>
 
+    {/* Modal para editar textos */}
     <SectionEditModal
       clave="differential_block"
-      title="Editar diferencial"
+      title="Editar diferencial — Textos"
       value={differential_block}
-      open={modalOpen}
-      onClose={() => setModalOpen(false)}
+      open={textModalOpen}
+      onClose={() => setTextModalOpen(false)}
       onSaved={(v) => updateConfig('differential_block', v)}
     >
       {(draft, setDraft) => (
@@ -178,6 +173,13 @@ export default function DifferentialBlock() {
               <Input value={draft.subtitulo} onChange={(e) => setDraft((p) => ({ ...p, subtitulo: e.target.value }))} />
             </Field>
           </div>
+          <button
+            type="button"
+            onClick={() => { setTextModalOpen(false); setImagesModalOpen(true) }}
+            className="w-full border border-gold/50 px-4 py-3 font-montserrat text-xs font-bold uppercase tracking-widest text-gold transition-colors hover:border-gold hover:bg-gold/10"
+          >
+            Editar imágenes de fondo →
+          </button>
           <div className="space-y-4">
             {draft.items.map((diff, i) => (
               <div key={i} className="space-y-3 border border-border bg-card-bg p-4">
@@ -216,6 +218,37 @@ export default function DifferentialBlock() {
             ))}
           </div>
         </>
+      )}
+    </SectionEditModal>
+
+    {/* Modal separado para editar imágenes */}
+    <SectionEditModal<ImagenesConfig>
+      clave="imagenes"
+      title="Editar diferencial — Imágenes"
+      value={imagenes}
+      open={imagesModalOpen}
+      onClose={() => setImagesModalOpen(false)}
+      onSaved={(v) => updateConfig('imagenes', v)}
+    >
+      {(draft, setDraft) => (
+        <div className="space-y-4">
+          {differentialItems.map(({ title }, i) => (
+            <div key={i} className="border border-border bg-card-bg p-4">
+              <p className="mb-3 font-montserrat text-xs font-bold uppercase tracking-widest text-gold">
+                Slide {i + 1}: {title}
+              </p>
+              <ImageUploadField
+                label="Imagen de fondo"
+                value={draft.diferencial_carousel[i] ?? ''}
+                carpeta="diferencial"
+                onChange={(url) => setDraft((p) => ({
+                  ...p,
+                  diferencial_carousel: p.diferencial_carousel.map((u, idx) => (idx === i ? url : u)),
+                }))}
+              />
+            </div>
+          ))}
+        </div>
       )}
     </SectionEditModal>
     </>

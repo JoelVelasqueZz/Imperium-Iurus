@@ -73,14 +73,22 @@ export type FilosofiaPilarConfig = {
 export type NosotrosPageConfig = {
   titulo: string
   intro: string
+  descripcion: string
+  tagline: string
+  filosofia_titulo: string
+  filosofia_subtitulo: string
+  filosofia_closing: string
   pilares: FilosofiaPilarConfig[]
   por_que_texto: string
+  vision_titulo: string
   vision: string
+  vision_tagline: string
 }
 
 export type TrustCardConfig = {
   title: string
   body: string
+  sub: string
 }
 
 export type TrustBlockConfig = {
@@ -195,6 +203,7 @@ export type ImagenesConfig = {
     funcionarios: string
     mediaticos: string
   }
+  diferencial_carousel: string[]
   galeria_nosotros: string[]
   galeria_nosotros_titulo: string
 }
@@ -284,6 +293,13 @@ export const CONFIG_DEFAULTS: SiteConfig = {
     titulo: 'Defensa penal estratégica para escenarios complejos',
     intro:
       'Protegemos la libertad, el patrimonio, la reputación y la continuidad empresarial de nuestros clientes frente a investigaciones penales, riesgos regulatorios y crisis jurídicas de alta complejidad.',
+    descripcion:
+      'IMPERIUM IURIS es una firma jurídica multidisciplinaria con sede en Guayaquil y cobertura nacional, especializada en derecho penal estratégico, penal económico, criminalidad empresarial, delitos contra la administración pública y defensa en investigaciones complejas.',
+    tagline:
+      'Nuestra práctica combina litigación técnica, análisis preventivo y respuesta inmediata para personas, empresas, directivos y funcionarios públicos.',
+    filosofia_titulo: 'Nuestra Filosofía',
+    filosofia_subtitulo: 'Cuatro principios sostienen cada decisión jurídica de la firma.',
+    filosofia_closing: 'No reaccionamos al problema. Lo anticipamos y lo controlamos.',
     pilares: [
       { title: 'Prevención',       text: 'Anticipamos riesgos antes de que escalen.' },
       { title: 'Estrategia',       text: 'Cada caso requiere una ruta legal diseñada a medida.' },
@@ -292,19 +308,21 @@ export const CONFIG_DEFAULTS: SiteConfig = {
     ],
     por_que_texto:
       'IMPERIUM IURIS nace para intervenir con precisión técnica antes de que una crisis jurídica genere daños irreversibles.',
+    vision_titulo: 'Construimos una nueva generación de defensa penal en Ecuador',
     vision:
       'Aspiramos a convertirnos en la firma penal estratégica más confiable, sofisticada e innovadora del país, integrando excelencia jurídica, tecnología y protección integral.',
+    vision_tagline: 'Defensa penal de nivel internacional adaptada a Ecuador.',
   },
   trust_block: {
     titulo: 'Solidez, confidencialidad y capacidad real',
     subtitulo: 'Una estructura jurídica diseñada para intervenir en escenarios donde la improvisación no es una opción.',
     tarjetas: [
-      { title: '+15 años de experiencia en litigación penal estratégica', body: 'Defendemos personas, empresarios, compañías y funcionarios frente a investigaciones penales complejas.' },
-      { title: 'Casos complejos de alto impacto jurídico y patrimonial', body: 'Lavado de activos · Corrupción · Fraude · Delitos financieros · Criminalidad organizada · Delitos societarios' },
-      { title: 'Reserva total en asuntos sensibles', body: 'Protegemos la información, reputación y seguridad de nuestros clientes mediante protocolos estrictos.' },
-      { title: 'Sede en Guayaquil | Cobertura en todo Ecuador', body: 'Guayaquil · Quito · Cuenca · Manta · Machala · Santo Domingo · Ambato · y más jurisdicciones.' },
-      { title: 'Defensa respaldada por especialistas multidisciplinarios', body: 'Penalistas · Constitucionalistas · Tributaristas · Criminalistas · Auditores forenses · Analistas financieros' },
-      { title: 'Prevención legal + defensa inmediata', body: 'Compliance penal · Investigaciones internas · Prevención corporativa · Defensa procesal · Litigación penal' },
+      { title: '+15 años de experiencia en litigación penal estratégica', body: 'Defendemos personas, empresarios, compañías y funcionarios frente a investigaciones penales complejas.', sub: 'Experiencia en delitos económicos, patrimoniales, corporativos y criminalidad organizada.' },
+      { title: 'Casos complejos de alto impacto jurídico y patrimonial', body: 'Lavado de activos · Corrupción · Fraude · Delitos financieros · Criminalidad organizada · Delitos societarios', sub: 'Diseñamos estrategias donde otros solo reaccionan.' },
+      { title: 'Reserva total en asuntos sensibles', body: 'Protegemos la información, reputación y seguridad de nuestros clientes mediante protocolos estrictos.', sub: 'Discreción absoluta antes, durante y después del proceso.' },
+      { title: 'Sede en Guayaquil | Cobertura en todo Ecuador', body: 'Guayaquil · Quito · Cuenca · Manta · Machala · Santo Domingo · Ambato · y más jurisdicciones.', sub: 'Respuesta jurídica inmediata donde el cliente lo necesite.' },
+      { title: 'Defensa respaldada por especialistas multidisciplinarios', body: 'Penalistas · Constitucionalistas · Tributaristas · Criminalistas · Auditores forenses · Analistas financieros', sub: 'Cada caso requiere más que abogados.' },
+      { title: 'Prevención legal + defensa inmediata', body: 'Compliance penal · Investigaciones internas · Prevención corporativa · Defensa procesal · Litigación penal', sub: 'Prevención inteligente. Defensa contundente.' },
     ],
   },
   services_block: {
@@ -447,6 +465,7 @@ export const CONFIG_DEFAULTS: SiteConfig = {
       funcionarios: '/IMG2.jpeg',
       mediaticos:   '/IMG7.jpeg',
     },
+    diferencial_carousel: ['/IMG1.jpeg', '/IMG5.jpeg', '/IMG2.jpeg', '/IMG6.jpeg', '/IMG7.jpeg', '/IMG8.jpeg'],
     galeria_nosotros: ['/IMG2.jpeg', '/IMG5.jpeg', '/IMG6.jpeg', '/IMG7.jpeg'],
     galeria_nosotros_titulo: 'Espacios diseñados para la excelencia',
   },

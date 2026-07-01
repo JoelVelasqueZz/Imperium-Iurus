@@ -92,3 +92,11 @@ insert into public.configuracion (clave, valor) values
   "subtitulo": "Comparta la información esencial de su caso para activar una evaluación jurídica inicial."
 }'::jsonb)
 on conflict (clave) do nothing;
+
+-- Actualizar trust_block para incluir el campo 'sub' en cada tarjeta
+-- NOTA: Si ya tienes datos en trust_block, usa este UPDATE en lugar de INSERT:
+-- update public.configuracion set valor = '...'::jsonb where clave = 'trust_block';
+
+-- Actualizar imagenes para incluir diferencial_carousel
+-- Los campos nuevos (diferencial_carousel, galeria_nosotros_titulo) se completan
+-- automáticamente vía CONFIG_DEFAULTS en getSiteConfig() aunque la fila ya exista.

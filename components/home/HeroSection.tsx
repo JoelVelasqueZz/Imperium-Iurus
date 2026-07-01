@@ -32,7 +32,7 @@ export default function HeroSection() {
 
   return (
     <>
-    <EditableSection onEdit={() => setModalOpen(true)}>
+    <EditableSection onEdit={() => setModalOpen(true)} bottomButton>
     <section className="relative isolate flex min-h-screen items-center overflow-hidden bg-[#0F1115] px-4 pt-24 sm:px-6 lg:px-8">
 
       {/* Carousel de fondos */}

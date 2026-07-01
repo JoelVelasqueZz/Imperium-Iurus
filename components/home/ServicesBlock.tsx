@@ -10,17 +10,20 @@ import { useSiteConfig, useUpdateConfig } from '@/components/providers/ConfigPro
 import EditableSection from '@/components/admin/EditableSection'
 import SectionEditModal from '@/components/admin/SectionEditModal'
 import { Field, Input, Textarea, ListEditor } from '@/components/admin/ConfigFormControls'
+import ImageUploadField from '@/components/admin/ImageUploadField'
+import type { ImagenesConfig } from '@/lib/config-utils'
 
 export default function ServicesBlock() {
   const [open, setOpen] = useState(serviceBlocks[0].id)
-  const [modalOpen, setModalOpen] = useState(false)
+  const [textModalOpen, setTextModalOpen] = useState(false)
+  const [imagesModalOpen, setImagesModalOpen] = useState(false)
   const { imagenes, services_block } = useSiteConfig()
   const updateConfig = useUpdateConfig()
   const serviceImages: Record<string, string> = imagenes.servicios
 
   return (
     <>
-    <EditableSection onEdit={() => setModalOpen(true)}>
+    <EditableSection onEdit={() => setTextModalOpen(true)} label="Editar textos">
     <section className="bg-text-light px-4 py-24 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
         <SectionHeader
@@ -99,12 +102,13 @@ export default function ServicesBlock() {
     </section>
     </EditableSection>
 
+    {/* Modal para editar textos */}
     <SectionEditModal
       clave="services_block"
-      title="Editar áreas de práctica"
+      title="Editar áreas de práctica — Textos"
       value={services_block}
-      open={modalOpen}
-      onClose={() => setModalOpen(false)}
+      open={textModalOpen}
+      onClose={() => setTextModalOpen(false)}
       onSaved={(v) => updateConfig('services_block', v)}
     >
       {(draft, setDraft) => (
@@ -117,6 +121,13 @@ export default function ServicesBlock() {
               <Input value={draft.subtitulo} onChange={(e) => setDraft((p) => ({ ...p, subtitulo: e.target.value }))} />
             </Field>
           </div>
+          <button
+            type="button"
+            onClick={() => { setTextModalOpen(false); setImagesModalOpen(true) }}
+            className="w-full border border-gold/50 px-4 py-3 font-montserrat text-xs font-bold uppercase tracking-widest text-gold transition-colors hover:border-gold hover:bg-gold/10"
+          >
+            Editar imágenes de fondo →
+          </button>
           <div className="space-y-4">
             {draft.items.map((service, i) => (
               <div key={i} className="space-y-3 border border-border bg-card-bg p-4">
@@ -174,6 +185,35 @@ export default function ServicesBlock() {
             ))}
           </div>
         </>
+      )}
+    </SectionEditModal>
+
+    {/* Modal separado para editar imágenes */}
+    <SectionEditModal<ImagenesConfig>
+      clave="imagenes"
+      title="Editar áreas de práctica — Imágenes"
+      value={imagenes}
+      open={imagesModalOpen}
+      onClose={() => setImagesModalOpen(false)}
+      onSaved={(v) => updateConfig('imagenes', v)}
+    >
+      {(draft, setDraft) => (
+        <div className="space-y-4">
+          {serviceBlocks.map(({ id, title }, i) => (
+            <div key={id} className="border border-border bg-card-bg p-4">
+              <p className="mb-3 font-montserrat text-xs font-bold uppercase tracking-widest text-gold">{title}</p>
+              <ImageUploadField
+                label="Imagen de fondo"
+                value={draft.servicios[id as keyof typeof draft.servicios]}
+                carpeta="servicios"
+                onChange={(url) => setDraft((p) => ({
+                  ...p,
+                  servicios: { ...p.servicios, [id]: url },
+                }))}
+              />
+            </div>
+          ))}
+        </div>
       )}
     </SectionEditModal>
     </>
