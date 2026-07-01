@@ -1,8 +1,20 @@
+'use client'
+
 import Image from 'next/image'
 import Link from 'next/link'
-import { BRAND, CONTACT, NAV_LINKS } from '@/lib/constants'
+import { Facebook, Instagram, Linkedin } from 'lucide-react'
+import { BRAND, NAV_LINKS } from '@/lib/constants'
+import { useSiteConfig } from '@/components/providers/ConfigProvider'
 
 export default function Footer() {
+  const { contacto, redes_sociales } = useSiteConfig()
+
+  const socialLinks = [
+    { href: redes_sociales.linkedin,  Icon: Linkedin,  label: 'LinkedIn'  },
+    { href: redes_sociales.instagram, Icon: Instagram, label: 'Instagram' },
+    { href: redes_sociales.facebook,  Icon: Facebook,  label: 'Facebook'  },
+  ].filter((s) => s.href)
+
   return (
     <footer className="border-t border-gold/10 bg-[#0D1624]/20 backdrop-blur-2xl">
       <div className="mx-auto grid max-w-7xl gap-10 px-4 py-14 sm:px-6 md:grid-cols-[1.2fr_0.8fr_1fr] lg:px-8">
@@ -25,6 +37,22 @@ export default function Footer() {
           <p className="mt-5 font-cinzel text-xs uppercase tracking-[0.28em] text-gold-light">
             {BRAND.location}
           </p>
+          {socialLinks.length > 0 && (
+            <div className="mt-5 flex gap-3">
+              {socialLinks.map(({ href, Icon, label }) => (
+                <a
+                  key={label}
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={label}
+                  className="flex h-8 w-8 items-center justify-center border border-gold/20 text-text-muted transition-colors hover:border-gold hover:text-gold focus-gold"
+                >
+                  <Icon size={14} />
+                </a>
+              ))}
+            </div>
+          )}
         </div>
 
         <div>
@@ -49,10 +77,10 @@ export default function Footer() {
             Contacto
           </h2>
           <div className="space-y-3 text-sm font-light text-text-muted">
-            <p>{CONTACT.address}</p>
-            <p>{CONTACT.phone}</p>
-            <p>{CONTACT.email}</p>
-            <p>{CONTACT.hours} | {CONTACT.emergency}</p>
+            <p>{contacto.direccion}</p>
+            <p>{contacto.telefono}</p>
+            <p>{contacto.correo}</p>
+            <p>{contacto.horas} | {contacto.emergencia}</p>
           </div>
         </div>
       </div>

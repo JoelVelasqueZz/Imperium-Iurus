@@ -300,6 +300,27 @@ Cuando un usuario no autenticado completa `/agenda` o `/contacto` y hace click e
 
 ---
 
+## Panel de configuración del sitio (`/admin/configuracion`)
+
+Editor de contenido en vivo. Tabla `configuracion` (`clave text primary key`, `valor jsonb`, `updated_at`). Cada sección del panel hace `PATCH /api/admin/configuracion` con `{ clave, valor }` (upsert por `clave`) y llama `revalidatePath('/', 'layout')`. El sitio público lee todo vía `getSiteConfig()` (`lib/config.ts`) → `<ConfigProvider>` (contexto client-side, `lib/config-utils.ts` define tipos/defaults) → `useSiteConfig()` en cada componente consumidor.
+
+Claves actuales: `contacto` · `horario_atencion` · `horario_citas` · `festivos` · `hero` · `redes_sociales` · `agenda_page` · `nosotros_page` · `trust_block` · `urgency_block` · `final_cta` · `imagenes`.
+
+| Clave | Consumida por |
+|-------|----------------|
+| `agenda_page` | `app/agenda/page.tsx` (eyebrow/título/subtítulo del formulario) |
+| `nosotros_page` | `AperturaSection`, `FilosofiaSection` (4 pilares), `PorQueSection`, `VisionSection` |
+| `trust_block` | `components/home/TrustBlock.tsx` (título+body de las 6 tarjetas; ícono y `sub` siguen fijos en `lib/constants.ts`) |
+| `urgency_block` | `components/home/UrgencyBlock.tsx` (texto principal + 3 escenarios: título/subtítulo/items/botón) |
+| `final_cta` | `components/home/FinalCTA.tsx` (título + botón primario; subtítulo y botón "Agendar cita" fijos) |
+| `imagenes` | `HeroSection` (carrusel), `ServicesBlock` (imágenes por área de práctica), `FirmaGallery` (galería nosotros) |
+
+**Subida de imágenes:** `components/admin/ImageUploadField.tsx` sube archivos a `POST /api/admin/configuracion/upload`, que valida sesión admin y usa el `service_role` key para escribir al bucket público `site-images` (bypassa RLS de Storage). Devuelve la URL pública y el campo se guarda como string igual que cualquier otra URL. El bucket y los valores iniciales de las nuevas claves están en `scripts/sql-configuracion-nuevas-secciones.sql` — pendiente de ejecutar en Supabase.
+
+> El hostname de Supabase se agrega dinámicamente a `images.remotePatterns` en `next.config.ts` (derivado de `NEXT_PUBLIC_SUPABASE_URL`) para que `next/image` pueda servir las imágenes subidas al bucket.
+
+---
+
 ## Convenciones
 
 - **Timezone Ecuador:** `America/Guayaquil` (UTC-5, sin DST). Siempre usar `Intl.DateTimeFormat.formatToParts()` para extraer componentes de fecha/hora, nunca `new Date(toLocaleString())`.

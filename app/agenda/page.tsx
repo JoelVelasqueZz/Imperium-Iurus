@@ -10,6 +10,7 @@ import ChatInviteBanner from '@/components/shared/ChatInviteBanner'
 import LoginModal from '@/components/shared/LoginModal'
 import { createSupabaseBrowserClient } from '@/lib/supabase-browser'
 import { appointmentSchema, type AppointmentFormData } from '@/lib/schemas'
+import { useSiteConfig } from '@/components/providers/ConfigProvider'
 
 const TIPOS = [
   { value: 'personal',    label: 'Consulta personal' },
@@ -33,6 +34,7 @@ function Field({
 
 export default function AgendaPage() {
   const supabase = createSupabaseBrowserClient()
+  const { horario_citas, festivos, agenda_page } = useSiteConfig()
 
   const [todayStr, setTodayStr]         = useState('')
   const [slots, setSlots]               = useState<string[]>([])
@@ -62,9 +64,13 @@ export default function AgendaPage() {
     setSlotsMsg(null)
     setSlots([])
 
+    if (festivos.fechas.includes(fechaValue)) {
+      setSlotsMsg('Esta fecha es festivo o día de excepción. Por favor seleccione otro día.')
+      return
+    }
     const day = new Date(fechaValue + 'T12:00:00').getDay()
-    if (day === 0 || day === 6) {
-      setSlotsMsg('Los sábados y domingos no hay atención. Seleccione un día hábil.')
+    if (!horario_citas.dias.includes(day)) {
+      setSlotsMsg('No hay atención ese día. Seleccione un día hábil según el horario configurado.')
       return
     }
 
@@ -138,9 +144,9 @@ export default function AgendaPage() {
       <div className="absolute inset-x-0 top-0 h-32 bg-primary -z-10" />
       <div className="mx-auto max-w-4xl">
         <SectionHeader
-          eyebrow="Agenda tu cita"
-          title="Reserva una consulta confidencial"
-          subtitle="Selecciona fecha y horario disponible. Te confirmaremos por correo a la brevedad."
+          eyebrow={agenda_page.eyebrow}
+          title={agenda_page.titulo}
+          subtitle={agenda_page.subtitulo}
           invert
         />
 

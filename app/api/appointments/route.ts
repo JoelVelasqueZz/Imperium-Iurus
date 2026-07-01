@@ -3,6 +3,8 @@ import { Resend } from 'resend'
 import { appointmentSchema, type ApiResponse, type AppointmentFormData } from '@/lib/schemas'
 import { supabase } from '@/lib/supabase'
 import { createSupabaseServerClient } from '@/lib/supabase-server'
+import { CONFIG_DEFAULTS, generateSlots, isDateAvailable } from '@/lib/config'
+import type { HorarioCitasConfig, FestivosConfig } from '@/lib/config'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
@@ -12,16 +14,19 @@ const TIPO_LABEL: Record<AppointmentFormData['tipoConsulta'], string> = {
   urgencia:    'Urgencia Penal',
 }
 
-// ─── Disponibilidad ───────────────────────────────────────────────────────────
+// ─── Leer horario de citas desde configuracion ────────────────────────────────
 
-function allSlots(): string[] {
-  const slots: string[] = []
-  for (let h = 8; h < 18; h++) {
-    for (const m of [0, 30]) {
-      slots.push(`${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`)
-    }
+async function getScheduleConfig(): Promise<{ horario: HorarioCitasConfig; festivos: FestivosConfig }> {
+  const { data } = await supabase
+    .from('configuracion')
+    .select('clave, valor')
+    .in('clave', ['horario_citas', 'festivos'])
+
+  const map = Object.fromEntries((data ?? []).map((r) => [r.clave as string, r.valor]))
+  return {
+    horario:  { ...CONFIG_DEFAULTS.horario_citas, ...(map['horario_citas'] ?? {}) } as HorarioCitasConfig,
+    festivos: { ...CONFIG_DEFAULTS.festivos,      ...(map['festivos']      ?? {}) } as FestivosConfig,
   }
-  return slots
 }
 
 function todayEcuador(): string {
@@ -33,11 +38,6 @@ function currentTimeEcuador(): { h: number; m: number } {
   return { h: now.getHours(), m: now.getMinutes() }
 }
 
-function isWeekend(fechaStr: string): boolean {
-  const day = new Date(fechaStr + 'T12:00:00').getDay()
-  return day === 0 || day === 6
-}
-
 // GET — slots disponibles para una fecha
 export async function GET(request: NextRequest): Promise<NextResponse> {
   const fecha = request.nextUrl.searchParams.get('fecha')
@@ -46,7 +46,9 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     return NextResponse.json({ success: false, error: 'Parámetro fecha requerido (YYYY-MM-DD)' }, { status: 400 })
   }
 
-  if (isWeekend(fecha)) {
+  const { horario, festivos } = await getScheduleConfig()
+
+  if (!isDateAvailable(fecha, horario, festivos)) {
     return NextResponse.json({ success: true, data: { fecha, slots: [] } })
   }
 
@@ -59,16 +61,14 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 
   const bookedSet = new Set((booked ?? []).map((r) => (r.hora as string).slice(0, 5)))
 
-  let slots = allSlots().filter((s) => !bookedSet.has(s))
+  let slots = generateSlots(horario).filter((s) => !bookedSet.has(s))
 
   // Si es hoy, filtrar slots pasados (con 30 min de margen)
   if (fecha === todayEcuador()) {
     const { h: nowH, m: nowM } = currentTimeEcuador()
     slots = slots.filter((slot) => {
       const [slotH, slotM] = slot.split(':').map(Number)
-      const slotMinutes = slotH * 60 + slotM
-      const nowMinutes  = nowH  * 60 + nowM + 30
-      return slotMinutes > nowMinutes
+      return slotH * 60 + slotM > nowH * 60 + nowM + 30
     })
   }
 
@@ -172,8 +172,9 @@ export async function POST(request: NextRequest): Promise<NextResponse<ApiRespon
   const serverClient = await createSupabaseServerClient()
   const { data: { user: sessionUser } } = await serverClient.auth.getUser()
 
-  if (isWeekend(data.fecha)) {
-    return NextResponse.json({ success: false, error: 'Solo se pueden agendar citas de lunes a viernes.' }, { status: 422 })
+  const { horario: horarioCitas, festivos } = await getScheduleConfig()
+  if (!isDateAvailable(data.fecha, horarioCitas, festivos)) {
+    return NextResponse.json({ success: false, error: 'Esta fecha no está disponible para agendar citas.' }, { status: 422 })
   }
 
   // Verificar disponibilidad (evita race conditions)

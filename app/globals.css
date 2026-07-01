@@ -53,3 +53,21 @@ body {
 .input-light {
   @apply focus-gold w-full border border-gold/30 bg-white px-4 py-4 font-inter text-sm text-primary placeholder-transparent transition-colors focus:border-gold;
 }
+
+/* ── TipTap prose styles (admin blog editor) ── */
+.prose h2 { @apply font-cinzel text-xl font-semibold text-gold mt-8 mb-3; }
+.prose h3 { @apply font-cinzel text-base font-semibold text-gold-light mt-6 mb-2; }
+.prose p  { @apply text-text-muted leading-8 mb-4; }
+.prose ul { @apply list-disc pl-5 space-y-1 text-text-muted mb-4; }
+.prose ol { @apply list-decimal pl-5 space-y-1 text-text-muted mb-4; }
+.prose strong { @apply font-semibold text-text-light; }
+.prose em { @apply italic text-text-light/80; }
+.prose hr { @apply border-gold/20 my-8; }
+.prose a  { @apply text-gold underline underline-offset-4 hover:text-gold-bright; }
+.prose .is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: #A7AFB7;
+  pointer-events: none;
+  height: 0;
+}

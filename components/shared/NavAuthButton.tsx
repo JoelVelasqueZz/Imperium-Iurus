@@ -5,13 +5,15 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { createSupabaseBrowserClient } from '@/lib/supabase-browser'
-import { CalendarDays, LogOut, MessageCircle, User } from 'lucide-react'
+import { CalendarDays, LayoutDashboard, LogOut, MessageCircle, PencilLine, User } from 'lucide-react'
 import type { User as SupabaseUser } from '@supabase/supabase-js'
+import { useEditMode } from '@/components/providers/EditModeProvider'
 
 export default function NavAuthButton({ mobile = false }: { mobile?: boolean }) {
   const router      = useRouter()
   const supabase    = createSupabaseBrowserClient()
   const dropdownRef = useRef<HTMLDivElement>(null)
+  const { isAdmin, editMode, toggleEditMode } = useEditMode()
 
   // undefined = cargando | null = no logueado | User = logueado
   const [user, setUser] = useState<SupabaseUser | null | undefined>(undefined)
@@ -108,6 +110,24 @@ export default function NavAuthButton({ mobile = false }: { mobile?: boolean }) 
             <CalendarDays size={14} />
             Mis citas
           </Link>
+          {isAdmin && (
+            <>
+              <Link
+                href="/admin/agenda"
+                className="flex items-center gap-2 font-montserrat text-xs font-medium uppercase tracking-widest text-gold/80 transition-colors hover:text-gold"
+              >
+                <LayoutDashboard size={14} />
+                Panel Admin
+              </Link>
+              <button
+                onClick={toggleEditMode}
+                className="flex items-center gap-2 font-montserrat text-xs font-medium uppercase tracking-widest text-gold/80 transition-colors hover:text-gold"
+              >
+                <PencilLine size={14} />
+                Modo Edición {editMode ? '(activo)' : ''}
+              </button>
+            </>
+          )}
           <button
             onClick={cerrarSesion}
             className="flex items-center gap-2 font-montserrat text-xs uppercase tracking-widest text-text-muted/70 transition-colors hover:text-red-400"
@@ -163,6 +183,28 @@ export default function NavAuthButton({ mobile = false }: { mobile?: boolean }) 
             <CalendarDays size={14} />
             Mis citas
           </Link>
+          {isAdmin && (
+            <>
+              <div className="mx-3 border-t border-border/60" />
+              <Link
+                href="/admin/agenda"
+                role="menuitem"
+                onClick={() => setOpen(false)}
+                className="flex items-center gap-3 px-4 py-3 font-montserrat text-xs uppercase tracking-widest text-gold/90 transition-colors hover:bg-gold/10 hover:text-gold"
+              >
+                <LayoutDashboard size={14} />
+                Panel Admin
+              </Link>
+              <button
+                role="menuitem"
+                onClick={() => { toggleEditMode(); setOpen(false) }}
+                className="flex w-full items-center gap-3 px-4 py-3 font-montserrat text-xs uppercase tracking-widest text-gold/70 transition-colors hover:bg-gold/10 hover:text-gold"
+              >
+                <PencilLine size={14} />
+                Modo Edición {editMode ? '(activo)' : ''}
+              </button>
+            </>
+          )}
           <div className="mx-3 border-t border-border/60" />
           <button
             role="menuitem"

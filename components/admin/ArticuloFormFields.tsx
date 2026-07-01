@@ -1,5 +1,9 @@
 'use client'
 
+import dynamic from 'next/dynamic'
+
+const TipTapEditor = dynamic(() => import('@/components/admin/TipTapEditor'), { ssr: false })
+
 export type ArticuloForm = {
   titulo: string
   slug: string
@@ -50,11 +54,12 @@ export function ArticuloFormFields({
         <textarea value={form.resumen} onChange={(e) => onChange('resumen', e.target.value)} rows={2} maxLength={500}
           className="w-full resize-none border border-border bg-card-bg px-4 py-3 text-sm text-text-light outline-none focus:border-gold" />
       </Field>
-      <Field label="Contenido (HTML)">
-        <textarea value={form.contenido} onChange={(e) => onChange('contenido', e.target.value)} rows={14} required
-          placeholder="<p>Contenido del artículo...</p><h2>Subtítulo</h2><p>Más contenido...</p>"
-          className="w-full resize-y border border-border bg-card-bg px-4 py-3 font-mono text-xs text-text-light outline-none focus:border-gold" />
-        <p className="mt-1 text-[11px] text-text-muted">Usa HTML: &lt;p&gt;, &lt;h2&gt;, &lt;strong&gt;, &lt;ul&gt;&lt;li&gt;</p>
+      <Field label="Contenido">
+        <TipTapEditor
+          value={form.contenido}
+          onChange={(html) => onChange('contenido', html)}
+          placeholder="Escribe el contenido del artículo..."
+        />
       </Field>
     </>
   )

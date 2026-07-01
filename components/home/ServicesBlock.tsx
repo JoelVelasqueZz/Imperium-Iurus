@@ -6,28 +6,32 @@ import { Check, ChevronDown } from 'lucide-react'
 import { AnimatePresence, motion } from 'framer-motion'
 import SectionHeader from '@/components/ui/SectionHeader'
 import { HOME, serviceBlocks } from '@/lib/constants'
-
-const serviceImages: Record<string, string> = {
-  personas:    '/IMG1.jpeg',
-  empresas:    '/IMG5.jpeg',
-  funcionarios:'/IMG2.jpeg',
-  mediaticos:  '/IMG7.jpeg',
-}
+import { useSiteConfig, useUpdateConfig } from '@/components/providers/ConfigProvider'
+import EditableSection from '@/components/admin/EditableSection'
+import SectionEditModal from '@/components/admin/SectionEditModal'
+import { Field, Input, Textarea, ListEditor } from '@/components/admin/ConfigFormControls'
 
 export default function ServicesBlock() {
   const [open, setOpen] = useState(serviceBlocks[0].id)
+  const [modalOpen, setModalOpen] = useState(false)
+  const { imagenes, services_block } = useSiteConfig()
+  const updateConfig = useUpdateConfig()
+  const serviceImages: Record<string, string> = imagenes.servicios
 
   return (
+    <>
+    <EditableSection onEdit={() => setModalOpen(true)}>
     <section className="bg-text-light px-4 py-24 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
         <SectionHeader
           eyebrow={HOME.services.eyebrow}
-          title={HOME.services.title}
-          subtitle={HOME.services.subtitle}
+          title={services_block.titulo}
+          subtitle={services_block.subtitulo}
           invert
         />
         <div className="grid gap-6 lg:grid-cols-2">
-          {serviceBlocks.map(({ id, icon: Icon, title, headline, desc, services, impact }) => {
+          {serviceBlocks.map(({ id, icon: Icon }, index) => {
+            const { title, headline, desc, services, impact } = services_block.items[index] ?? serviceBlocks[index]
             const isOpen = open === id
             return (
               <motion.article
@@ -93,5 +97,85 @@ export default function ServicesBlock() {
         </div>
       </div>
     </section>
+    </EditableSection>
+
+    <SectionEditModal
+      clave="services_block"
+      title="Editar áreas de práctica"
+      value={services_block}
+      open={modalOpen}
+      onClose={() => setModalOpen(false)}
+      onSaved={(v) => updateConfig('services_block', v)}
+    >
+      {(draft, setDraft) => (
+        <>
+          <div className="grid gap-5 md:grid-cols-2">
+            <Field label="Título de la sección">
+              <Input value={draft.titulo} onChange={(e) => setDraft((p) => ({ ...p, titulo: e.target.value }))} />
+            </Field>
+            <Field label="Subtítulo de la sección">
+              <Input value={draft.subtitulo} onChange={(e) => setDraft((p) => ({ ...p, subtitulo: e.target.value }))} />
+            </Field>
+          </div>
+          <div className="space-y-4">
+            {draft.items.map((service, i) => (
+              <div key={i} className="space-y-3 border border-border bg-card-bg p-4">
+                <p className="font-montserrat text-xs font-bold uppercase tracking-widest text-gold">
+                  {serviceBlocks[i]?.title ?? `Área ${i + 1}`}
+                </p>
+                <Field label="Título">
+                  <Input
+                    value={service.title}
+                    onChange={(e) => setDraft((p) => ({
+                      ...p,
+                      items: p.items.map((x, idx) => (idx === i ? { ...x, title: e.target.value } : x)),
+                    }))}
+                  />
+                </Field>
+                <Field label="Encabezado (headline)">
+                  <Input
+                    value={service.headline}
+                    onChange={(e) => setDraft((p) => ({
+                      ...p,
+                      items: p.items.map((x, idx) => (idx === i ? { ...x, headline: e.target.value } : x)),
+                    }))}
+                  />
+                </Field>
+                <Field label="Descripción">
+                  <Textarea
+                    rows={2}
+                    value={service.desc}
+                    onChange={(e) => setDraft((p) => ({
+                      ...p,
+                      items: p.items.map((x, idx) => (idx === i ? { ...x, desc: e.target.value } : x)),
+                    }))}
+                  />
+                </Field>
+                <Field label="Servicios (lista)">
+                  <ListEditor
+                    items={service.services}
+                    onChange={(services) => setDraft((p) => ({
+                      ...p,
+                      items: p.items.map((x, idx) => (idx === i ? { ...x, services } : x)),
+                    }))}
+                    placeholder="Agregar servicio..."
+                  />
+                </Field>
+                <Field label="Frase de impacto">
+                  <Input
+                    value={service.impact}
+                    onChange={(e) => setDraft((p) => ({
+                      ...p,
+                      items: p.items.map((x, idx) => (idx === i ? { ...x, impact: e.target.value } : x)),
+                    }))}
+                  />
+                </Field>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+    </SectionEditModal>
+    </>
   )
 }

@@ -7,6 +7,10 @@ import { AnimatePresence, motion } from 'framer-motion'
 import Button from '@/components/ui/Button'
 import SectionHeader from '@/components/ui/SectionHeader'
 import { differentialItems, HOME } from '@/lib/constants'
+import { useSiteConfig, useUpdateConfig } from '@/components/providers/ConfigProvider'
+import EditableSection from '@/components/admin/EditableSection'
+import SectionEditModal from '@/components/admin/SectionEditModal'
+import { Field, Input, Textarea } from '@/components/admin/ConfigFormControls'
 
 const slideImages = [
   '/IMG1.jpeg', // Diagnóstico Estratégico
@@ -29,6 +33,9 @@ const total = differentialItems.length
 export default function DifferentialBlock() {
   const [current, setCurrent] = useState(0)
   const [direction, setDirection] = useState(1)
+  const [modalOpen, setModalOpen] = useState(false)
+  const { differential_block } = useSiteConfig()
+  const updateConfig = useUpdateConfig()
 
   const prev = useCallback(() => {
     setDirection(-1)
@@ -45,9 +52,12 @@ export default function DifferentialBlock() {
     setCurrent(i)
   }, [])
 
-  const { icon: Icon, title, text, impact } = differentialItems[current]
+  const { icon: Icon } = differentialItems[current]
+  const { title, text, impact } = differential_block.items[current] ?? differentialItems[current]
 
   return (
+    <>
+    <EditableSection onEdit={() => setModalOpen(true)}>
     <section className="relative overflow-hidden bg-text-light px-4 py-24 sm:px-6 lg:px-8">
       {/* IMG4 como textura de fondo de sección con overlay claro */}
       <div className="absolute inset-0 -z-20">
@@ -58,8 +68,8 @@ export default function DifferentialBlock() {
       <div className="mx-auto max-w-7xl">
         <SectionHeader
           eyebrow={HOME.differential.eyebrow}
-          title={HOME.differential.title}
-          subtitle={HOME.differential.subtitle}
+          title={differential_block.titulo}
+          subtitle={differential_block.subtitulo}
           invert
         />
 
@@ -148,5 +158,66 @@ export default function DifferentialBlock() {
         </div>
       </div>
     </section>
+    </EditableSection>
+
+    <SectionEditModal
+      clave="differential_block"
+      title="Editar diferencial"
+      value={differential_block}
+      open={modalOpen}
+      onClose={() => setModalOpen(false)}
+      onSaved={(v) => updateConfig('differential_block', v)}
+    >
+      {(draft, setDraft) => (
+        <>
+          <div className="grid gap-5 md:grid-cols-2">
+            <Field label="Título de la sección">
+              <Input value={draft.titulo} onChange={(e) => setDraft((p) => ({ ...p, titulo: e.target.value }))} />
+            </Field>
+            <Field label="Subtítulo de la sección">
+              <Input value={draft.subtitulo} onChange={(e) => setDraft((p) => ({ ...p, subtitulo: e.target.value }))} />
+            </Field>
+          </div>
+          <div className="space-y-4">
+            {draft.items.map((diff, i) => (
+              <div key={i} className="space-y-3 border border-border bg-card-bg p-4">
+                <p className="font-montserrat text-xs font-bold uppercase tracking-widest text-gold">
+                  {differentialItems[i]?.title ?? `Diferencial ${i + 1}`}
+                </p>
+                <Field label="Título">
+                  <Input
+                    value={diff.title}
+                    onChange={(e) => setDraft((p) => ({
+                      ...p,
+                      items: p.items.map((x, idx) => (idx === i ? { ...x, title: e.target.value } : x)),
+                    }))}
+                  />
+                </Field>
+                <Field label="Texto">
+                  <Textarea
+                    rows={2}
+                    value={diff.text}
+                    onChange={(e) => setDraft((p) => ({
+                      ...p,
+                      items: p.items.map((x, idx) => (idx === i ? { ...x, text: e.target.value } : x)),
+                    }))}
+                  />
+                </Field>
+                <Field label="Frase de impacto">
+                  <Input
+                    value={diff.impact}
+                    onChange={(e) => setDraft((p) => ({
+                      ...p,
+                      items: p.items.map((x, idx) => (idx === i ? { ...x, impact: e.target.value } : x)),
+                    }))}
+                  />
+                </Field>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+    </SectionEditModal>
+    </>
   )
 }

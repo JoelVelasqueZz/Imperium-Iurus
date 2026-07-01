@@ -2,15 +2,16 @@
 
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { CalendarDays, LogOut, MessageCircle, MessageSquare, Newspaper, Star } from 'lucide-react'
+import { CalendarDays, ExternalLink, LogOut, MessageCircle, MessageSquare, Newspaper, Settings, Star } from 'lucide-react'
 import { createSupabaseBrowserClient } from '@/lib/supabase-browser'
 
 const NAV = [
-  { href: '/admin/agenda',      label: 'Agenda',      icon: CalendarDays },
-  { href: '/admin/contacto',    label: 'Consultas',   icon: MessageSquare },
-  { href: '/admin/chats',       label: 'Chats',       icon: MessageCircle },
-  { href: '/admin/blog',        label: 'Blog',        icon: Newspaper },
-  { href: '/admin/testimonios', label: 'Testimonios', icon: Star },
+  { href: '/admin/agenda',        label: 'Agenda',        icon: CalendarDays },
+  { href: '/admin/contacto',      label: 'Consultas',     icon: MessageSquare },
+  { href: '/admin/chats',         label: 'Chats',         icon: MessageCircle },
+  { href: '/admin/blog',          label: 'Blog',          icon: Newspaper },
+  { href: '/admin/testimonios',   label: 'Testimonios',   icon: Star },
+  { href: '/admin/configuracion', label: 'Configuración', icon: Settings },
 ]
 
 export default function AdminNav() {
@@ -55,8 +56,17 @@ export default function AdminNav() {
         })}
       </nav>
 
-      {/* Logout */}
-      <div className="border-t border-border p-3">
+      {/* Ver sitio + Logout */}
+      <div className="space-y-0.5 border-t border-border p-3">
+        <a
+          href="/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-3 rounded px-3 py-2.5 font-montserrat text-xs font-medium uppercase tracking-widest text-text-muted transition-colors hover:bg-white/5 hover:text-gold/80"
+        >
+          <ExternalLink size={15} className="shrink-0" />
+          Ver sitio público
+        </a>
         <button
           onClick={handleLogout}
           className="flex w-full items-center gap-3 rounded px-3 py-2.5 font-montserrat text-xs font-medium uppercase tracking-widest text-text-muted transition-colors hover:bg-red-950/40 hover:text-red-400"

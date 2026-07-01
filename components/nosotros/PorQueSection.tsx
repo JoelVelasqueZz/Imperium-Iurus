@@ -1,11 +1,12 @@
-// IMPERIUM IURIS — T05 Por qué existimos
-// Módulo: M1 — Sitio Web Público
-// RF: RF-43, RF-44, RF-45
+'use client'
+
 import SectionHeader from '@/components/ui/SectionHeader'
 import Reveal from '@/components/ui/Reveal'
 import { NOSOTROS, riskList } from '@/lib/constants'
+import { useSiteConfig } from '@/components/providers/ConfigProvider'
 
 export default function PorQueSection() {
+  const { nosotros_page } = useSiteConfig()
   return (
     <section className="bg-secondary px-4 py-24 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-6xl">
@@ -23,7 +24,7 @@ export default function PorQueSection() {
           ))}
         </div>
         <p className="mx-auto mt-10 max-w-3xl text-center text-base font-light leading-8 text-text-muted">
-          {NOSOTROS.porQue.closing1}
+          {nosotros_page.por_que_texto}
         </p>
         <p className="mt-6 text-center font-trajan text-2xl font-bold uppercase tracking-[0.12em] text-white">
           {NOSOTROS.porQue.closing2}

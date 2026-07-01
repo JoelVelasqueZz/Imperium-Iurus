@@ -3,6 +3,11 @@ import localFont from 'next/font/local'
 import { Inter, Cormorant_Garamond } from 'next/font/google'
 import './globals.css'
 import PublicShell from '@/components/layout/PublicShell'
+import { ConfigProvider } from '@/components/providers/ConfigProvider'
+import { EditModeProvider } from '@/components/providers/EditModeProvider'
+import { getSiteConfig } from '@/lib/config'
+import { getUser } from '@/lib/supabase-server'
+import { isAdminUser } from '@/lib/admin-auth'
 import { BRAND } from '@/lib/constants'
 
 const trajanPro = localFont({
@@ -95,7 +100,16 @@ export const metadata: Metadata = {
   alternates: { canonical: 'https://imperiumiuris.ec' },
 }
 
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  const config = await getSiteConfig()
+  const { contacto, horario_atencion } = config
+
+  const user = await getUser()
+  const isAdmin = isAdminUser(user)
+
+  const DAYS_EN = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday']
+  const openDays = horario_atencion.dias.map((d: number) => DAYS_EN[d])
+
   return (
     <html
       lang="es"
@@ -111,8 +125,8 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
               name: 'Imperium Iuris',
               description: 'Firma jurídica de defensa penal estratégica en Guayaquil, Ecuador.',
               url: 'https://imperiumiuris.ec',
-              telephone: '+593-985-222-635',
-              email: 'contacto@imperiumiuris.ec',
+              telephone: contacto.whatsapp,
+              email: contacto.correo,
               address: {
                 '@type': 'PostalAddress',
                 addressLocality: 'Guayaquil',
@@ -122,9 +136,9 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
               geo: { '@type': 'GeoCoordinates', latitude: -2.1894, longitude: -79.8891 },
               openingHoursSpecification: {
                 '@type': 'OpeningHoursSpecification',
-                dayOfWeek: ['Monday','Tuesday','Wednesday','Thursday','Friday'],
-                opens: '08:00',
-                closes: '18:00',
+                dayOfWeek: openDays,
+                opens: horario_atencion.hora_inicio,
+                closes: horario_atencion.hora_fin,
               },
               priceRange: '$$',
               areaServed: { '@type': 'Country', name: 'Ecuador' },
@@ -132,7 +146,11 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
             }),
           }}
         />
-        <PublicShell>{children}</PublicShell>
+        <ConfigProvider config={config}>
+          <EditModeProvider isAdmin={isAdmin}>
+            <PublicShell>{children}</PublicShell>
+          </EditModeProvider>
+        </ConfigProvider>
       </body>
     </html>
   )

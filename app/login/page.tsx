@@ -1,8 +1,9 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import Image from 'next/image'
+import { useRouter } from 'next/navigation'
 import { createSupabaseBrowserClient } from '@/lib/supabase-browser'
-import { Shield } from 'lucide-react'
 
 function GoogleIcon() {
   return (
@@ -16,8 +17,13 @@ function GoogleIcon() {
 }
 
 export default function LoginClientePage() {
-  const [loading, setLoading] = useState(false)
-  const [error,   setError]   = useState<string | null>(null)
+  const router = useRouter()
+
+  const [loadingGoogle,   setLoadingGoogle]   = useState(false)
+  const [loadingPassword, setLoadingPassword] = useState(false)
+  const [error,    setError]    = useState<string | null>(null)
+  const [email,    setEmail]    = useState('')
+  const [password, setPassword] = useState('')
 
   useEffect(() => {
     if (new URLSearchParams(window.location.search).get('error')) {
@@ -26,7 +32,7 @@ export default function LoginClientePage() {
   }, [])
 
   async function loginConGoogle() {
-    setLoading(true)
+    setLoadingGoogle(true)
     setError(null)
     const supabase = createSupabaseBrowserClient()
     const { error } = await supabase.auth.signInWithOAuth({
@@ -35,20 +41,45 @@ export default function LoginClientePage() {
     })
     if (error) {
       setError('No se pudo conectar con Google. Intente de nuevo.')
-      setLoading(false)
+      setLoadingGoogle(false)
     }
   }
 
+  async function loginConPassword(e: React.FormEvent) {
+    e.preventDefault()
+    setError(null)
+    setLoadingPassword(true)
+
+    const supabase = createSupabaseBrowserClient()
+    const { error } = await supabase.auth.signInWithPassword({ email, password })
+
+    if (error) {
+      setError('Correo o contraseña incorrectos.')
+      setLoadingPassword(false)
+      return
+    }
+
+    router.push('/')
+    router.refresh()
+  }
+
+  const loading = loadingGoogle || loadingPassword
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-primary px-4">
+    <div className="flex min-h-screen items-center justify-center bg-primary px-4 py-16">
       <div className="w-full max-w-sm">
         {/* Encabezado */}
         <div className="mb-8 text-center">
-          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center border border-gold/40 bg-gold/10">
-            <Shield size={20} className="text-gold" />
-          </div>
-          <p className="font-cinzel text-[10px] uppercase tracking-[0.4em] text-gold/50">
-            Portal de clientes
+          <Image
+            src="/logo-imperium.png"
+            alt="Logo de Imperium Iuris"
+            width={80}
+            height={72}
+            className="mx-auto h-16 w-auto object-contain mix-blend-screen brightness-110"
+            priority
+          />
+          <p className="mt-4 font-cinzel text-[10px] uppercase tracking-[0.4em] text-gold/50">
+            Portal de acceso
           </p>
           <h1 className="mt-1 font-cinzel text-2xl font-bold uppercase tracking-widest text-gold">
             Imperium Iuris
@@ -72,13 +103,59 @@ export default function LoginClientePage() {
             disabled={loading}
             className="flex w-full items-center justify-center gap-3 border border-border bg-white/5 px-4 py-3 font-montserrat text-xs font-bold uppercase tracking-widest text-text-light transition-colors hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {!loading && <GoogleIcon />}
-            {loading ? 'Redirigiendo…' : 'Iniciar sesión con Google'}
+            {!loadingGoogle && <GoogleIcon />}
+            {loadingGoogle ? 'Redirigiendo…' : 'Iniciar sesión con Google'}
           </button>
+
+          {/* Divisor */}
+          <div className="my-6 flex items-center gap-3">
+            <div className="h-px flex-1 bg-border" />
+            <span className="font-montserrat text-[10px] uppercase tracking-widest text-text-muted/50">o</span>
+            <div className="h-px flex-1 bg-border" />
+          </div>
+
+          {/* Email + contraseña */}
+          <form onSubmit={loginConPassword} className="space-y-4">
+            <div>
+              <label className="mb-1.5 block font-montserrat text-xs font-medium uppercase tracking-widest text-text-muted">
+                Correo electrónico
+              </label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                autoComplete="email"
+                className="w-full border border-border bg-card-bg px-4 py-3 font-montserrat text-sm text-text-light placeholder-text-muted/50 outline-none focus:border-gold"
+                placeholder="correo@ejemplo.com"
+              />
+            </div>
+            <div>
+              <label className="mb-1.5 block font-montserrat text-xs font-medium uppercase tracking-widest text-text-muted">
+                Contraseña
+              </label>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                autoComplete="current-password"
+                className="w-full border border-border bg-card-bg px-4 py-3 font-montserrat text-sm text-text-light placeholder-text-muted/50 outline-none focus:border-gold"
+                placeholder="••••••••"
+              />
+            </div>
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full border border-gold bg-gold py-3 font-montserrat text-xs font-bold uppercase tracking-widest text-primary transition-colors hover:bg-gold/90 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {loadingPassword ? 'Verificando...' : 'Iniciar sesión'}
+            </button>
+          </form>
         </div>
 
         <p className="mt-6 text-center font-montserrat text-[10px] uppercase tracking-widest text-text-muted/40">
-          Acceso exclusivo para clientes registrados
+          Acceso exclusivo para clientes y administradores registrados
         </p>
       </div>
     </div>

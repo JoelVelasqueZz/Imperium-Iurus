@@ -1,13 +1,11 @@
 'use client'
 
-// IMPERIUM IURIS — T10 Botón flotante de urgencia 24/7
-// Módulo: M1 — Sitio Web Público
-// RF: RF-03, RF-04
 import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Clock, FileText, Phone, Siren, X } from 'lucide-react'
-import { CONTACT, getWhatsAppUrl } from '@/lib/constants'
+import { useSiteConfig } from '@/components/providers/ConfigProvider'
+import { buildWhatsAppUrl, isOfficeHours } from '@/lib/config-utils'
 
 const itemVariants = {
   hidden: { opacity: 0, y: 12, scale: 0.9 },
@@ -17,31 +15,16 @@ const itemVariants = {
 const itemClass =
   'focus-gold flex items-center gap-3 whitespace-nowrap rounded-full border border-gold-bright bg-card-bg px-4 py-3 pr-5 font-montserrat text-xs font-bold uppercase tracking-widest text-text-light shadow-xl shadow-black/40 transition-colors hover:bg-gold hover:text-primary'
 
-// Lun-Vie 08:00-18:00 hora Ecuador (America/Guayaquil, UTC-5, sin DST)
-function checkOfficeHours(): boolean {
-  const parts = new Intl.DateTimeFormat('en-US', {
-    timeZone: 'America/Guayaquil',
-    weekday: 'short',
-    hour: '2-digit',
-    hour12: false,
-  }).formatToParts(new Date())
-  const weekday = parts.find(p => p.type === 'weekday')?.value ?? ''
-  const hour = parseInt(parts.find(p => p.type === 'hour')?.value ?? '-1', 10)
-  const workdays = new Set(['Mon', 'Tue', 'Wed', 'Thu', 'Fri'])
-  return workdays.has(weekday) && hour >= 8 && hour < 18
-}
-
 export default function UrgencyFloatingButton() {
-  const [open, setOpen] = useState(false)
-  const [isOfficeHours, setIsOfficeHours] = useState<boolean | null>(null)
-  const containerRef = useRef<HTMLDivElement>(null)
+  const [open, setOpen]           = useState(false)
+  const [inOffice, setInOffice]   = useState<boolean | null>(null)
+  const containerRef              = useRef<HTMLDivElement>(null)
+  const { contacto, horario_atencion } = useSiteConfig()
 
   useEffect(() => {
     if (!open) return
     function handleOutside(e: MouseEvent) {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
-        setOpen(false)
-      }
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) setOpen(false)
     }
     function handleEscape(e: KeyboardEvent) {
       if (e.key === 'Escape') setOpen(false)
@@ -55,23 +38,25 @@ export default function UrgencyFloatingButton() {
   }, [open])
 
   const toggle = () => {
-    if (!open) setIsOfficeHours(checkOfficeHours())
-    setOpen(v => !v)
+    if (!open) setInOffice(isOfficeHours(horario_atencion))
+    setOpen((v) => !v)
   }
 
   const close = () => setOpen(false)
+
+  const waUrl = buildWhatsAppUrl(contacto.whatsapp)
 
   const options = [
     {
       label: 'WhatsApp',
       icon: () => <Siren size={18} aria-hidden="true" />,
-      href: getWhatsAppUrl(),
+      href: waUrl,
       type: 'external' as const,
     },
     {
       label: 'Llamada directa',
       icon: () => <Phone size={18} aria-hidden="true" />,
-      href: 'tel:0985222635',
+      href: `tel:${contacto.telefono}`,
       type: 'tel' as const,
     },
     {
@@ -81,6 +66,8 @@ export default function UrgencyFloatingButton() {
       type: 'internal' as const,
     },
   ]
+
+  const horarioDisplay = `${horario_atencion.hora_inicio.slice(0,5)}–${horario_atencion.hora_fin.slice(0,5)}`
 
   return (
     <div ref={containerRef} className="fixed bottom-5 right-5 z-40 flex flex-col items-end gap-3">
@@ -93,35 +80,34 @@ export default function UrgencyFloatingButton() {
             animate="visible"
             exit="hidden"
           >
-            {/* Banner de horario — primer ítem del menú */}
+            {/* Banner de horario */}
             <motion.div
               variants={itemVariants}
               transition={{ duration: 0.22, ease: 'easeOut' }}
               className={`flex max-w-[230px] items-start gap-2.5 rounded-2xl border px-4 py-3 text-right text-xs font-light leading-snug shadow-xl shadow-black/40 ${
-                isOfficeHours
+                inOffice
                   ? 'border-emerald-500/30 bg-card-bg text-emerald-400'
                   : 'border-gold/30 bg-card-bg text-gold/90'
               }`}
             >
               <Clock size={14} className="mt-0.5 shrink-0 opacity-70" aria-hidden="true" />
               <span>
-                {isOfficeHours
-                  ? <>Disponibles ahora<br /><span className="opacity-60">Lun–Vie 08:00–18:00</span></>
-                  : 'Estamos fuera de horario, pero para emergencias penales puede contactarnos por WhatsApp'
-                }
+                {inOffice ? (
+                  <>Disponibles ahora<br /><span className="opacity-60">{horarioDisplay}</span></>
+                ) : (
+                  horario_atencion.mensaje_fuera
+                )}
               </span>
             </motion.div>
 
             {options.map((opt, i) => {
               const Icon = opt.icon
               const transition = { duration: 0.22, delay: (i + 1) * 0.05, ease: 'easeOut' as const }
-
               return (
                 <motion.div key={opt.label} variants={itemVariants} transition={transition} role="none">
                   {opt.type === 'internal' ? (
                     <Link href={opt.href} className={itemClass} role="menuitem" onClick={close}>
-                      <Icon />
-                      {opt.label}
+                      <Icon />{opt.label}
                     </Link>
                   ) : (
                     <a
@@ -132,8 +118,7 @@ export default function UrgencyFloatingButton() {
                       role="menuitem"
                       onClick={close}
                     >
-                      <Icon />
-                      {opt.label}
+                      <Icon />{opt.label}
                     </a>
                   )}
                 </motion.div>

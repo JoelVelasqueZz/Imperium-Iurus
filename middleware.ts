@@ -1,5 +1,6 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
+import { isAdminUser } from '@/lib/admin-auth'
 
 export async function middleware(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request })
@@ -30,11 +31,7 @@ export async function middleware(request: NextRequest) {
   // ── Rutas admin ────────────────────────────────────────────────────────
   if (pathname.startsWith('/admin')) {
     const isLoginPage = pathname === '/admin/login'
-    // Admin = role 'admin' en app_metadata O email coincide con ADMIN_EMAIL
-    const isAdmin =
-      !!user &&
-      (user.app_metadata?.role === 'admin' ||
-        (!!process.env.ADMIN_EMAIL && user.email === process.env.ADMIN_EMAIL))
+    const isAdmin = isAdminUser(user)
 
     if (!isAdmin && !isLoginPage) {
       const url = new URL('/admin/login', request.url)

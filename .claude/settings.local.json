@@ -27,7 +27,12 @@
       "Bash(npm init *)",
       "Bash(node verify_urgency_button.js)",
       "Bash(git restore *)",
-      "Bash(node *)"
+      "Bash(node *)",
+      "Bash(echo \"EXIT:$?\")",
+      "Bash(xargs grep -ln \"FileBody\")",
+      "Bash(netstat -ano)",
+      "Bash(wmic process *)",
+      "Bash(powershell -Command \"Get-CimInstance Win32_Process -Filter 'ProcessId=3700' | Select-Object ProcessId,ParentProcessId,CommandLine\")"
     ]
   }
 }

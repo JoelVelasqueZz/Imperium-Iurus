@@ -4,13 +4,15 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { Menu, Phone, X } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { BRAND, CONTACT, NAV_LINKS } from '@/lib/constants'
+import { BRAND, NAV_LINKS } from '@/lib/constants'
+import { useSiteConfig } from '@/components/providers/ConfigProvider'
 import Button from '@/components/ui/Button'
 import NavAuthButton from '@/components/shared/NavAuthButton'
 
 export default function Navbar() {
-  const [open, setOpen] = useState(false)
+  const [open, setOpen]       = useState(false)
   const [scrolled, setScrolled] = useState(false)
+  const { contacto } = useSiteConfig()
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 80)
@@ -65,7 +67,7 @@ export default function Navbar() {
         {/* Auth + CTA */}
         <div className="hidden items-center gap-4 md:flex">
           <NavAuthButton />
-          <Button href={`tel:${CONTACT.phone}`} variant="danger" className="px-5 py-3 text-xs tracking-widest">
+          <Button href={`tel:${contacto.telefono}`} variant="danger" className="px-5 py-3 text-xs tracking-widest">
             <Phone size={14} /> Urgencia 24/7
           </Button>
         </div>
@@ -96,7 +98,7 @@ export default function Navbar() {
               </Link>
             ))}
             <NavAuthButton mobile />
-            <Button href={`tel:${CONTACT.phone}`} variant="danger" className="mt-5 w-full">
+            <Button href={`tel:${contacto.telefono}`} variant="danger" className="mt-5 w-full">
               <Phone size={16} /> Urgencia 24/7
             </Button>
           </div>

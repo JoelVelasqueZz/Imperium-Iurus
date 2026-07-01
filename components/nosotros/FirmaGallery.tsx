@@ -3,26 +3,32 @@
 import { useState, useEffect, useCallback } from 'react'
 import Image from 'next/image'
 import { X, ChevronLeft, ChevronRight } from 'lucide-react'
+import { useSiteConfig } from '@/components/providers/ConfigProvider'
 
-const galleryImages = [
-  { src: '/IMG2.jpeg', alt: 'Área de recepción — IMPERIUM IURIS' },
-  { src: '/IMG5.jpeg', alt: 'Sala de juntas principal' },
-  { src: '/IMG6.jpeg', alt: 'Lobby de entrada' },
-  { src: '/IMG7.jpeg', alt: 'Lobby con emblema IMPERIUM IURIS' },
+const GALLERY_ALTS = [
+  'Área de recepción — IMPERIUM IURIS',
+  'Sala de juntas principal',
+  'Lobby de entrada',
+  'Lobby con emblema IMPERIUM IURIS',
 ]
 
 export default function FirmaGallery() {
+  const { imagenes } = useSiteConfig()
+  const galleryImages = imagenes.galeria_nosotros.map((src, i) => ({
+    src,
+    alt: GALLERY_ALTS[i] ?? 'IMPERIUM IURIS',
+  }))
   const [lightbox, setLightbox] = useState<number | null>(null)
 
   const close = useCallback(() => setLightbox(null), [])
 
   const prev = useCallback(() =>
     setLightbox((i) => (i === null ? null : (i - 1 + galleryImages.length) % galleryImages.length)),
-  [])
+  [galleryImages.length])
 
   const next = useCallback(() =>
     setLightbox((i) => (i === null ? null : (i + 1) % galleryImages.length)),
-  [])
+  [galleryImages.length])
 
   useEffect(() => {
     if (lightbox === null) return
