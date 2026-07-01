@@ -51,6 +51,18 @@ export type AgendaPageConfig = {
   eyebrow: string
   titulo: string
   subtitulo: string
+  horario_titulo: string
+  horario_texto1: string
+  horario_texto2: string
+  urgencia_texto: string
+  pasos_titulo: string
+  pasos: string[]
+}
+
+export type ContactoPageConfig = {
+  eyebrow: string
+  titulo: string
+  subtitulo: string
 }
 
 export type FilosofiaPilarConfig = {
@@ -120,6 +132,61 @@ export type FinalCtaConfig = {
   boton: string
 }
 
+export type TestimonioItemConfig = {
+  texto: string
+  autor: string
+}
+
+export type TestimonialsBlockConfig = {
+  titulo: string
+  subtitulo: string
+  testimonios: TestimonioItemConfig[]
+}
+
+export type FooterConfig = {
+  descripcion: string
+}
+
+export type PorQueBlockConfig = {
+  titulo: string
+  subtitulo: string
+  items: string[]
+  texto: string
+  closing: string
+}
+
+export type EquipoBlockConfig = {
+  titulo: string
+  subtitulo: string
+  especialistas: string[]
+  closing: string
+}
+
+export type MetodologiaPasoConfig = {
+  titulo: string
+  texto: string
+}
+
+export type MetodologiaBlockConfig = {
+  titulo: string
+  subtitulo: string
+  pasos: MetodologiaPasoConfig[]
+}
+
+export type ConfidencialidadBlockConfig = {
+  titulo: string
+  subtitulo: string
+  items: string[]
+  closing: string
+}
+
+export type CtaNosotrosConfig = {
+  titulo: string
+  subtitulo: string
+  boton_primary: string
+  boton_secondary: string
+}
+
 export type ImagenesConfig = {
   hero_carousel: string[]
   servicios: {
@@ -129,6 +196,7 @@ export type ImagenesConfig = {
     mediaticos: string
   }
   galeria_nosotros: string[]
+  galeria_nosotros_titulo: string
 }
 
 export type SiteConfig = {
@@ -139,12 +207,20 @@ export type SiteConfig = {
   hero: HeroConfig
   redes_sociales: RedesSocialesConfig
   agenda_page: AgendaPageConfig
+  contacto_page: ContactoPageConfig
   nosotros_page: NosotrosPageConfig
   trust_block: TrustBlockConfig
   services_block: ServicesBlockConfig
   urgency_block: UrgencyBlockConfig
   differential_block: DifferentialBlockConfig
   final_cta: FinalCtaConfig
+  testimonials_block: TestimonialsBlockConfig
+  footer: FooterConfig
+  por_que_block: PorQueBlockConfig
+  equipo_block: EquipoBlockConfig
+  metodologia_block: MetodologiaBlockConfig
+  confidencialidad_block: ConfidencialidadBlockConfig
+  cta_nosotros: CtaNosotrosConfig
   imagenes: ImagenesConfig
 }
 
@@ -187,6 +263,22 @@ export const CONFIG_DEFAULTS: SiteConfig = {
     eyebrow:   'Agenda tu cita',
     titulo:    'Reserva una consulta confidencial',
     subtitulo: 'Selecciona fecha y horario disponible. Te confirmaremos por correo a la brevedad.',
+    horario_titulo: 'Horario de atención',
+    horario_texto1: 'Lunes a viernes, 08:00 – 18:00',
+    horario_texto2: 'Citas de 30 minutos',
+    urgencia_texto: 'Para urgencias penales fuera de horario, contáctenos directamente por WhatsApp. Respondemos las 24 horas.',
+    pasos_titulo: '¿Qué esperar?',
+    pasos: [
+      'Confirme su cita con este formulario.',
+      'Recibirá un correo de confirmación.',
+      'Nuestro equipo lo contactará para preparar la sesión.',
+      'Consulta inicial confidencial y estratégica.',
+    ],
+  },
+  contacto_page: {
+    eyebrow:   'Contacto',
+    titulo:    'Consulta confidencial',
+    subtitulo: 'Comparta la información esencial de su caso para activar una evaluación jurídica inicial.',
   },
   nosotros_page: {
     titulo: 'Defensa penal estratégica para escenarios complejos',
@@ -289,6 +381,64 @@ export const CONFIG_DEFAULTS: SiteConfig = {
     titulo: 'Tu defensa no puede esperar',
     boton:  'Contactar ahora',
   },
+  testimonials_block: {
+    titulo: 'Reserva absoluta en cada caso',
+    subtitulo: 'Testimonios anónimos de clientes que confiaron asuntos sensibles a la firma.',
+    testimonios: [
+      { texto: 'Resolvieron un caso extremadamente delicado con absoluta reserva.', autor: 'Cliente confidencial' },
+      { texto: 'Su estrategia evitó consecuencias irreparables para mi familia y mi empresa.', autor: 'Cliente confidencial' },
+      { texto: 'Profesionalismo total. En el momento más crítico, su equipo respondió de inmediato.', autor: 'Cliente confidencial' },
+    ],
+  },
+  footer: {
+    descripcion: 'Defensa penal estrategica para personas, empresas y funcionarios frente a escenarios juridicos complejos.',
+  },
+  por_que_block: {
+    titulo: 'Defendemos lo que una investigación puede poner en riesgo',
+    subtitulo: 'Un proceso penal no solo compromete la libertad. Puede afectar toda una vida institucional, familiar y patrimonial.',
+    items: ['Patrimonio', 'Empresas', 'Reputación', 'Trayectoria profesional', 'Estabilidad familiar'],
+    texto: 'IMPERIUM IURIS nace para intervenir con precisión técnica antes de que una crisis jurídica genere daños irreversibles.',
+    closing: 'Defendemos personas, empresas y futuros.',
+  },
+  equipo_block: {
+    titulo: 'Casos complejos requieren múltiples especialistas',
+    subtitulo: 'Nuestro modelo integra profesionales de distintas áreas para construir defensas más sólidas.',
+    especialistas: [
+      'Abogados penalistas',
+      'Constitucionalistas',
+      'Expertos en compliance',
+      'Auditores forenses',
+      'Especialistas financieros',
+      'Peritos tecnológicos',
+      'Criminalistas',
+      'Consultores reputacionales',
+    ],
+    closing: 'Una sola perspectiva nunca resuelve crisis complejas.',
+  },
+  metodologia_block: {
+    titulo: 'Metodología de Trabajo',
+    subtitulo: 'Cada etapa reduce incertidumbre y aumenta control.',
+    pasos: [
+      { titulo: 'Diagnóstico inicial', texto: 'Identificamos riesgos inmediatos y evaluamos el escenario jurídico completo.' },
+      { titulo: 'Investigación estratégica', texto: 'Analizamos información crítica, precedentes y contexto probatorio.' },
+      { titulo: 'Diseño de defensa', texto: 'Construimos la ruta jurídica más efectiva para el caso específico.' },
+      { titulo: 'Ejecución legal', texto: 'Actuamos procesalmente con precisión técnica y agilidad estratégica.' },
+      { titulo: 'Protección integral', texto: 'Protegemos patrimonio, reputación y continuidad durante el proceso.' },
+      { titulo: 'Seguimiento permanente', texto: 'Acompañamiento continuo hasta la resolución definitiva del caso.' },
+    ],
+  },
+  confidencialidad_block: {
+    titulo: 'La discreción es parte de nuestra defensa',
+    subtitulo: 'Aplicamos protocolos estrictos para proteger información crítica antes, durante y después del proceso.',
+    items: ['Documentación sensible', 'Información financiera', 'Datos corporativos', 'Reputación personal', 'Privacidad familiar'],
+    closing: 'Lo que nos confía permanece protegido.',
+  },
+  cta_nosotros: {
+    titulo: 'Cuando el riesgo aumenta, la improvisación desaparece',
+    subtitulo: 'Converse con nuestro equipo y reciba una evaluación jurídica estratégica y confidencial.',
+    boton_primary: 'Solicitar consulta confidencial',
+    boton_secondary: 'Hablar con un especialista ahora',
+  },
   imagenes: {
     hero_carousel: ['/IMG1.jpeg', '/IMG6.jpeg', '/IMG7.jpeg'],
     servicios: {
@@ -298,6 +448,7 @@ export const CONFIG_DEFAULTS: SiteConfig = {
       mediaticos:   '/IMG7.jpeg',
     },
     galeria_nosotros: ['/IMG2.jpeg', '/IMG5.jpeg', '/IMG6.jpeg', '/IMG7.jpeg'],
+    galeria_nosotros_titulo: 'Espacios diseñados para la excelencia',
   },
 }
 

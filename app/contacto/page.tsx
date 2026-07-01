@@ -13,6 +13,10 @@ import LoginModal from '@/components/shared/LoginModal'
 import { createSupabaseBrowserClient } from '@/lib/supabase-browser'
 import { CONTACT, contactTypes } from '@/lib/constants'
 import { contactSchema, type ContactFormData } from '@/lib/schemas'
+import { useSiteConfig, useUpdateConfig } from '@/components/providers/ConfigProvider'
+import EditableSection from '@/components/admin/EditableSection'
+import SectionEditModal from '@/components/admin/SectionEditModal'
+import { Field as ConfigField, Input as ConfigInput, Textarea as ConfigTextarea } from '@/components/admin/ConfigFormControls'
 
 function TipoConsultaSync({ setValue }: { setValue: UseFormSetValue<ContactFormData> }) {
   const searchParams = useSearchParams()
@@ -27,6 +31,9 @@ function TipoConsultaSync({ setValue }: { setValue: UseFormSetValue<ContactFormD
 
 export default function ContactoPage() {
   const supabase = createSupabaseBrowserClient()
+  const { contacto_page } = useSiteConfig()
+  const updateConfig = useUpdateConfig()
+  const [headerModalOpen, setHeaderModalOpen] = useState(false)
 
   const [sent, setSent]                   = useState(false)
   const [serverError, setServerError]     = useState<string | null>(null)
@@ -103,12 +110,14 @@ export default function ContactoPage() {
     <main className="relative bg-[#F5F3EE] px-4 pb-24 pt-60 sm:px-6 lg:px-8">
       <div className="absolute inset-x-0 top-0 h-32 bg-primary -z-10" />
       <div className="mx-auto max-w-7xl">
-        <SectionHeader
-          eyebrow="Contacto"
-          title="Consulta confidencial"
-          subtitle="Comparta la información esencial de su caso para activar una evaluación jurídica inicial."
-          invert
-        />
+        <EditableSection onEdit={() => setHeaderModalOpen(true)} topSafe>
+          <SectionHeader
+            eyebrow={contacto_page.eyebrow}
+            title={contacto_page.titulo}
+            subtitle={contacto_page.subtitulo}
+            invert
+          />
+        </EditableSection>
 
         <Suspense fallback={null}>
           <TipoConsultaSync setValue={setValue} />
@@ -221,6 +230,29 @@ export default function ContactoPage() {
           if (pendingData) submitFormData(pendingData)
         }}
       />
+
+      <SectionEditModal
+        clave="contacto_page"
+        title="Editar título y subtítulo — Contacto"
+        value={contacto_page}
+        open={headerModalOpen}
+        onClose={() => setHeaderModalOpen(false)}
+        onSaved={(v) => updateConfig('contacto_page', v)}
+      >
+        {(draft, setDraft) => (
+          <>
+            <ConfigField label="Eyebrow (texto pequeño superior)">
+              <ConfigInput value={draft.eyebrow} onChange={(e) => setDraft((p) => ({ ...p, eyebrow: e.target.value }))} />
+            </ConfigField>
+            <ConfigField label="Título">
+              <ConfigInput value={draft.titulo} onChange={(e) => setDraft((p) => ({ ...p, titulo: e.target.value }))} />
+            </ConfigField>
+            <ConfigField label="Subtítulo">
+              <ConfigTextarea rows={2} value={draft.subtitulo} onChange={(e) => setDraft((p) => ({ ...p, subtitulo: e.target.value }))} />
+            </ConfigField>
+          </>
+        )}
+      </SectionEditModal>
     </main>
   )
 }

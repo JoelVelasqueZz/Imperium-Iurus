@@ -1,13 +1,19 @@
 'use client'
 
+import { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { Facebook, Instagram, Linkedin } from 'lucide-react'
 import { BRAND, NAV_LINKS } from '@/lib/constants'
-import { useSiteConfig } from '@/components/providers/ConfigProvider'
+import { useSiteConfig, useUpdateConfig } from '@/components/providers/ConfigProvider'
+import EditableSection from '@/components/admin/EditableSection'
+import SectionEditModal from '@/components/admin/SectionEditModal'
+import { Field, Textarea } from '@/components/admin/ConfigFormControls'
 
 export default function Footer() {
-  const { contacto, redes_sociales } = useSiteConfig()
+  const [modalOpen, setModalOpen] = useState(false)
+  const { contacto, redes_sociales, footer } = useSiteConfig()
+  const updateConfig = useUpdateConfig()
 
   const socialLinks = [
     { href: redes_sociales.linkedin,  Icon: Linkedin,  label: 'LinkedIn'  },
@@ -16,6 +22,8 @@ export default function Footer() {
   ].filter((s) => s.href)
 
   return (
+    <>
+    <EditableSection onEdit={() => setModalOpen(true)}>
     <footer className="border-t border-gold/10 bg-[#0D1624]/20 backdrop-blur-2xl">
       <div className="mx-auto grid max-w-7xl gap-10 px-4 py-14 sm:px-6 md:grid-cols-[1.2fr_0.8fr_1fr] lg:px-8">
         <div>
@@ -32,7 +40,7 @@ export default function Footer() {
             </span>
           </div>
           <p className="max-w-md font-montserrat text-sm font-light leading-7 text-text-muted">
-            Defensa penal estrategica para personas, empresas y funcionarios frente a escenarios juridicos complejos.
+            {footer.descripcion}
           </p>
           <p className="mt-5 font-cinzel text-xs uppercase tracking-[0.28em] text-gold-light">
             {BRAND.location}
@@ -113,5 +121,22 @@ export default function Footer() {
         </div>
       </div>
     </footer>
+    </EditableSection>
+
+    <SectionEditModal
+      clave="footer"
+      title="Editar footer"
+      value={footer}
+      open={modalOpen}
+      onClose={() => setModalOpen(false)}
+      onSaved={(v) => updateConfig('footer', v)}
+    >
+      {(draft, setDraft) => (
+        <Field label="Descripción de la firma">
+          <Textarea rows={3} value={draft.descripcion} onChange={(e) => setDraft((p) => ({ ...p, descripcion: e.target.value }))} />
+        </Field>
+      )}
+    </SectionEditModal>
+    </>
   )
 }

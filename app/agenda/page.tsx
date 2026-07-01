@@ -10,7 +10,10 @@ import ChatInviteBanner from '@/components/shared/ChatInviteBanner'
 import LoginModal from '@/components/shared/LoginModal'
 import { createSupabaseBrowserClient } from '@/lib/supabase-browser'
 import { appointmentSchema, type AppointmentFormData } from '@/lib/schemas'
-import { useSiteConfig } from '@/components/providers/ConfigProvider'
+import { useSiteConfig, useUpdateConfig } from '@/components/providers/ConfigProvider'
+import EditableSection from '@/components/admin/EditableSection'
+import SectionEditModal from '@/components/admin/SectionEditModal'
+import { Field as ConfigField, Input as ConfigInput, Textarea as ConfigTextarea, ListEditor } from '@/components/admin/ConfigFormControls'
 
 const TIPOS = [
   { value: 'personal',    label: 'Consulta personal' },
@@ -35,7 +38,10 @@ function Field({
 export default function AgendaPage() {
   const supabase = createSupabaseBrowserClient()
   const { horario_citas, festivos, agenda_page } = useSiteConfig()
+  const updateConfig = useUpdateConfig()
 
+  const [headerModalOpen, setHeaderModalOpen]   = useState(false)
+  const [sidebarModalOpen, setSidebarModalOpen] = useState(false)
   const [todayStr, setTodayStr]         = useState('')
   const [slots, setSlots]               = useState<string[]>([])
   const [loadingSlots, setLoading]      = useState(false)
@@ -143,12 +149,14 @@ export default function AgendaPage() {
     <main className="relative bg-[#F5F3EE] px-4 pb-24 pt-60 sm:px-6 lg:px-8">
       <div className="absolute inset-x-0 top-0 h-32 bg-primary -z-10" />
       <div className="mx-auto max-w-4xl">
-        <SectionHeader
-          eyebrow={agenda_page.eyebrow}
-          title={agenda_page.titulo}
-          subtitle={agenda_page.subtitulo}
-          invert
-        />
+        <EditableSection onEdit={() => setHeaderModalOpen(true)} topSafe>
+          <SectionHeader
+            eyebrow={agenda_page.eyebrow}
+            title={agenda_page.titulo}
+            subtitle={agenda_page.subtitulo}
+            invert
+          />
+        </EditableSection>
 
         <div className="grid gap-8 lg:grid-cols-[1fr_320px]">
           {/* ─── Formulario ─── */}
@@ -247,22 +255,23 @@ export default function AgendaPage() {
           </form>
 
           {/* ─── Sidebar informativo ─── */}
+          <EditableSection onEdit={() => setSidebarModalOpen(true)}>
           <aside className="space-y-5">
             <div className="border border-gold/20 bg-[#F5F3EE] p-6">
-              <h2 className="font-cinzel text-lg font-semibold text-gold">Horario de atención</h2>
+              <h2 className="font-cinzel text-lg font-semibold text-gold">{agenda_page.horario_titulo}</h2>
               <div className="mt-4 space-y-2 text-sm font-light text-primary/70">
                 <p className="flex items-center gap-2">
                   <Clock size={14} className="shrink-0 text-gold" />
-                  Lunes a viernes, 08:00 – 18:00
+                  {agenda_page.horario_texto1}
                 </p>
                 <p className="flex items-center gap-2">
                   <Clock size={14} className="shrink-0 text-gold" />
-                  Citas de 30 minutos
+                  {agenda_page.horario_texto2}
                 </p>
               </div>
               <div className="mt-5 border-t border-gold/20 pt-5">
                 <p className="text-xs font-light leading-relaxed text-primary/60">
-                  Para urgencias penales fuera de horario, contáctenos directamente por WhatsApp. Respondemos las 24 horas.
+                  {agenda_page.urgencia_texto}
                 </p>
                 <a
                   href="https://wa.me/593985222635"
@@ -276,14 +285,9 @@ export default function AgendaPage() {
             </div>
 
             <div className="border border-gold/20 bg-[#F5F3EE] p-6">
-              <h2 className="font-cinzel text-lg font-semibold text-gold">¿Qué esperar?</h2>
+              <h2 className="font-cinzel text-lg font-semibold text-gold">{agenda_page.pasos_titulo}</h2>
               <ol className="mt-4 space-y-3 text-sm font-light text-primary/70">
-                {[
-                  'Confirme su cita con este formulario.',
-                  'Recibirá un correo de confirmación.',
-                  'Nuestro equipo lo contactará para preparar la sesión.',
-                  'Consulta inicial confidencial y estratégica.',
-                ].map((step, i) => (
+                {agenda_page.pasos.map((step, i) => (
                   <li key={i} className="flex gap-3">
                     <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center border border-gold/40 font-cinzel text-[10px] text-gold">
                       {i + 1}
@@ -294,8 +298,68 @@ export default function AgendaPage() {
               </ol>
             </div>
           </aside>
+          </EditableSection>
         </div>
       </div>
+
+      <SectionEditModal
+        clave="agenda_page"
+        title="Editar título y subtítulo — Agenda"
+        value={agenda_page}
+        open={headerModalOpen}
+        onClose={() => setHeaderModalOpen(false)}
+        onSaved={(v) => updateConfig('agenda_page', v)}
+      >
+        {(draft, setDraft) => (
+          <>
+            <ConfigField label="Eyebrow (texto pequeño superior)">
+              <ConfigInput value={draft.eyebrow} onChange={(e) => setDraft((p) => ({ ...p, eyebrow: e.target.value }))} />
+            </ConfigField>
+            <ConfigField label="Título">
+              <ConfigInput value={draft.titulo} onChange={(e) => setDraft((p) => ({ ...p, titulo: e.target.value }))} />
+            </ConfigField>
+            <ConfigField label="Subtítulo">
+              <ConfigTextarea rows={2} value={draft.subtitulo} onChange={(e) => setDraft((p) => ({ ...p, subtitulo: e.target.value }))} />
+            </ConfigField>
+          </>
+        )}
+      </SectionEditModal>
+
+      <SectionEditModal
+        clave="agenda_page"
+        title="Editar textos de ayuda lateral — Agenda"
+        value={agenda_page}
+        open={sidebarModalOpen}
+        onClose={() => setSidebarModalOpen(false)}
+        onSaved={(v) => updateConfig('agenda_page', v)}
+      >
+        {(draft, setDraft) => (
+          <>
+            <ConfigField label="Título — Horario de atención">
+              <ConfigInput value={draft.horario_titulo} onChange={(e) => setDraft((p) => ({ ...p, horario_titulo: e.target.value }))} />
+            </ConfigField>
+            <ConfigField label="Horario — línea 1">
+              <ConfigInput value={draft.horario_texto1} onChange={(e) => setDraft((p) => ({ ...p, horario_texto1: e.target.value }))} />
+            </ConfigField>
+            <ConfigField label="Horario — línea 2">
+              <ConfigInput value={draft.horario_texto2} onChange={(e) => setDraft((p) => ({ ...p, horario_texto2: e.target.value }))} />
+            </ConfigField>
+            <ConfigField label="Texto de urgencias">
+              <ConfigTextarea rows={2} value={draft.urgencia_texto} onChange={(e) => setDraft((p) => ({ ...p, urgencia_texto: e.target.value }))} />
+            </ConfigField>
+            <ConfigField label="Título — ¿Qué esperar?">
+              <ConfigInput value={draft.pasos_titulo} onChange={(e) => setDraft((p) => ({ ...p, pasos_titulo: e.target.value }))} />
+            </ConfigField>
+            <ConfigField label="Pasos">
+              <ListEditor
+                items={draft.pasos}
+                onChange={(pasos) => setDraft((p) => ({ ...p, pasos }))}
+                placeholder="Agregar paso..."
+              />
+            </ConfigField>
+          </>
+        )}
+      </SectionEditModal>
 
       <LoginModal
         open={showLoginModal}

@@ -3,7 +3,11 @@
 import { useState, useEffect, useCallback } from 'react'
 import Image from 'next/image'
 import { X, ChevronLeft, ChevronRight } from 'lucide-react'
-import { useSiteConfig } from '@/components/providers/ConfigProvider'
+import { useSiteConfig, useUpdateConfig } from '@/components/providers/ConfigProvider'
+import EditableSection from '@/components/admin/EditableSection'
+import SectionEditModal from '@/components/admin/SectionEditModal'
+import { Field, Input } from '@/components/admin/ConfigFormControls'
+import ImageUploadField from '@/components/admin/ImageUploadField'
 
 const GALLERY_ALTS = [
   'Área de recepción — IMPERIUM IURIS',
@@ -13,7 +17,9 @@ const GALLERY_ALTS = [
 ]
 
 export default function FirmaGallery() {
+  const [modalOpen, setModalOpen] = useState(false)
   const { imagenes } = useSiteConfig()
+  const updateConfig = useUpdateConfig()
   const galleryImages = imagenes.galeria_nosotros.map((src, i) => ({
     src,
     alt: GALLERY_ALTS[i] ?? 'IMPERIUM IURIS',
@@ -42,13 +48,15 @@ export default function FirmaGallery() {
   }, [lightbox, close, prev, next])
 
   return (
+    <>
+    <EditableSection onEdit={() => setModalOpen(true)}>
     <section className="bg-primary px-4 py-16 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
         <p className="mb-3 text-center font-cinzel text-xs font-semibold uppercase tracking-[0.35em] text-gold-light">
           Nuestra Firma
         </p>
         <h2 className="mb-10 text-center font-cinzel text-2xl font-semibold uppercase tracking-wide text-text-light md:text-3xl">
-          Espacios diseñados para la excelencia
+          {imagenes.galeria_nosotros_titulo}
         </h2>
 
         <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
@@ -127,5 +135,41 @@ export default function FirmaGallery() {
         </div>
       )}
     </section>
+    </EditableSection>
+
+    <SectionEditModal
+      clave="imagenes"
+      title="Editar galería de la firma — Nosotros"
+      value={imagenes}
+      open={modalOpen}
+      onClose={() => setModalOpen(false)}
+      onSaved={(v) => updateConfig('imagenes', v)}
+    >
+      {(draft, setDraft) => (
+        <>
+          <Field label="Título de la sección">
+            <Input
+              value={draft.galeria_nosotros_titulo}
+              onChange={(e) => setDraft((p) => ({ ...p, galeria_nosotros_titulo: e.target.value }))}
+            />
+          </Field>
+          <div className="space-y-4">
+            {draft.galeria_nosotros.map((url, i) => (
+              <ImageUploadField
+                key={i}
+                label={`Imagen ${i + 1}`}
+                value={url}
+                carpeta="galeria"
+                onChange={(newUrl) => setDraft((p) => ({
+                  ...p,
+                  galeria_nosotros: p.galeria_nosotros.map((u, idx) => (idx === i ? newUrl : u)),
+                }))}
+              />
+            ))}
+          </div>
+        </>
+      )}
+    </SectionEditModal>
+    </>
   )
 }
