@@ -5,7 +5,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { createSupabaseBrowserClient } from '@/lib/supabase-browser'
-import { CalendarDays, LayoutDashboard, LogOut, MessageCircle, PencilLine, User } from 'lucide-react'
+import { CalendarDays, LayoutDashboard, LogOut, MessageCircle, PencilLine, Shield, User } from 'lucide-react'
 import type { User as SupabaseUser } from '@supabase/supabase-js'
 import { useEditMode } from '@/components/providers/EditModeProvider'
 
@@ -81,6 +81,7 @@ export default function NavAuthButton({ mobile = false }: { mobile?: boolean }) 
                  || user.email?.split('@')[0]
                  || 'Mi cuenta'
   const avatar = user.user_metadata?.avatar_url as string | undefined
+  const isGoogleUser = user.app_metadata?.provider === 'google' || user.app_metadata?.providers?.includes('google')
 
   if (mobile) {
     return (
@@ -112,6 +113,15 @@ export default function NavAuthButton({ mobile = false }: { mobile?: boolean }) 
             <CalendarDays size={14} />
             Mis citas
           </Link>
+          {!isAdmin && !isGoogleUser && (
+            <Link
+              href="/cuenta/seguridad"
+              className="flex items-center gap-2 font-montserrat text-xs font-medium uppercase tracking-widest text-gold/80 transition-colors hover:text-gold"
+            >
+              <Shield size={14} />
+              Seguridad (2FA)
+            </Link>
+          )}
           {isAdmin && (
             <>
               <Link
@@ -187,6 +197,17 @@ export default function NavAuthButton({ mobile = false }: { mobile?: boolean }) 
             <CalendarDays size={14} />
             Mis citas
           </Link>
+          {!isAdmin && !isGoogleUser && (
+            <Link
+              href="/cuenta/seguridad"
+              role="menuitem"
+              onClick={() => setOpen(false)}
+              className="flex items-center gap-3 px-4 py-3 font-montserrat text-xs uppercase tracking-widest text-gold/70 transition-colors hover:bg-gold/10 hover:text-gold"
+            >
+              <Shield size={14} />
+              Seguridad (2FA)
+            </Link>
+          )}
           {isAdmin && (
             <>
               <div className="mx-3 border-t border-border/60" />

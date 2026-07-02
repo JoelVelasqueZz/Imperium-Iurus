@@ -45,12 +45,12 @@ export async function middleware(request: NextRequest) {
   }
 
   // ── Portal de clientes ─────────────────────────────────────────────────
-  if (pathname.startsWith('/chat') || pathname.startsWith('/mis-citas')) {
+  if (pathname.startsWith('/chat') || pathname.startsWith('/mis-citas') || pathname.startsWith('/cuenta')) {
     if (!user) return NextResponse.redirect(new URL('/login', request.url))
     return supabaseResponse
   }
 
-  if (pathname === '/login') {
+  if (pathname === '/login' || pathname === '/registro') {
     if (user) return NextResponse.redirect(new URL('/', request.url))
     return supabaseResponse
   }
@@ -59,5 +59,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/admin/:path*', '/chat', '/mis-citas', '/login'],
+  matcher: ['/admin/:path*', '/chat', '/mis-citas', '/cuenta/:path*', '/login', '/registro'],
 }

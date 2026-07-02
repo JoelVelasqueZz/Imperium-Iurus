@@ -2,8 +2,10 @@
 
 import { useEffect, useState } from 'react'
 import Image from 'next/image'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { createSupabaseBrowserClient } from '@/lib/supabase-browser'
+import { isTrustedDevice } from '@/lib/trusted-device'
 
 function GoogleIcon() {
   return (
@@ -24,6 +26,9 @@ export default function LoginClientePage() {
   const [error,    setError]    = useState<string | null>(null)
   const [email,    setEmail]    = useState('')
   const [password, setPassword] = useState('')
+  const [needs2FA, setNeeds2FA] = useState(false)
+  const [totpCode, setTotpCode] = useState('')
+  const [rememberDevice, setRememberDevice] = useState(false)
 
   useEffect(() => {
     if (new URLSearchParams(window.location.search).get('error')) {
@@ -51,10 +56,19 @@ export default function LoginClientePage() {
     setLoadingPassword(true)
 
     const supabase = createSupabaseBrowserClient()
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password })
 
     if (error) {
       setError('Correo o contraseña incorrectos.')
+      setLoadingPassword(false)
+      return
+    }
+
+    const { data: factors } = await supabase.auth.mfa.listFactors()
+    const totpFactor = factors?.totp?.[0]
+
+    if (totpFactor && !isTrustedDevice(data.user?.id)) {
+      setNeeds2FA(true)
       setLoadingPassword(false)
       return
     }
@@ -63,12 +77,142 @@ export default function LoginClientePage() {
     router.refresh()
   }
 
+  async function verify2FA(e: React.FormEvent) {
+    e.preventDefault()
+    setError(null)
+    setLoadingPassword(true)
+
+    const supabase = createSupabaseBrowserClient()
+    const { data: factors } = await supabase.auth.mfa.listFactors()
+    const totpFactor = factors?.totp?.[0]
+
+    if (!totpFactor) {
+      setError('Error de configuración 2FA.')
+      setLoadingPassword(false)
+      return
+    }
+
+    const { data: challenge, error: challengeError } = await supabase.auth.mfa.challenge({
+      factorId: totpFactor.id,
+    })
+
+    if (challengeError) {
+      setError('Error al verificar. Intente de nuevo.')
+      setLoadingPassword(false)
+      return
+    }
+
+    const { data: verifyData, error: verifyError } = await supabase.auth.mfa.verify({
+      factorId: totpFactor.id,
+      challengeId: challenge.id,
+      code: totpCode,
+    })
+
+    if (verifyError) {
+      setError('Código incorrecto. Intente de nuevo.')
+      setLoadingPassword(false)
+      return
+    }
+
+    if (rememberDevice) {
+      const { saveTrustedDevice } = await import('@/lib/trusted-device')
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) saveTrustedDevice(user.id)
+    }
+
+    router.push('/')
+    router.refresh()
+  }
+
   const loading = loadingGoogle || loadingPassword
+
+  if (needs2FA) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-primary px-4 py-16">
+        <div className="w-full max-w-sm">
+          <div className="mb-8 text-center">
+            <Image
+              src="/logo-imperium.png"
+              alt="Logo de Imperium Iuris"
+              width={80}
+              height={72}
+              className="mx-auto h-16 w-auto object-contain mix-blend-screen brightness-110"
+              priority
+            />
+            <p className="mt-4 font-cinzel text-[10px] uppercase tracking-[0.4em] text-gold/50">
+              Verificación
+            </p>
+            <h1 className="mt-1 font-cinzel text-2xl font-bold uppercase tracking-widest text-gold">
+              Autenticación 2FA
+            </h1>
+          </div>
+
+          <div className="border border-border bg-card-bg p-8">
+            <p className="mb-6 text-center font-montserrat text-xs leading-relaxed text-text-muted">
+              Ingrese el código de 6 dígitos de su aplicación autenticadora
+            </p>
+
+            {error && (
+              <p className="mb-4 border border-red-500/30 bg-red-950/30 px-4 py-3 text-sm text-red-400">
+                {error}
+              </p>
+            )}
+
+            <form onSubmit={verify2FA} className="space-y-4">
+              <div>
+                <label className="mb-1.5 block font-montserrat text-xs font-medium uppercase tracking-widest text-text-muted">
+                  Código de verificación
+                </label>
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  maxLength={6}
+                  value={totpCode}
+                  onChange={(e) => setTotpCode(e.target.value.replace(/\D/g, ''))}
+                  required
+                  autoComplete="one-time-code"
+                  className="w-full border border-border bg-card-bg px-4 py-3 text-center font-mono text-2xl tracking-[0.5em] text-text-light placeholder-text-muted/50 outline-none focus:border-gold"
+                  placeholder="000000"
+                />
+              </div>
+
+              <label className="flex cursor-pointer items-center gap-3">
+                <input
+                  type="checkbox"
+                  checked={rememberDevice}
+                  onChange={(e) => setRememberDevice(e.target.checked)}
+                  className="h-4 w-4 rounded border-border bg-card-bg text-gold focus:ring-gold"
+                />
+                <span className="font-montserrat text-xs text-text-muted">
+                  Recordar este dispositivo por 30 días
+                </span>
+              </label>
+
+              <button
+                type="submit"
+                disabled={loading || totpCode.length !== 6}
+                className="w-full border border-gold bg-gold py-3 font-montserrat text-xs font-bold uppercase tracking-widest text-primary transition-colors hover:bg-gold/90 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {loadingPassword ? 'Verificando...' : 'Verificar'}
+              </button>
+            </form>
+
+            <button
+              onClick={() => { setNeeds2FA(false); setTotpCode(''); setError(null) }}
+              className="mt-4 w-full font-montserrat text-xs text-text-muted hover:text-gold"
+            >
+              ← Volver al inicio de sesión
+            </button>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-primary px-4 py-16">
       <div className="w-full max-w-sm">
-        {/* Encabezado */}
         <div className="mb-8 text-center">
           <Image
             src="/logo-imperium.png"
@@ -86,7 +230,6 @@ export default function LoginClientePage() {
           </h1>
         </div>
 
-        {/* Tarjeta */}
         <div className="border border-border bg-card-bg p-8">
           <p className="mb-6 text-center font-montserrat text-xs leading-relaxed text-text-muted">
             Acceda a su conversación privada con el abogado
@@ -107,14 +250,12 @@ export default function LoginClientePage() {
             {loadingGoogle ? 'Redirigiendo…' : 'Iniciar sesión con Google'}
           </button>
 
-          {/* Divisor */}
           <div className="my-6 flex items-center gap-3">
             <div className="h-px flex-1 bg-border" />
             <span className="font-montserrat text-[10px] uppercase tracking-widest text-text-muted/50">o</span>
             <div className="h-px flex-1 bg-border" />
           </div>
 
-          {/* Email + contraseña */}
           <form onSubmit={loginConPassword} className="space-y-4">
             <div>
               <label className="mb-1.5 block font-montserrat text-xs font-medium uppercase tracking-widest text-text-muted">
@@ -152,10 +293,19 @@ export default function LoginClientePage() {
               {loadingPassword ? 'Verificando...' : 'Iniciar sesión'}
             </button>
           </form>
+
+          <div className="mt-6 text-center">
+            <p className="font-montserrat text-xs text-text-muted">
+              ¿No tienes cuenta?{' '}
+              <Link href="/registro" className="text-gold hover:underline">
+                Regístrate
+              </Link>
+            </p>
+          </div>
         </div>
 
         <p className="mt-6 text-center font-montserrat text-[10px] uppercase tracking-widest text-text-muted/40">
-          Acceso exclusivo para clientes y administradores registrados
+          Acceso exclusivo para clientes
         </p>
       </div>
     </div>
