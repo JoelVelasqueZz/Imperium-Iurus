@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
-import SectionHeader from '@/components/ui/SectionHeader'
+import BlogHeader from '@/components/blog/BlogHeader'
 import { supabase } from '@/lib/supabase'
 
 export const metadata: Metadata = {
@@ -52,7 +52,7 @@ export default async function BlogPage({ searchParams }: { searchParams: Promise
   return (
     <main className="bg-primary px-4 pb-24 pt-32 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
-        <SectionHeader eyebrow="Blog" title="Contenido juridico de autoridad" subtitle="Guias practicas para decisiones urgentes, empresariales y reputacionales." />
+        <BlogHeader />
         <div className="mb-10 flex flex-wrap justify-center gap-3">
           {categorias.map((categoria) => (
             <Link key={categoria} href={categoria === 'Todos' ? '/blog' : `/blog?categoria=${encodeURIComponent(categoria)}`}

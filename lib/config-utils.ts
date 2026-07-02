@@ -65,6 +65,12 @@ export type ContactoPageConfig = {
   subtitulo: string
 }
 
+export type BlogPageConfig = {
+  eyebrow: string
+  titulo: string
+  subtitulo: string
+}
+
 export type FilosofiaPilarConfig = {
   title: string
   text: string
@@ -221,6 +227,7 @@ export type SiteConfig = {
   redes_sociales: RedesSocialesConfig
   agenda_page: AgendaPageConfig
   contacto_page: ContactoPageConfig
+  blog_page: BlogPageConfig
   nosotros_page: NosotrosPageConfig
   trust_block: TrustBlockConfig
   services_block: ServicesBlockConfig
@@ -292,6 +299,11 @@ export const CONFIG_DEFAULTS: SiteConfig = {
     eyebrow:   'Contacto',
     titulo:    'Consulta confidencial',
     subtitulo: 'Comparta la información esencial de su caso para activar una evaluación jurídica inicial.',
+  },
+  blog_page: {
+    eyebrow:   'Blog',
+    titulo:    'Contenido jurídico de autoridad',
+    subtitulo: 'Guías prácticas para decisiones urgentes, empresariales y reputacionales.',
   },
   nosotros_page: {
     titulo: 'Defensa penal estratégica para escenarios complejos',
