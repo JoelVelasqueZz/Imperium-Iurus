@@ -32,7 +32,12 @@
       "Bash(xargs grep -ln \"FileBody\")",
       "Bash(netstat -ano)",
       "Bash(wmic process *)",
-      "Bash(powershell -Command \"Get-CimInstance Win32_Process -Filter 'ProcessId=3700' | Select-Object ProcessId,ParentProcessId,CommandLine\")"
+      "Bash(powershell -Command \"Get-CimInstance Win32_Process -Filter 'ProcessId=3700' | Select-Object ProcessId,ParentProcessId,CommandLine\")",
+      "PowerShell(Add-Type -AssemblyName System.Drawing; $img = [System.Drawing.Image]::FromFile\\(\"$PWD\\\\public\\\\isotipo-aguila.png\"\\); Write-Output \"isotipo-aguila.png: $\\($img.Width\\) x $\\($img.Height\\) px\"; $img.Dispose\\(\\))",
+      "PowerShell(Add-Type -AssemblyName System.Drawing; $img = [System.Drawing.Image]::FromFile\\(\"$PWD\\\\public\\\\logo-imperium.png\"\\); Write-Output \"logo-imperium.png: $\\($img.Width\\) x $\\($img.Height\\) px\"; $img.Dispose\\(\\))",
+      "PowerShell(Add-Type -AssemblyName System.Drawing; $img = [System.Drawing.Image]::FromFile\\(\"$PWD\\\\public\\\\icon.png\"\\); Write-Output \"icon.png: $\\($img.Width\\) x $\\($img.Height\\) px\"; $img.Dispose\\(\\))",
+      "PowerShell(Add-Type -AssemblyName System.Drawing; $img = [System.Drawing.Image]::FromFile\\(\"$PWD\\\\public\\\\IMG9-removebg-preview.png\"\\); Write-Output \"IMG9-removebg-preview.png: $\\($img.Width\\) x $\\($img.Height\\) px\"; $img.Dispose\\(\\))",
+      "PowerShell(Remove-Item *)"
     ]
   }
 }
