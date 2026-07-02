@@ -96,13 +96,15 @@ export default function NavAuthButton({ mobile = false }: { mobile?: boolean }) 
           <span className="font-montserrat text-sm text-gold/90">{firstName}</span>
         </div>
         <div className="flex flex-col gap-3">
-          <Link
-            href="/chat"
-            className="flex items-center gap-2 font-montserrat text-xs font-medium uppercase tracking-widest text-gold transition-colors hover:text-gold/80"
-          >
-            <MessageCircle size={14} />
-            Chat con su abogado
-          </Link>
+          {!isAdmin && (
+            <Link
+              href="/chat"
+              className="flex items-center gap-2 font-montserrat text-xs font-medium uppercase tracking-widest text-gold transition-colors hover:text-gold/80"
+            >
+              <MessageCircle size={14} />
+              Chat con su abogado
+            </Link>
+          )}
           <Link
             href="/mis-citas"
             className="flex items-center gap-2 font-montserrat text-xs font-medium uppercase tracking-widest text-gold/80 transition-colors hover:text-gold"
@@ -165,15 +167,17 @@ export default function NavAuthButton({ mobile = false }: { mobile?: boolean }) 
           role="menu"
           className="absolute right-0 top-full mt-2 w-56 border border-border bg-[#0D1624]/98 py-1 shadow-xl shadow-black/40 backdrop-blur-xl"
         >
-          <Link
-            href="/chat"
-            role="menuitem"
-            onClick={() => setOpen(false)}
-            className="flex items-center gap-3 px-4 py-3 font-montserrat text-xs uppercase tracking-widest text-gold/90 transition-colors hover:bg-gold/10 hover:text-gold"
-          >
-            <MessageCircle size={14} />
-            Chat con su abogado
-          </Link>
+          {!isAdmin && (
+            <Link
+              href="/chat"
+              role="menuitem"
+              onClick={() => setOpen(false)}
+              className="flex items-center gap-3 px-4 py-3 font-montserrat text-xs uppercase tracking-widest text-gold/90 transition-colors hover:bg-gold/10 hover:text-gold"
+            >
+              <MessageCircle size={14} />
+              Chat con su abogado
+            </Link>
+          )}
           <Link
             href="/mis-citas"
             role="menuitem"
