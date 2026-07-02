@@ -243,6 +243,7 @@ export default function SeguridadPage() {
               {/* Código QR */}
               <div className="mb-6 flex justify-center">
                 <div className="rounded-lg bg-white p-4 shadow-lg">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={qrCode} alt="Código QR para 2FA" className="h-48 w-48" />
                 </div>
               </div>
@@ -266,7 +267,7 @@ export default function SeguridadPage() {
                   </button>
                 </div>
                 <p className="mt-2 font-montserrat text-[10px] text-text-muted/60">
-                  En la app, selecciona "Agregar cuenta" → "Ingresar clave manualmente" y pega este código.
+                  En la app, selecciona &quot;Agregar cuenta&quot; → &quot;Ingresar clave manualmente&quot; y pega este código.
                 </p>
               </div>
 
