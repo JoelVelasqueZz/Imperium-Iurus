@@ -175,7 +175,7 @@ export default function NavAuthButton({ mobile = false }: { mobile?: boolean }) 
       {open && (
         <div
           role="menu"
-          className="absolute right-0 top-full mt-2 w-56 border border-border bg-[#0D1624]/98 py-1 shadow-xl shadow-black/40 backdrop-blur-xl"
+          className="absolute right-0 top-full mt-2 w-56 border border-border bg-[#0F1115] py-1 shadow-lg shadow-black/50"
         >
           {!isAdmin && (
             <Link
