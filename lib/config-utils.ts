@@ -71,12 +71,19 @@ export type BlogPageConfig = {
   subtitulo: string
 }
 
+export type BlogPreviewConfig = {
+  eyebrow: string
+  titulo: string
+  subtitulo: string
+}
+
 export type FilosofiaPilarConfig = {
   title: string
   text: string
 }
 
 export type NosotrosPageConfig = {
+  eyebrow: string
   titulo: string
   intro: string
   descripcion: string
@@ -98,6 +105,7 @@ export type TrustCardConfig = {
 }
 
 export type TrustBlockConfig = {
+  eyebrow: string
   titulo: string
   subtitulo: string
   tarjetas: TrustCardConfig[]
@@ -112,6 +120,7 @@ export type ServiceItemConfig = {
 }
 
 export type ServicesBlockConfig = {
+  eyebrow: string
   titulo: string
   subtitulo: string
   items: ServiceItemConfig[]
@@ -124,8 +133,11 @@ export type DifferentialItemConfig = {
 }
 
 export type DifferentialBlockConfig = {
+  eyebrow: string
   titulo: string
   subtitulo: string
+  closing: string
+  cta: string
   items: DifferentialItemConfig[]
 }
 
@@ -137,7 +149,12 @@ export type UrgencyEscenarioConfig = {
 }
 
 export type UrgencyBlockConfig = {
+  eyebrow: string
+  titulo: string
   texto_principal: string
+  badge: string
+  cta: string
+  footer: string
   escenarios: UrgencyEscenarioConfig[]
 }
 
@@ -156,6 +173,7 @@ export type TestimonioItemConfig = {
 }
 
 export type TestimonialsBlockConfig = {
+  eyebrow: string
   titulo: string
   subtitulo: string
   testimonios: TestimonioItemConfig[]
@@ -215,6 +233,7 @@ export type ImagenesConfig = {
   }
   diferencial_carousel: string[]
   galeria_nosotros: string[]
+  galeria_nosotros_eyebrow: string
   galeria_nosotros_titulo: string
 }
 
@@ -228,6 +247,7 @@ export type SiteConfig = {
   agenda_page: AgendaPageConfig
   contacto_page: ContactoPageConfig
   blog_page: BlogPageConfig
+  blog_preview: BlogPreviewConfig
   nosotros_page: NosotrosPageConfig
   trust_block: TrustBlockConfig
   services_block: ServicesBlockConfig
@@ -305,7 +325,13 @@ export const CONFIG_DEFAULTS: SiteConfig = {
     titulo:    'Contenido jurídico de autoridad',
     subtitulo: 'Guías prácticas para decisiones urgentes, empresariales y reputacionales.',
   },
+  blog_preview: {
+    eyebrow:   'Contenido de autoridad',
+    titulo:    'Blog jurídico premium',
+    subtitulo: 'Criterios prácticos para actuar a tiempo frente a riesgos penales.',
+  },
   nosotros_page: {
+    eyebrow:   'Nosotros',
     titulo: 'Defensa penal estratégica para escenarios complejos',
     intro:
       'Protegemos la libertad, el patrimonio, la reputación y la continuidad empresarial de nuestros clientes frente a investigaciones penales, riesgos regulatorios y crisis jurídicas de alta complejidad.',
@@ -330,6 +356,7 @@ export const CONFIG_DEFAULTS: SiteConfig = {
     vision_tagline: 'Defensa penal de nivel internacional adaptada a Ecuador.',
   },
   trust_block: {
+    eyebrow: 'Confianza inmediata',
     titulo: 'Solidez, confidencialidad y capacidad real',
     subtitulo: 'Una estructura jurídica diseñada para intervenir en escenarios donde la improvisación no es una opción.',
     tarjetas: [
@@ -342,6 +369,7 @@ export const CONFIG_DEFAULTS: SiteConfig = {
     ],
   },
   services_block: {
+    eyebrow: 'Áreas de práctica',
     titulo: '¿En qué podemos ayudarte?',
     subtitulo: 'Identifique rápidamente el tipo de riesgo y active una respuesta jurídica proporcional a la amenaza.',
     items: [
@@ -376,8 +404,13 @@ export const CONFIG_DEFAULTS: SiteConfig = {
     ],
   },
   urgency_block: {
+    eyebrow: 'Intervención inmediata',
+    titulo: '¿Enfrenta una situación penal urgente?',
     texto_principal:
       'Actuamos de manera inmediata cuando su libertad, patrimonio, empresa o reputación están en riesgo.',
+    badge: 'Atención confidencial. Respuesta estratégica. Intervención inmediata.',
+    cta: 'Hablar con abogado ahora',
+    footer: 'Respuesta confidencial | Atención inmediata | Cobertura nacional',
     escenarios: [
       {
         titulo: '¿Fuiste detenido?',
@@ -400,8 +433,11 @@ export const CONFIG_DEFAULTS: SiteConfig = {
     ],
   },
   differential_block: {
+    eyebrow: 'No somos un despacho penal tradicional',
     titulo: '¿Por qué IMPERIUM IURIS es diferente?',
     subtitulo: 'Combinamos defensa penal estratégica, inteligencia jurídica y protección integral para casos de alta complejidad.',
+    closing: 'Casos complejos requieren estructuras superiores',
+    cta: 'Solicitar evaluación confidencial',
     items: [
       { title: 'Diagnóstico Estratégico Inmediato', text: 'Analizamos riesgo penal, exposición patrimonial, impacto empresarial y consecuencias reputacionales.', impact: 'Cada minuto sin estrategia aumenta el riesgo.' },
       { title: 'Defensa Multidisciplinaria', text: 'Integramos penal, constitucional, compliance, auditoría forense, criminalística y análisis financiero.', impact: 'Casos complejos requieren múltiples especialistas.' },
@@ -420,6 +456,7 @@ export const CONFIG_DEFAULTS: SiteConfig = {
     boton2_url: '/agenda',
   },
   testimonials_block: {
+    eyebrow: 'Prueba social',
     titulo: 'Reserva absoluta en cada caso',
     subtitulo: 'Testimonios anónimos de clientes que confiaron asuntos sensibles a la firma.',
     testimonios: [
@@ -487,6 +524,7 @@ export const CONFIG_DEFAULTS: SiteConfig = {
     },
     diferencial_carousel: ['/IMG1.jpeg', '/IMG5.jpeg', '/IMG2.jpeg', '/IMG6.jpeg', '/IMG7.jpeg', '/IMG8.jpeg'],
     galeria_nosotros: ['/IMG2.jpeg', '/IMG5.jpeg', '/IMG6.jpeg', '/IMG7.jpeg'],
+    galeria_nosotros_eyebrow: 'Nuestra Firma',
     galeria_nosotros_titulo: 'Espacios diseñados para la excelencia',
   },
 }

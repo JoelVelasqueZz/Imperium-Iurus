@@ -6,7 +6,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { AnimatePresence, motion } from 'framer-motion'
 import Button from '@/components/ui/Button'
 import SectionHeader from '@/components/ui/SectionHeader'
-import { differentialItems, HOME } from '@/lib/constants'
+import { differentialItems } from '@/lib/constants'
 import { useSiteConfig, useUpdateConfig } from '@/components/providers/ConfigProvider'
 import EditableSection from '@/components/admin/EditableSection'
 import SectionEditModal from '@/components/admin/SectionEditModal'
@@ -61,7 +61,7 @@ export default function DifferentialBlock() {
 
       <div className="mx-auto max-w-7xl">
         <SectionHeader
-          eyebrow={HOME.differential.eyebrow}
+          eyebrow={differential_block.eyebrow}
           title={differential_block.titulo}
           subtitle={differential_block.subtitulo}
           invert
@@ -146,9 +146,9 @@ export default function DifferentialBlock() {
 
         <div className="mt-14 text-center">
           <p className="mb-5 font-cinzel text-lg font-semibold tracking-wide text-primary">
-            {HOME.differential.closing}
+            {differential_block.closing}
           </p>
-          <Button href="/contacto">{HOME.differential.cta}</Button>
+          <Button href="/contacto">{differential_block.cta}</Button>
         </div>
       </div>
     </section>
@@ -165,12 +165,23 @@ export default function DifferentialBlock() {
     >
       {(draft, setDraft) => (
         <>
+          <Field label="Eyebrow (texto pequeño superior)">
+            <Input value={draft.eyebrow} onChange={(e) => setDraft((p) => ({ ...p, eyebrow: e.target.value }))} />
+          </Field>
           <div className="grid gap-5 md:grid-cols-2">
             <Field label="Título de la sección">
               <Input value={draft.titulo} onChange={(e) => setDraft((p) => ({ ...p, titulo: e.target.value }))} />
             </Field>
             <Field label="Subtítulo de la sección">
               <Input value={draft.subtitulo} onChange={(e) => setDraft((p) => ({ ...p, subtitulo: e.target.value }))} />
+            </Field>
+          </div>
+          <div className="grid gap-5 md:grid-cols-2">
+            <Field label="Frase de cierre">
+              <Input value={draft.closing} onChange={(e) => setDraft((p) => ({ ...p, closing: e.target.value }))} />
+            </Field>
+            <Field label="Texto del botón CTA">
+              <Input value={draft.cta} onChange={(e) => setDraft((p) => ({ ...p, cta: e.target.value }))} />
             </Field>
           </div>
           <button

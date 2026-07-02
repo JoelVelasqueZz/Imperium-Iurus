@@ -5,7 +5,6 @@ import { ArrowRight } from 'lucide-react'
 import Button from '@/components/ui/Button'
 import SectionHeader from '@/components/ui/SectionHeader'
 import Reveal from '@/components/ui/Reveal'
-import { HOME } from '@/lib/constants'
 import { useSiteConfig, useUpdateConfig } from '@/components/providers/ConfigProvider'
 import { buildWhatsAppUrl } from '@/lib/config-utils'
 import EditableSection from '@/components/admin/EditableSection'
@@ -23,12 +22,12 @@ export default function UrgencyBlock() {
     <section className="border-y border-gold/50 bg-primary px-4 py-24 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
         <SectionHeader
-          eyebrow={HOME.urgency.eyebrow}
-          title={HOME.urgency.title}
+          eyebrow={urgency_block.eyebrow}
+          title={urgency_block.titulo}
           subtitle={urgency_block.texto_principal}
         />
         <p className="mb-12 text-center font-cinzel text-xs font-semibold uppercase tracking-[0.3em] text-gold">
-          {HOME.urgency.badge}
+          {urgency_block.badge}
         </p>
         <div className="grid gap-6 lg:grid-cols-3">
           {urgency_block.escenarios.map((item, index) => (
@@ -56,10 +55,10 @@ export default function UrgencyBlock() {
         </div>
         <div className="mt-12 text-center">
           <Button href="/contacto?tipo=urgencia" className="animate-pulse-gold bg-gold-bright px-10 py-5 text-base">
-            {HOME.urgency.cta} <ArrowRight size={18} />
+            {urgency_block.cta} <ArrowRight size={18} />
           </Button>
           <p className="mt-4 font-inter text-xs font-medium uppercase tracking-[0.24em] text-text-muted">
-            {HOME.urgency.footer}
+            {urgency_block.footer}
           </p>
         </div>
       </div>
@@ -76,6 +75,12 @@ export default function UrgencyBlock() {
     >
       {(draft, setDraft) => (
         <>
+          <Field label="Eyebrow (texto pequeño superior)">
+            <Input value={draft.eyebrow} onChange={(e) => setDraft((p) => ({ ...p, eyebrow: e.target.value }))} />
+          </Field>
+          <Field label="Título">
+            <Input value={draft.titulo} onChange={(e) => setDraft((p) => ({ ...p, titulo: e.target.value }))} />
+          </Field>
           <Field label="Texto principal de la sección">
             <Textarea
               rows={2}
@@ -83,6 +88,17 @@ export default function UrgencyBlock() {
               onChange={(e) => setDraft((p) => ({ ...p, texto_principal: e.target.value }))}
             />
           </Field>
+          <Field label="Badge (línea dorada)">
+            <Input value={draft.badge} onChange={(e) => setDraft((p) => ({ ...p, badge: e.target.value }))} />
+          </Field>
+          <div className="grid gap-5 md:grid-cols-2">
+            <Field label="Texto del botón CTA">
+              <Input value={draft.cta} onChange={(e) => setDraft((p) => ({ ...p, cta: e.target.value }))} />
+            </Field>
+            <Field label="Texto footer">
+              <Input value={draft.footer} onChange={(e) => setDraft((p) => ({ ...p, footer: e.target.value }))} />
+            </Field>
+          </div>
           <div className="space-y-4">
             {draft.escenarios.map((esc, i) => (
               <div key={i} className="space-y-3 border border-border bg-card-bg p-4">

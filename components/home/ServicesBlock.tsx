@@ -5,7 +5,7 @@ import Image from 'next/image'
 import { Check, ChevronDown } from 'lucide-react'
 import { AnimatePresence, motion } from 'framer-motion'
 import SectionHeader from '@/components/ui/SectionHeader'
-import { HOME, serviceBlocks } from '@/lib/constants'
+import { serviceBlocks } from '@/lib/constants'
 import { useSiteConfig, useUpdateConfig } from '@/components/providers/ConfigProvider'
 import EditableSection from '@/components/admin/EditableSection'
 import SectionEditModal from '@/components/admin/SectionEditModal'
@@ -27,7 +27,7 @@ export default function ServicesBlock() {
     <section className="bg-text-light px-4 py-24 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
         <SectionHeader
-          eyebrow={HOME.services.eyebrow}
+          eyebrow={services_block.eyebrow}
           title={services_block.titulo}
           subtitle={services_block.subtitulo}
           invert
@@ -113,6 +113,9 @@ export default function ServicesBlock() {
     >
       {(draft, setDraft) => (
         <>
+          <Field label="Eyebrow (texto pequeño superior)">
+            <Input value={draft.eyebrow} onChange={(e) => setDraft((p) => ({ ...p, eyebrow: e.target.value }))} />
+          </Field>
           <div className="grid gap-5 md:grid-cols-2">
             <Field label="Título de la sección">
               <Input value={draft.titulo} onChange={(e) => setDraft((p) => ({ ...p, titulo: e.target.value }))} />

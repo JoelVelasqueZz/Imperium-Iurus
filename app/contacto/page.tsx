@@ -5,13 +5,13 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useSearchParams } from 'next/navigation'
 import type { UseFormSetValue } from 'react-hook-form'
-import { Clock, Mail, MapPin, Phone } from 'lucide-react'
 import Button from '@/components/ui/Button'
 import SectionHeader from '@/components/ui/SectionHeader'
 import ChatInviteBanner from '@/components/shared/ChatInviteBanner'
 import LoginModal from '@/components/shared/LoginModal'
+import ContactInfoBlock from '@/components/contacto/ContactInfoBlock'
 import { createSupabaseBrowserClient } from '@/lib/supabase-browser'
-import { CONTACT, contactTypes } from '@/lib/constants'
+import { contactTypes } from '@/lib/constants'
 import { contactSchema, type ContactFormData } from '@/lib/schemas'
 import { useSiteConfig, useUpdateConfig } from '@/components/providers/ConfigProvider'
 import EditableSection from '@/components/admin/EditableSection'
@@ -31,7 +31,7 @@ function TipoConsultaSync({ setValue }: { setValue: UseFormSetValue<ContactFormD
 
 export default function ContactoPage() {
   const supabase = createSupabaseBrowserClient()
-  const { contacto_page } = useSiteConfig()
+  const { contacto_page, contacto } = useSiteConfig()
   const updateConfig = useUpdateConfig()
   const [headerModalOpen, setHeaderModalOpen] = useState(false)
 
@@ -102,8 +102,8 @@ export default function ContactoPage() {
   })
 
   const mapUrl = useMemo(
-    () => `https://www.google.com/maps?q=${encodeURIComponent(CONTACT.address)}&output=embed`,
-    [],
+    () => `https://www.google.com/maps?q=${encodeURIComponent(contacto.direccion)}&output=embed`,
+    [contacto.direccion],
   )
 
   return (
@@ -187,25 +187,7 @@ export default function ContactoPage() {
 
           {/* ─── Aside — fondo marfil ─── */}
           <aside className="space-y-6">
-            <div className="border border-gold/20 bg-[#F5F3EE] p-7">
-              <h2 className="font-cinzel text-2xl font-semibold text-gold">Información de contacto</h2>
-              <div className="mt-6 space-y-4 text-sm font-light text-primary/70">
-                <Info icon={MapPin} text={CONTACT.address} />
-                <Info icon={Phone} text={CONTACT.phone} />
-                <Info icon={Mail} text={CONTACT.email} />
-                <Info icon={Clock} text={`${CONTACT.hours} | Emergencias: ${CONTACT.emergency}`} />
-              </div>
-              <div className="mt-7 flex flex-wrap gap-3">
-                {CONTACT.social.map((item) => (
-                  <span
-                    key={item}
-                    className="border border-gold/40 px-4 py-2 text-xs uppercase tracking-widest text-gold"
-                  >
-                    {item}
-                  </span>
-                ))}
-              </div>
-            </div>
+            <ContactInfoBlock />
             <div className="overflow-hidden border border-gold/20 bg-[#F5F3EE]">
               <iframe
                 title="Mapa Guayaquil Imperium Iuris"
@@ -274,14 +256,5 @@ function Field({
       {children}
       {error ? <span className="mt-2 block text-sm text-red-600">{error}</span> : null}
     </label>
-  )
-}
-
-function Info({ icon: Icon, text }: { icon: typeof MapPin; text: string }) {
-  return (
-    <p className="flex gap-3">
-      <Icon size={18} className="mt-0.5 shrink-0 text-gold" aria-hidden="true" />
-      <span className="text-primary/80">{text}</span>
-    </p>
   )
 }

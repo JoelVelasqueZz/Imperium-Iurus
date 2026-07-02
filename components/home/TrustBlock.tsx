@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import SectionHeader from '@/components/ui/SectionHeader'
-import { HOME, trustCards } from '@/lib/constants'
+import { trustCards } from '@/lib/constants'
 import { useSiteConfig, useUpdateConfig } from '@/components/providers/ConfigProvider'
 import EditableSection from '@/components/admin/EditableSection'
 import SectionEditModal from '@/components/admin/SectionEditModal'
@@ -19,7 +19,7 @@ export default function TrustBlock() {
     <section className="bg-primary px-4 py-24 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
         <SectionHeader
-          eyebrow={HOME.trust.eyebrow}
+          eyebrow={trust_block.eyebrow}
           title={trust_block.titulo}
           subtitle={trust_block.subtitulo}
         />
@@ -60,6 +60,9 @@ export default function TrustBlock() {
     >
       {(draft, setDraft) => (
         <>
+          <Field label="Eyebrow (texto pequeño superior)">
+            <Input value={draft.eyebrow} onChange={(e) => setDraft((p) => ({ ...p, eyebrow: e.target.value }))} />
+          </Field>
           <div className="grid gap-5 md:grid-cols-2">
             <Field label="Título de la sección">
               <Input value={draft.titulo} onChange={(e) => setDraft((p) => ({ ...p, titulo: e.target.value }))} />

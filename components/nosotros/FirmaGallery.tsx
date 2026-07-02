@@ -53,7 +53,7 @@ export default function FirmaGallery() {
     <section className="bg-primary px-4 py-16 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
         <p className="mb-3 text-center font-cinzel text-xs font-semibold uppercase tracking-[0.35em] text-gold-light">
-          Nuestra Firma
+          {imagenes.galeria_nosotros_eyebrow}
         </p>
         <h2 className="mb-10 text-center font-cinzel text-2xl font-semibold uppercase tracking-wide text-text-light md:text-3xl">
           {imagenes.galeria_nosotros_titulo}
@@ -147,6 +147,12 @@ export default function FirmaGallery() {
     >
       {(draft, setDraft) => (
         <>
+          <Field label="Eyebrow (texto pequeño superior)">
+            <Input
+              value={draft.galeria_nosotros_eyebrow}
+              onChange={(e) => setDraft((p) => ({ ...p, galeria_nosotros_eyebrow: e.target.value }))}
+            />
+          </Field>
           <Field label="Título de la sección">
             <Input
               value={draft.galeria_nosotros_titulo}

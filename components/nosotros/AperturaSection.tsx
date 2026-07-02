@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { NOSOTROS } from '@/lib/constants'
 import { useSiteConfig, useUpdateConfig } from '@/components/providers/ConfigProvider'
 import EditableSection from '@/components/admin/EditableSection'
 import SectionEditModal from '@/components/admin/SectionEditModal'
@@ -17,7 +16,7 @@ export default function AperturaSection() {
     <section className="premium-surface px-4 pb-20 pt-36 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-5xl text-center">
         <p className="font-cinzel text-xs font-semibold uppercase tracking-[0.35em] text-gold-light">
-          {NOSOTROS.apertura.eyebrow}
+          {nosotros_page.eyebrow}
         </p>
         <h1 className="mt-6 font-trajan text-4xl font-bold uppercase tracking-[0.08em] text-white md:text-6xl">
           {nosotros_page.titulo}
@@ -45,6 +44,9 @@ export default function AperturaSection() {
     >
       {(draft, setDraft) => (
         <>
+          <Field label="Eyebrow (texto pequeño superior)">
+            <Input value={draft.eyebrow} onChange={(e) => setDraft((p) => ({ ...p, eyebrow: e.target.value }))} />
+          </Field>
           <Field label="Título">
             <Input value={draft.titulo} onChange={(e) => setDraft((p) => ({ ...p, titulo: e.target.value }))} />
           </Field>

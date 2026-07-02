@@ -3,7 +3,6 @@
 import { useState } from 'react'
 import Reveal from '@/components/ui/Reveal'
 import SectionHeader from '@/components/ui/SectionHeader'
-import { HOME } from '@/lib/constants'
 import { useSiteConfig, useUpdateConfig } from '@/components/providers/ConfigProvider'
 import EditableSection from '@/components/admin/EditableSection'
 import SectionEditModal from '@/components/admin/SectionEditModal'
@@ -25,7 +24,7 @@ export default function TestimonialsBlockClient({
     <section className="bg-primary px-4 py-24 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-6xl">
         <SectionHeader
-          eyebrow={HOME.testimonials.eyebrow}
+          eyebrow={testimonials_block.eyebrow}
           title={testimonials_block.titulo}
           subtitle={testimonials_block.subtitulo}
         />
@@ -55,6 +54,9 @@ export default function TestimonialsBlockClient({
     >
       {(draft, setDraft) => (
         <>
+          <Field label="Eyebrow (texto pequeño superior)">
+            <Input value={draft.eyebrow} onChange={(e) => setDraft((p) => ({ ...p, eyebrow: e.target.value }))} />
+          </Field>
           <div className="grid gap-5 md:grid-cols-2">
             <Field label="Título de la sección">
               <Input value={draft.titulo} onChange={(e) => setDraft((p) => ({ ...p, titulo: e.target.value }))} />

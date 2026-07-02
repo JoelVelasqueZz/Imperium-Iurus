@@ -15,6 +15,7 @@ const CLAVES_VALIDAS = [
   'agenda_page',
   'contacto_page',
   'blog_page',
+  'blog_preview',
   'nosotros_page',
   'trust_block',
   'services_block',

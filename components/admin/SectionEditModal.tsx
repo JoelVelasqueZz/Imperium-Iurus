@@ -11,6 +11,7 @@ export default function SectionEditModal<T>({
   open,
   onClose,
   onSaved,
+  customSave,
   children,
 }: {
   clave: string
@@ -19,6 +20,7 @@ export default function SectionEditModal<T>({
   open: boolean
   onClose: () => void
   onSaved: (value: T) => void
+  customSave?: (draft: T) => Promise<void>
   children: (draft: T, setDraft: (updater: (prev: T) => T) => void) => React.ReactNode
 }) {
   const [draft, setDraft] = useState(value)
@@ -38,14 +40,18 @@ export default function SectionEditModal<T>({
   async function handleSave() {
     setState('saving')
     try {
-      const res = await fetch('/api/admin/configuracion', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ clave, valor: draft }),
-      })
-      if (!res.ok) {
-        setState('error')
-        return
+      if (customSave) {
+        await customSave(draft)
+      } else {
+        const res = await fetch('/api/admin/configuracion', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ clave, valor: draft }),
+        })
+        if (!res.ok) {
+          setState('error')
+          return
+        }
       }
       onSaved(draft)
       onClose()
