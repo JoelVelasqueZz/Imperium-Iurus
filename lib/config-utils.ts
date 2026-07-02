@@ -137,7 +137,11 @@ export type UrgencyBlockConfig = {
 
 export type FinalCtaConfig = {
   titulo: string
+  subtitulo: string
   boton: string
+  boton_url: string
+  boton2: string
+  boton2_url: string
 }
 
 export type TestimonioItemConfig = {
@@ -397,7 +401,11 @@ export const CONFIG_DEFAULTS: SiteConfig = {
   },
   final_cta: {
     titulo: 'Tu defensa no puede esperar',
-    boton:  'Contactar ahora',
+    subtitulo: 'Agenda una consulta estratégica totalmente confidencial',
+    boton: 'Contactar ahora',
+    boton_url: '/contacto',
+    boton2: 'Agendar cita',
+    boton2_url: '/agenda',
   },
   testimonials_block: {
     titulo: 'Reserva absoluta en cada caso',

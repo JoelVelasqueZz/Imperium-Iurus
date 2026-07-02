@@ -23,7 +23,7 @@ export default function ServicesBlock() {
 
   return (
     <>
-    <EditableSection onEdit={() => setTextModalOpen(true)} label="Editar textos">
+    <EditableSection onEdit={() => setTextModalOpen(true)} label="Editar textos" bottomButton>
     <section className="bg-text-light px-4 py-24 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
         <SectionHeader

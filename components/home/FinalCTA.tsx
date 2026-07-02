@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import Button from '@/components/ui/Button'
-import { HOME } from '@/lib/constants'
 import { useSiteConfig, useUpdateConfig } from '@/components/providers/ConfigProvider'
 import EditableSection from '@/components/admin/EditableSection'
 import SectionEditModal from '@/components/admin/SectionEditModal'
@@ -22,14 +21,14 @@ export default function FinalCTA() {
         </h2>
         <div className="mx-auto mt-6 h-px w-24 origin-center animate-[fadeInUp_1.2s_ease-out_forwards] bg-gold" />
         <p className="mx-auto mt-7 max-w-2xl text-lg font-light leading-8 text-text-muted">
-          {HOME.finalCta.subtitle}
+          {final_cta.subtitulo}
         </p>
         <div className="mt-9 flex flex-col items-center justify-center gap-4 sm:flex-row">
-          <Button href="/contacto" className="px-12 py-5 text-sm">
+          <Button href={final_cta.boton_url} className="px-12 py-5 text-sm">
             {final_cta.boton}
           </Button>
-          <Button href="/agenda" variant="secondary" className="px-12 py-5 text-sm">
-            Agendar cita
+          <Button href={final_cta.boton2_url} variant="secondary" className="px-12 py-5 text-sm">
+            {final_cta.boton2}
           </Button>
         </div>
       </div>
@@ -45,13 +44,21 @@ export default function FinalCTA() {
       onSaved={(v) => updateConfig('final_cta', v)}
     >
       {(draft, setDraft) => (
-        <div className="grid gap-5 md:grid-cols-2">
+        <div className="space-y-5">
           <Field label="Título">
             <Input value={draft.titulo} onChange={(e) => setDraft((p) => ({ ...p, titulo: e.target.value }))} />
           </Field>
-          <Field label="Texto del botón">
-            <Input value={draft.boton} onChange={(e) => setDraft((p) => ({ ...p, boton: e.target.value }))} />
+          <Field label="Subtítulo">
+            <Input value={draft.subtitulo} onChange={(e) => setDraft((p) => ({ ...p, subtitulo: e.target.value }))} />
           </Field>
+          <div className="grid gap-5 md:grid-cols-2">
+            <Field label="Texto del botón principal">
+              <Input value={draft.boton} onChange={(e) => setDraft((p) => ({ ...p, boton: e.target.value }))} />
+            </Field>
+            <Field label="Texto del segundo botón">
+              <Input value={draft.boton2} onChange={(e) => setDraft((p) => ({ ...p, boton2: e.target.value }))} />
+            </Field>
+          </div>
         </div>
       )}
     </SectionEditModal>
