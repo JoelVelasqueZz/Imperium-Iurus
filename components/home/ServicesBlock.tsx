@@ -13,7 +13,7 @@ import { Field, Input, Textarea, ListEditor } from '@/components/admin/ConfigFor
 import ImageUploadField from '@/components/admin/ImageUploadField'
 import type { ImagenesConfig } from '@/lib/config-utils'
 
-export default function ServicesBlock() {
+export default function ServicesBlock({ bottomButton = false }: { bottomButton?: boolean }) {
   const [open, setOpen] = useState(serviceBlocks[0].id)
   const [textModalOpen, setTextModalOpen] = useState(false)
   const [imagesModalOpen, setImagesModalOpen] = useState(false)
@@ -23,7 +23,7 @@ export default function ServicesBlock() {
 
   return (
     <>
-    <EditableSection onEdit={() => setTextModalOpen(true)} label="Editar textos" bottomButton>
+    <EditableSection onEdit={() => setTextModalOpen(true)} label="Editar textos" bottomButton={bottomButton}>
     <section className="bg-text-light px-4 py-24 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
         <SectionHeader

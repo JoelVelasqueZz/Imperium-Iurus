@@ -16,7 +16,7 @@ import FinalCTA from '@/components/home/FinalCTA'
 export default function ServiciosPage() {
   return (
     <main className="pt-20">
-      <ServicesBlock />
+      <ServicesBlock bottomButton />
       <FinalCTA />
     </main>
   )
