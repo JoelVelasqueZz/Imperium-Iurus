@@ -133,8 +133,8 @@ export default function TerminosPage() {
                 {s.title}
               </h2>
               <div className="space-y-4 border-l border-gold/20 pl-6">
-                {s.content.map((p, i) => (
-                  <p key={i} className="text-sm font-light leading-8 text-text-muted">
+                {s.content.map((p) => (
+                  <p key={p} className="text-sm font-light leading-8 text-text-muted">
                     {p}
                   </p>
                 ))}

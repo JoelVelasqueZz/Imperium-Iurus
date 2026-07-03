@@ -19,7 +19,7 @@ import {
 
 // ─── Identidad y contacto ─────────────────────────────────────────────────────
 
-export const CONTACT = {
+const CONTACT = {
   phone: '+593 XX XXX XXXX',
   whatsapp: '+593 985 222 635',
   email: 'contacto@imperiumiuris.ec',
@@ -33,9 +33,9 @@ export const CONTACT = {
 // El número real vive en NEXT_PUBLIC_WHATSAPP_NUMBER (.env.local) para poder
 // cambiarlo sin tocar código.
 
-export const WHATSAPP_EMERGENCY_MESSAGE = 'Hola, necesito asistencia legal urgente de IMPERIUM IURIS'
+const WHATSAPP_EMERGENCY_MESSAGE = 'Hola, necesito asistencia legal urgente de IMPERIUM IURIS'
 
-export function getWhatsAppUrl(message: string = WHATSAPP_EMERGENCY_MESSAGE) {
+function getWhatsAppUrl(message: string = WHATSAPP_EMERGENCY_MESSAGE) {
   const number = (process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || CONTACT.whatsapp).replace(/\D/g, '')
   return `https://wa.me/${number}?text=${encodeURIComponent(message)}`
 }
@@ -60,7 +60,7 @@ export const NAV_LINKS = [
 // Fuente única de verdad para todo el texto del home. Los componentes no
 // deben tener strings literales de contenido: deben referenciar estas claves.
 
-export const HOME = {
+const HOME = {
   hero: {
     titleBefore: 'Defensa Penal',
     titleHighlight: 'Estratégica',
@@ -117,7 +117,7 @@ export const HOME = {
 
 // ─── Texto de secciones — NOSOTROS ───────────────────────────────────────────
 
-export const NOSOTROS = {
+const NOSOTROS = {
   apertura: {
     eyebrow: 'Nosotros',
     title: 'Defensa penal estratégica para escenarios complejos',
@@ -287,7 +287,7 @@ export const serviceBlocks = [
 
 // ─── Urgencia ─────────────────────────────────────────────────────────────────
 
-export const urgencyCases = [
+const urgencyCases = [
   {
     title: '¿Fuiste detenido?',
     headline: 'Defensa inmediata desde el primer minuto',
@@ -370,7 +370,7 @@ export const differentialItems = [
 
 // ─── Testimonios ──────────────────────────────────────────────────────────────
 
-export const testimonials = [
+const testimonials = [
   'Resolvieron un caso extremadamente delicado con absoluta reserva.',
   'Su estrategia evitó consecuencias irreparables para mi familia y mi empresa.',
   'Profesionalismo total. En el momento más crítico, su equipo respondió de inmediato.',
@@ -387,7 +387,7 @@ export const philosophyPillars = [
 
 // ─── ¿Por qué existimos? — Nosotros ──────────────────────────────────────────
 
-export const riskList = [
+const riskList = [
   'Patrimonio',
   'Empresas',
   'Reputación',
@@ -397,7 +397,7 @@ export const riskList = [
 
 // ─── Equipo — Nosotros ────────────────────────────────────────────────────────
 
-export const specialists = [
+const specialists = [
   'Abogados penalistas',
   'Constitucionalistas',
   'Expertos en compliance',
@@ -410,7 +410,7 @@ export const specialists = [
 
 // ─── Metodología — Nosotros ───────────────────────────────────────────────────
 
-export const methodologySteps: [string, string][] = [
+const methodologySteps: [string, string][] = [
   ['Diagnóstico inicial', 'Identificamos riesgos inmediatos y evaluamos el escenario jurídico completo.'],
   ['Investigación estratégica', 'Analizamos información crítica, precedentes y contexto probatorio.'],
   ['Diseño de defensa', 'Construimos la ruta jurídica más efectiva para el caso específico.'],
@@ -421,7 +421,7 @@ export const methodologySteps: [string, string][] = [
 
 // ─── Confidencialidad — Nosotros ──────────────────────────────────────────────
 
-export const confidentialityItems = [
+const confidentialityItems = [
   'Documentación sensible',
   'Información financiera',
   'Datos corporativos',

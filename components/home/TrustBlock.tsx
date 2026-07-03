@@ -73,7 +73,7 @@ export default function TrustBlock() {
           </div>
           <div className="grid gap-4 md:grid-cols-2">
             {draft.tarjetas.map((tarjeta, i) => (
-              <div key={i} className="space-y-2 border border-border bg-card-bg p-4">
+              <div key={trustCards[i]?.title ?? `tarjeta-${i}`} className="space-y-2 border border-border bg-card-bg p-4">
                 <Input
                   value={tarjeta.title}
                   placeholder="Título de la tarjeta"

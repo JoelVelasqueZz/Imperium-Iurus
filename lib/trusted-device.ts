@@ -1,57 +1,39 @@
 const STORAGE_KEY = 'ii_trusted_device'
-const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000
 
-interface TrustedDeviceData {
-  userId: string
-  expiresAt: number
-  signature: string
-}
+// La firma del token vive en el servidor (lib/trusted-device-server.ts) —
+// el cliente solo guarda el token opaco y pide al servidor que lo emita/valide.
 
-function generateSignature(userId: string, expiresAt: number): string {
-  const data = `${userId}:${expiresAt}:imperium-iuris-2fa`
-  let hash = 0
-  for (let i = 0; i < data.length; i++) {
-    const char = data.charCodeAt(i)
-    hash = ((hash << 5) - hash) + char
-    hash = hash & hash
-  }
-  return Math.abs(hash).toString(36)
-}
-
-export function saveTrustedDevice(userId: string): void {
+export async function saveTrustedDevice(): Promise<void> {
   if (typeof window === 'undefined') return
 
-  const expiresAt = Date.now() + THIRTY_DAYS_MS
-  const signature = generateSignature(userId, expiresAt)
-
-  const data: TrustedDeviceData = { userId, expiresAt, signature }
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(data))
+  try {
+    const res = await fetch('/api/auth/trusted-device', { method: 'POST' })
+    if (!res.ok) return
+    const { token } = await res.json()
+    if (typeof token === 'string') localStorage.setItem(STORAGE_KEY, token)
+  } catch {
+    // Si falla, simplemente no se recuerda el dispositivo — no es crítico.
+  }
 }
 
-export function isTrustedDevice(userId: string | undefined): boolean {
-  if (typeof window === 'undefined' || !userId) return false
+export async function isTrustedDevice(): Promise<boolean> {
+  if (typeof window === 'undefined') return false
+
+  const token = localStorage.getItem(STORAGE_KEY)
+  if (!token) return false
 
   try {
-    const stored = localStorage.getItem(STORAGE_KEY)
-    if (!stored) return false
+    const res = await fetch('/api/auth/trusted-device/verify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token }),
+    })
+    if (!res.ok) return false
 
-    const data: TrustedDeviceData = JSON.parse(stored)
-
-    if (data.userId !== userId) return false
-    if (Date.now() > data.expiresAt) {
-      localStorage.removeItem(STORAGE_KEY)
-      return false
-    }
-
-    const expectedSignature = generateSignature(data.userId, data.expiresAt)
-    if (data.signature !== expectedSignature) {
-      localStorage.removeItem(STORAGE_KEY)
-      return false
-    }
-
-    return true
+    const { trusted } = await res.json()
+    if (!trusted) localStorage.removeItem(STORAGE_KEY)
+    return Boolean(trusted)
   } catch {
-    localStorage.removeItem(STORAGE_KEY)
     return false
   }
 }

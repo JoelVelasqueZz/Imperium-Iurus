@@ -210,6 +210,7 @@ export default function ChatClientePage() {
             value={texto}
             onChange={(e) => setTexto(e.target.value)}
             placeholder="Escriba su mensaje…"
+            aria-label="Escriba su mensaje"
             disabled={!user || enviando}
             className="flex-1 border border-border bg-card-bg px-4 py-2.5 font-montserrat text-sm text-text-light placeholder-text-muted/40 outline-none transition-colors focus:border-gold disabled:opacity-50"
           />

@@ -42,9 +42,17 @@ function formatFecha(fecha: string, hora: string) {
 }
 
 export default function CitasAdmin({ citas: initial }: { citas: Cita[] }) {
+  const [prevInitial, setPrevInitial] = useState(initial)
   const [citas, setCitas] = useState<Cita[]>(initial)
   const [updating, setUpdating] = useState<string | null>(null)
   const [filter, setFilter] = useState<CitaEstado | 'todas'>('todas')
+
+  // Si Next.js vuelve a renderizar esta página con datos frescos del servidor
+  // (ej. tras navegar y volver), esto refresca la lista sin perder el filtro activo.
+  if (initial !== prevInitial) {
+    setPrevInitial(initial)
+    setCitas(initial)
+  }
 
   async function changeEstado(id: string, estado: CitaEstado) {
     setUpdating(id)

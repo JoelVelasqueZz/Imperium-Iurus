@@ -3,23 +3,29 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { Menu, Phone, X } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useState, useSyncExternalStore } from 'react'
 import { BRAND, NAV_LINKS } from '@/lib/constants'
 import { useSiteConfig } from '@/components/providers/ConfigProvider'
 import Button from '@/components/ui/Button'
 import NavAuthButton from '@/components/shared/NavAuthButton'
 
+function subscribeToScroll(callback: () => void) {
+  window.addEventListener('scroll', callback, { passive: true })
+  return () => window.removeEventListener('scroll', callback)
+}
+
+function getScrolled() {
+  return window.scrollY > 80
+}
+
+function getScrolledServerSnapshot() {
+  return false
+}
+
 export default function Navbar() {
   const [open, setOpen]       = useState(false)
-  const [scrolled, setScrolled] = useState(false)
+  const scrolled = useSyncExternalStore(subscribeToScroll, getScrolled, getScrolledServerSnapshot)
   const { contacto } = useSiteConfig()
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 80)
-    onScroll()
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [])
 
   return (
     <header

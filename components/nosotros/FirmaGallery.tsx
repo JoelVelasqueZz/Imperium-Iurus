@@ -83,6 +83,9 @@ export default function FirmaGallery() {
 
       {/* Lightbox */}
       {lightbox !== null && (
+        // El backdrop cierra al hacer click como conveniencia — el botón "Cerrar"
+        // y la tecla Escape (manejada arriba) ya cubren el cierre por teclado.
+        // eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/92"
           onClick={close}
@@ -166,7 +169,7 @@ export default function FirmaGallery() {
           <div className="space-y-4">
             {draft.galeria_nosotros.map((url, i) => (
               <ImageUploadField
-                key={i}
+                key={url || `galeria-${i}`}
                 label={`Imagen ${i + 1}`}
                 value={url}
                 carpeta="galeria"

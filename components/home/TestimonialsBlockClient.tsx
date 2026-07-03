@@ -70,7 +70,7 @@ export default function TestimonialsBlockClient({
           </p>
           <div className="grid gap-4 md:grid-cols-3">
             {draft.testimonios.map((testimonio, i) => (
-              <div key={i} className="space-y-2 border border-border bg-card-bg p-4">
+              <div key={testimonio.texto || `testimonio-${i}`} className="space-y-2 border border-border bg-card-bg p-4">
                 <Textarea
                   rows={3}
                   value={testimonio.texto}

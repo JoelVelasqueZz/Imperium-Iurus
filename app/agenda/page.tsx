@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { CalendarDays, Clock, Loader2 } from 'lucide-react'
@@ -42,19 +42,15 @@ export default function AgendaPage() {
 
   const [headerModalOpen, setHeaderModalOpen]   = useState(false)
   const [sidebarModalOpen, setSidebarModalOpen] = useState(false)
-  const [todayStr, setTodayStr]         = useState('')
+  const [todayStr]                      = useState(() => new Date().toLocaleDateString('en-CA', { timeZone: 'America/Guayaquil' }))
   const [slots, setSlots]               = useState<string[]>([])
   const [loadingSlots, setLoading]      = useState(false)
   const [slotsMsg, setSlotsMsg]         = useState<string | null>(null)
   const [sent, setSent]                 = useState(false)
   const [serverError, setServerError]   = useState<string | null>(null)
-  const [isLoggedIn, setIsLoggedIn]     = useState<boolean | null>(null)
+  const isLoggedInRef = useRef<boolean | null>(null)
   const [showLoginModal, setShowLoginModal] = useState(false)
   const [pendingData, setPendingData]   = useState<AppointmentFormData | null>(null)
-
-  useEffect(() => {
-    setTodayStr(new Date().toLocaleDateString('en-CA', { timeZone: 'America/Guayaquil' }))
-  }, [])
 
   const {
     register, handleSubmit, watch, reset,
@@ -80,8 +76,9 @@ export default function AgendaPage() {
       return
     }
 
+    const controller = new AbortController()
     setLoading(true)
-    fetch(`/api/appointments?fecha=${fechaValue}`)
+    fetch(`/api/appointments?fecha=${fechaValue}`, { signal: controller.signal })
       .then((r) => r.json())
       .then((json) => {
         if (json.success) {
@@ -89,9 +86,13 @@ export default function AgendaPage() {
           if (json.data.slots.length === 0) setSlotsMsg('No hay horarios disponibles para este día.')
         }
       })
-      .catch(() => setSlotsMsg('Error al cargar horarios. Intente nuevamente.'))
-      .finally(() => setLoading(false))
-  }, [fechaValue])
+      .catch((err) => { if (err.name !== 'AbortError') setSlotsMsg('Error al cargar horarios. Intente nuevamente.') })
+      .finally(() => { if (!controller.signal.aborted) setLoading(false) })
+
+    // Si el usuario cambia de fecha antes de que responda el fetch anterior,
+    // esto cancela esa petición para que su respuesta no pise la fecha actual.
+    return () => controller.abort()
+  }, [fechaValue, festivos.fechas, horario_citas.dias])
 
   const submitFormData = useCallback(async (data: AppointmentFormData) => {
     setServerError(null)
@@ -121,7 +122,7 @@ export default function AgendaPage() {
   // Verificar sesión al montar + auto-enviar si hay datos pendientes de antes del login OAuth
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
-      setIsLoggedIn(!!user)
+      isLoggedInRef.current = !!user
       if (!user) return
 
       const saved = sessionStorage.getItem('pending_agenda')
@@ -137,7 +138,7 @@ export default function AgendaPage() {
   }, [supabase, submitFormData])
 
   const onSubmit = handleSubmit(async (data) => {
-    if (!isLoggedIn) {
+    if (!isLoggedInRef.current) {
       setPendingData(data)
       setShowLoginModal(true)
       return
@@ -288,7 +289,7 @@ export default function AgendaPage() {
               <h2 className="font-cinzel text-lg font-semibold text-gold">{agenda_page.pasos_titulo}</h2>
               <ol className="mt-4 space-y-3 text-sm font-light text-primary/70">
                 {agenda_page.pasos.map((step, i) => (
-                  <li key={i} className="flex gap-3">
+                  <li key={step} className="flex gap-3">
                     <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center border border-gold/40 font-cinzel text-[10px] text-gold">
                       {i + 1}
                     </span>

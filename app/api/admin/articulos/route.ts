@@ -2,6 +2,7 @@ import { type NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { supabase } from '@/lib/supabase'
 import { getUser } from '@/lib/supabase-server'
+import { isAdminUser } from '@/lib/admin-auth'
 
 const articuloSchema = z.object({
   titulo:         z.string().min(3),
@@ -15,7 +16,7 @@ const articuloSchema = z.object({
 
 export async function GET() {
   const user = await getUser()
-  if (!user) return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
+  if (!isAdminUser(user)) return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
 
   const { data, error } = await supabase.from('articulos').select('*').order('created_at', { ascending: false })
   if (error) return NextResponse.json({ error: error.message }, { status: 502 })
@@ -24,7 +25,7 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   const user = await getUser()
-  if (!user) return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
+  if (!isAdminUser(user)) return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
 
   const parsed = articuloSchema.safeParse(await request.json().catch(() => ({})))
   if (!parsed.success) return NextResponse.json({ error: 'Datos inválidos', issues: parsed.error.flatten().fieldErrors }, { status: 422 })

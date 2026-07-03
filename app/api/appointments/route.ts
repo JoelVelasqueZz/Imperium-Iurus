@@ -5,6 +5,7 @@ import { supabase } from '@/lib/supabase'
 import { createSupabaseServerClient } from '@/lib/supabase-server'
 import { CONFIG_DEFAULTS, generateSlots, isDateAvailable } from '@/lib/config'
 import type { HorarioCitasConfig, FestivosConfig } from '@/lib/config'
+import { checkRateLimit, getClientIp } from '@/lib/rate-limit'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
@@ -40,6 +41,10 @@ function currentTimeEcuador(): { h: number; m: number } {
 
 // GET — slots disponibles para una fecha
 export async function GET(request: NextRequest): Promise<NextResponse> {
+  if (!checkRateLimit(`appointments-get:${getClientIp(request)}`, 30, 60 * 1000)) {
+    return NextResponse.json({ success: false, error: 'Demasiadas solicitudes. Intente de nuevo en un momento.' }, { status: 429 })
+  }
+
   const fecha = request.nextUrl.searchParams.get('fecha')
 
   if (!fecha || !/^\d{4}-\d{2}-\d{2}$/.test(fecha)) {
@@ -151,6 +156,10 @@ function emailClienteCita(data: AppointmentFormData): string {
 
 // POST — Crear nueva cita
 export async function POST(request: NextRequest): Promise<NextResponse<ApiResponse<{ id: string } | null>>> {
+  if (!checkRateLimit(`appointments-post:${getClientIp(request)}`, 5, 10 * 60 * 1000)) {
+    return NextResponse.json({ success: false, error: 'Demasiadas solicitudes. Intente de nuevo en unos minutos.' }, { status: 429 })
+  }
+
   let body: unknown
   try {
     body = await request.json()
@@ -168,11 +177,13 @@ export async function POST(request: NextRequest): Promise<NextResponse<ApiRespon
 
   const data = parsed.data
 
-  // Obtener usuario si hay sesión activa (para vincular cliente_id)
+  // Obtener usuario si hay sesión activa (para vincular cliente_id) y el
+  // horario de citas configurado — ninguno depende del resultado del otro.
   const serverClient = await createSupabaseServerClient()
-  const { data: { user: sessionUser } } = await serverClient.auth.getUser()
-
-  const { horario: horarioCitas, festivos } = await getScheduleConfig()
+  const [{ data: { user: sessionUser } }, { horario: horarioCitas, festivos }] = await Promise.all([
+    serverClient.auth.getUser(),
+    getScheduleConfig(),
+  ])
   if (!isDateAvailable(data.fecha, horarioCitas, festivos)) {
     return NextResponse.json({ success: false, error: 'Esta fecha no está disponible para agendar citas.' }, { status: 422 })
   }

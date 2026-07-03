@@ -134,7 +134,7 @@ export default function ServicesBlock({ bottomButton = false }: { bottomButton?:
           </button>
           <div className="space-y-4">
             {draft.items.map((service, i) => (
-              <div key={i} className="space-y-3 border border-border bg-card-bg p-4">
+              <div key={serviceBlocks[i]?.title ?? `servicio-${i}`} className="space-y-3 border border-border bg-card-bg p-4">
                 <p className="font-montserrat text-xs font-bold uppercase tracking-widest text-gold">
                   {serviceBlocks[i]?.title ?? `Área ${i + 1}`}
                 </p>

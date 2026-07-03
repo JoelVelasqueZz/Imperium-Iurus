@@ -3,7 +3,8 @@
 import { useState } from 'react'
 import { Plus, Trash2 } from 'lucide-react'
 import type { SiteConfig } from '@/lib/config'
-import { Field, Input, Textarea, SaveButton, useSave } from '@/components/admin/ConfigFormControls'
+import { Field, Input, Textarea, SaveButton } from '@/components/admin/ConfigFormControls'
+import { useSave } from '@/components/admin/useSave'
 
 type Props = { initialConfig: SiteConfig }
 
@@ -35,7 +36,7 @@ function DiasCheckboxes({
     <div className="flex flex-wrap gap-2">
       {DIAS_LABELS.map((label, i) => (
         <button
-          key={i}
+          key={label}
           type="button"
           onClick={() => toggle(i)}
           className={`rounded border px-3 py-1.5 font-montserrat text-xs uppercase tracking-widest transition-colors ${
@@ -54,6 +55,8 @@ function DiasCheckboxes({
 // ─── Componente principal ─────────────────────────────────────────────────────
 
 export default function ConfiguracionAdmin({ initialConfig }: Props) {
+  const [prevInitialConfig, setPrevInitialConfig] = useState(initialConfig)
+
   // ── Contacto ────────────────────────────────────────────────────────────────
   const [contacto, setContacto] = useState(initialConfig.contacto)
   const saveContacto = useSave('contacto')
@@ -74,6 +77,17 @@ export default function ConfiguracionAdmin({ initialConfig }: Props) {
   const [festivos, setFestivos] = useState(initialConfig.festivos)
   const saveFestivos = useSave('festivos')
   const [nuevaFecha, setNuevaFecha] = useState('')
+
+  // Si el servidor manda un initialConfig nuevo (ej. tras navegar y volver a esta
+  // página), refresca los 5 campos de una sola vez en lugar de quedar con datos viejos.
+  if (initialConfig !== prevInitialConfig) {
+    setPrevInitialConfig(initialConfig)
+    setContacto(initialConfig.contacto)
+    setRedes(initialConfig.redes_sociales)
+    setHorarioAtencion(initialConfig.horario_atencion)
+    setHorarioCitas(initialConfig.horario_citas)
+    setFestivos(initialConfig.festivos)
+  }
 
   function addFestivo() {
     if (!nuevaFecha || festivos.fechas.includes(nuevaFecha)) return

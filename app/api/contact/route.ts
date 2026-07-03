@@ -2,6 +2,7 @@ import { type NextRequest, NextResponse } from 'next/server'
 import { Resend } from 'resend'
 import { contactSchema, type ApiResponse, type ContactFormData } from '@/lib/schemas'
 import { supabase } from '@/lib/supabase'
+import { checkRateLimit, getClientIp } from '@/lib/rate-limit'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
@@ -92,6 +93,11 @@ function emailCliente(data: ContactFormData): string {
 }
 
 export async function POST(request: NextRequest): Promise<NextResponse<ApiResponse>> {
+  const ip = getClientIp(request)
+  if (!checkRateLimit(`contact:${ip}`, 5, 10 * 60 * 1000)) {
+    return NextResponse.json({ success: false, error: 'Demasiadas solicitudes. Intente de nuevo en unos minutos.' }, { status: 429 })
+  }
+
   let body: unknown
   try {
     body = await request.json()

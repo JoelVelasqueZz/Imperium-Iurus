@@ -33,9 +33,19 @@ export default function ChatAdmin({ clienteId, cliente, mensajesIniciales }: Pro
   const supabase  = createSupabaseBrowserClient()
   const bottomRef = useRef<HTMLDivElement>(null)
 
+  const [prevClienteId, setPrevClienteId] = useState(clienteId)
   const [mensajes, setMensajes] = useState<Mensaje[]>(mensajesIniciales)
   const [texto,    setTexto]    = useState('')
   const [pending,  startTransition] = useTransition()
+
+  // Si el admin navega de un chat a otro sin recargar la página, React reutiliza
+  // esta misma instancia — sin este chequeo, los mensajes del cliente anterior
+  // quedarían visibles bajo el nombre del nuevo cliente.
+  if (clienteId !== prevClienteId) {
+    setPrevClienteId(clienteId)
+    setMensajes(mensajesIniciales)
+    setTexto('')
+  }
 
   // Scroll to bottom
   useEffect(() => {
@@ -164,6 +174,7 @@ export default function ChatAdmin({ clienteId, cliente, mensajesIniciales }: Pro
             value={texto}
             onChange={(e) => setTexto(e.target.value)}
             placeholder={`Responder a ${nombreCliente}…`}
+            aria-label={`Responder a ${nombreCliente}`}
             disabled={pending}
             className="flex-1 border border-border bg-card-bg px-4 py-2.5 font-montserrat text-sm text-text-light placeholder-text-muted/40 outline-none transition-colors focus:border-gold disabled:opacity-50"
           />

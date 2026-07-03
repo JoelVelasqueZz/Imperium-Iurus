@@ -559,13 +559,15 @@ export function isDateAvailable(
   return cfg.dias.includes(day)
 }
 
+const OFFICE_HOURS_FORMATTER = new Intl.DateTimeFormat('en-US', {
+  timeZone: 'America/Guayaquil',
+  weekday: 'short',
+  hour: '2-digit',
+  hour12: false,
+})
+
 export function isOfficeHours(cfg: HorarioAtencionConfig): boolean {
-  const parts = new Intl.DateTimeFormat('en-US', {
-    timeZone: 'America/Guayaquil',
-    weekday: 'short',
-    hour: '2-digit',
-    hour12: false,
-  }).formatToParts(new Date())
+  const parts = OFFICE_HOURS_FORMATTER.formatToParts(new Date())
 
   const WEEKDAY: Record<string, number> = { Sun:0, Mon:1, Tue:2, Wed:3, Thu:4, Fri:5, Sat:6 }
   const weekday = WEEKDAY[parts.find(p => p.type === 'weekday')?.value ?? ''] ?? -1

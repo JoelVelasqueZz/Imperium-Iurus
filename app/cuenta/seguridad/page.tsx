@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -22,16 +22,11 @@ export default function SeguridadPage() {
   const [totpFactor, setTotpFactor] = useState<Factor | null>(null)
   const [qrCode, setQrCode] = useState<string | null>(null)
   const [secret, setSecret] = useState<string | null>(null)
-  const [totpUri, setTotpUri] = useState<string | null>(null)
-  const [factorId, setFactorId] = useState<string | null>(null)
+  const factorIdRef = useRef<string | null>(null)
   const [verifyCode, setVerifyCode] = useState('')
   const [copied, setCopied] = useState(false)
 
-  useEffect(() => {
-    loadFactors()
-  }, [])
-
-  async function loadFactors() {
+  const loadFactors = useCallback(async () => {
     setLoading(true)
     const { data: { user } } = await supabase.auth.getUser()
 
@@ -44,7 +39,11 @@ export default function SeguridadPage() {
     const verified = factors?.totp?.find(f => f.status === 'verified')
     setTotpFactor(verified || null)
     setLoading(false)
-  }
+  }, [supabase, router])
+
+  useEffect(() => {
+    loadFactors()
+  }, [loadFactors])
 
   async function startEnrollment() {
     setEnrolling(true)
@@ -63,12 +62,12 @@ export default function SeguridadPage() {
 
     setQrCode(data.totp.qr_code)
     setSecret(data.totp.secret)
-    setTotpUri(data.totp.uri)
-    setFactorId(data.id)
+    factorIdRef.current = data.id
   }
 
   async function verifyEnrollment(e: React.FormEvent) {
     e.preventDefault()
+    const factorId = factorIdRef.current
     if (!factorId) return
 
     setVerifying(true)
@@ -99,8 +98,7 @@ export default function SeguridadPage() {
     setSuccess('Autenticación de dos factores activada correctamente.')
     setQrCode(null)
     setSecret(null)
-    setTotpUri(null)
-    setFactorId(null)
+    factorIdRef.current = null
     setVerifyCode('')
     setEnrolling(false)
     setVerifying(false)
@@ -131,8 +129,7 @@ export default function SeguridadPage() {
   function cancelEnrollment() {
     setQrCode(null)
     setSecret(null)
-    setTotpUri(null)
-    setFactorId(null)
+    factorIdRef.current = null
     setVerifyCode('')
     setEnrolling(false)
     setError(null)
@@ -244,8 +241,9 @@ export default function SeguridadPage() {
               {/* Código QR */}
               <div className="mb-6 flex justify-center">
                 <div className="rounded-lg bg-white p-4 shadow-lg">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={qrCode} alt="Código QR para 2FA" className="h-48 w-48" />
+                  {qrCode && (
+                    <Image src={qrCode} alt="Código QR para 2FA" width={192} height={192} className="h-48 w-48" unoptimized />
+                  )}
                 </div>
               </div>
 
@@ -299,6 +297,7 @@ export default function SeguridadPage() {
                     onChange={(e) => setVerifyCode(e.target.value.replace(/\D/g, ''))}
                     required
                     autoComplete="one-time-code"
+                    aria-label="Código de verificación de 6 dígitos"
                     className="w-full border border-border bg-card-bg px-4 py-3 text-center font-mono text-2xl tracking-[0.5em] text-text-light placeholder-text-muted/50 outline-none focus:border-gold"
                     placeholder="000000"
                   />

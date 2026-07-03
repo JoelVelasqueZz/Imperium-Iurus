@@ -101,7 +101,7 @@ export default function UrgencyBlock() {
           </div>
           <div className="space-y-4">
             {draft.escenarios.map((esc, i) => (
-              <div key={i} className="space-y-3 border border-border bg-card-bg p-4">
+              <div key={esc.titulo || `escenario-${i}`} className="space-y-3 border border-border bg-card-bg p-4">
                 <div className="grid gap-3 md:grid-cols-2">
                   <Field label="Título">
                     <Input

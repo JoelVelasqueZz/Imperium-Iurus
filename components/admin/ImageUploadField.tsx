@@ -70,6 +70,7 @@ export default function ImageUploadField({ label, value, carpeta, onChange }: Pr
             ref={inputRef}
             type="file"
             accept="image/jpeg,image/png,image/webp,image/avif"
+            aria-label={label}
             className="hidden"
             onChange={(e) => {
               const file = e.target.files?.[0]

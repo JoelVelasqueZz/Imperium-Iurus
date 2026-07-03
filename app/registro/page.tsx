@@ -30,16 +30,16 @@ function PasswordRequirement({ met, text }: { met: boolean; text: string }) {
   )
 }
 
-function StrengthBar({ score }: { score: number }) {
-  const colors = ['bg-red-500', 'bg-orange-500', 'bg-yellow-500', 'bg-green-500']
-  const labels: Record<number, { text: string; color: string }> = {
-    0: { text: '', color: '' },
-    1: { text: 'Débil', color: 'text-red-400' },
-    2: { text: 'Regular', color: 'text-orange-400' },
-    3: { text: 'Media', color: 'text-yellow-400' },
-    4: { text: 'Fuerte', color: 'text-green-400' },
-  }
+const STRENGTH_COLORS = ['bg-red-500', 'bg-orange-500', 'bg-yellow-500', 'bg-green-500']
+const STRENGTH_LABELS: Record<number, { text: string; color: string }> = {
+  0: { text: '', color: '' },
+  1: { text: 'Débil', color: 'text-red-400' },
+  2: { text: 'Regular', color: 'text-orange-400' },
+  3: { text: 'Media', color: 'text-yellow-400' },
+  4: { text: 'Fuerte', color: 'text-green-400' },
+}
 
+function StrengthBar({ score }: { score: number }) {
   return (
     <div className="mt-2">
       <div className="flex gap-1">
@@ -47,14 +47,14 @@ function StrengthBar({ score }: { score: number }) {
           <div
             key={i}
             className={`h-1 flex-1 rounded-full transition-colors ${
-              i <= score ? colors[score - 1] : 'bg-border'
+              i <= score ? STRENGTH_COLORS[score - 1] : 'bg-border'
             }`}
           />
         ))}
       </div>
       {score > 0 && (
-        <p className={`mt-1 text-xs ${labels[score].color}`}>
-          {labels[score].text}
+        <p className={`mt-1 text-xs ${STRENGTH_LABELS[score].color}`}>
+          {STRENGTH_LABELS[score].text}
         </p>
       )}
     </div>

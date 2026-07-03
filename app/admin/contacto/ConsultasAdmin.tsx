@@ -35,10 +35,17 @@ function fmtDate(iso: string) {
 }
 
 export default function ConsultasAdmin({ consultas: initial }: { consultas: Consulta[] }) {
+  const [prevInitial, setPrevInitial] = useState(initial)
   const [consultas, setConsultas] = useState(initial)
   const [updating, setUpdating]   = useState<string | null>(null)
   const [expanded, setExpanded]   = useState<string | null>(null)
   const [filter, setFilter]       = useState<string>('todos')
+
+  // Refresca la lista si el servidor manda datos nuevos, sin perder el filtro activo.
+  if (initial !== prevInitial) {
+    setPrevInitial(initial)
+    setConsultas(initial)
+  }
 
   async function changeEstado(id: string, estado: string) {
     setUpdating(id)

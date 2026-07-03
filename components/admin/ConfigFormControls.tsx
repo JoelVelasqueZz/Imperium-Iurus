@@ -2,18 +2,17 @@
 
 import { useState } from 'react'
 import { Check, Loader2, Plus, Trash2 } from 'lucide-react'
-
-export type SaveState = 'idle' | 'saving' | 'saved' | 'error'
+import type { SaveState } from '@/components/admin/useSave'
 
 export function Field({ label, hint, children }: { label: string; hint?: string; children: React.ReactNode }) {
   return (
-    <div>
-      <label className="mb-1.5 block font-montserrat text-xs font-medium uppercase tracking-widest text-text-muted">
+    <label className="block">
+      <span className="mb-1.5 block font-montserrat text-xs font-medium uppercase tracking-widest text-text-muted">
         {label}
-      </label>
+      </span>
       {children}
       {hint && <p className="mt-1 text-[11px] text-text-muted/60">{hint}</p>}
-    </div>
+    </label>
   )
 }
 
@@ -81,6 +80,7 @@ export function ListEditor({
           onChange={(e) => setDraft(e.target.value)}
           onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); add() } }}
           placeholder={placeholder}
+          aria-label={placeholder ?? 'Agregar elemento'}
           className="flex-1 border border-border bg-card-bg px-3 py-2 text-sm text-text-light outline-none focus:border-gold"
         />
         <button
@@ -112,25 +112,3 @@ export function ListEditor({
   )
 }
 
-export async function saveSection(clave: string, valor: unknown): Promise<boolean> {
-  const res = await fetch('/api/admin/configuracion', {
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ clave, valor }),
-  })
-  return res.ok
-}
-
-export function useSave(clave: string) {
-  const [state, setState] = useState<SaveState>('idle')
-
-  async function save(valor: unknown) {
-    setState('saving')
-    const ok = await saveSection(clave, valor).catch(() => false)
-    setState(ok ? 'saved' : 'error')
-    if (ok) setTimeout(() => setState('idle'), 3000)
-    return ok
-  }
-
-  return { state, save }
-}

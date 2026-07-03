@@ -2,6 +2,7 @@ import { type NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { supabase } from '@/lib/supabase'
 import { getUser } from '@/lib/supabase-server'
+import { isAdminUser } from '@/lib/admin-auth'
 
 const patchSchema = z.object({
   titulo:         z.string().min(3).optional(),
@@ -16,6 +17,9 @@ const patchSchema = z.object({
 type Params = { params: Promise<{ id: string }> }
 
 export async function GET(_req: NextRequest, { params }: Params) {
+  const user = await getUser()
+  if (!isAdminUser(user)) return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
+
   const { id } = await params
   const { data, error } = await supabase.from('articulos').select('*').eq('id', id).single()
   if (error) return NextResponse.json({ error: 'Artículo no encontrado' }, { status: 404 })
@@ -24,7 +28,7 @@ export async function GET(_req: NextRequest, { params }: Params) {
 
 export async function PATCH(request: NextRequest, { params }: Params) {
   const user = await getUser()
-  if (!user) return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
+  if (!isAdminUser(user)) return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
 
   const { id } = await params
   const parsed = patchSchema.safeParse(await request.json().catch(() => ({})))
@@ -40,7 +44,7 @@ export async function PATCH(request: NextRequest, { params }: Params) {
 
 export async function DELETE(_req: NextRequest, { params }: Params) {
   const user = await getUser()
-  if (!user) return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
+  if (!isAdminUser(user)) return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
 
   const { id } = await params
   const { error } = await supabase.from('articulos').delete().eq('id', id)

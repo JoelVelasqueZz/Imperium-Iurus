@@ -24,6 +24,23 @@ type Props = {
   placeholder?: string
 }
 
+function btn(action: () => boolean, active: boolean, Icon: React.ElementType, title: string) {
+  return (
+    <button
+      type="button"
+      title={title}
+      onClick={action}
+      className={`rounded p-1.5 transition-colors ${
+        active
+          ? 'bg-gold text-primary'
+          : 'text-text-muted hover:bg-white/10 hover:text-gold'
+      }`}
+    >
+      <Icon size={14} />
+    </button>
+  )
+}
+
 export default function TipTapEditor({ value, onChange, placeholder = 'Escribe el contenido aquí...' }: Props) {
   const editor = useEditor({
     extensions: [
@@ -53,21 +70,6 @@ export default function TipTapEditor({ value, onChange, placeholder = 'Escribe e
   }, [editor, value])
 
   if (!editor) return null
-
-  const btn = (action: () => boolean, active: boolean, Icon: React.ElementType, title: string) => (
-    <button
-      type="button"
-      title={title}
-      onClick={action}
-      className={`rounded p-1.5 transition-colors ${
-        active
-          ? 'bg-gold text-primary'
-          : 'text-text-muted hover:bg-white/10 hover:text-gold'
-      }`}
-    >
-      <Icon size={14} />
-    </button>
-  )
 
   function setLink() {
     const prev = editor?.getAttributes('link').href as string | undefined

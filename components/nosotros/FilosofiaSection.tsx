@@ -62,7 +62,7 @@ export default function FilosofiaSection() {
           </div>
           <div className="grid gap-4 md:grid-cols-2">
             {draft.pilares.map((pilar, i) => (
-              <div key={i} className="space-y-2 border border-border bg-card-bg p-4">
+              <div key={ROMANOS[i] ?? i} className="space-y-2 border border-border bg-card-bg p-4">
                 <p className="font-cinzel text-xs font-bold text-gold">{ROMANOS[i]}</p>
                 <Field label="Título del pilar">
                   <Input

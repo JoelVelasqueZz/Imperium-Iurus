@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useCallback, useContext, useState } from 'react'
+import { createContext, use, useCallback, useMemo, useState } from 'react'
 import type { SiteConfig } from '@/lib/config-utils'
 
 type ConfigContextValue = {
@@ -23,15 +23,17 @@ export function ConfigProvider({
     setState((prev) => ({ ...prev, [key]: value }))
   }, [])
 
+  const contextValue = useMemo(() => ({ config: state, updateConfig }), [state, updateConfig])
+
   return (
-    <ConfigContext.Provider value={{ config: state, updateConfig }}>
+    <ConfigContext.Provider value={contextValue}>
       {children}
     </ConfigContext.Provider>
   )
 }
 
 export function useSiteConfig(): SiteConfig {
-  const ctx = useContext(ConfigContext)
+  const ctx = use(ConfigContext)
   if (!ctx) throw new Error('useSiteConfig must be used inside <ConfigProvider>')
   return ctx.config
 }
@@ -40,7 +42,7 @@ export function useSiteConfig(): SiteConfig {
 // editor inline, sin esperar a un refresh de la página (revalidatePath solo
 // afecta al próximo request server-side).
 export function useUpdateConfig() {
-  const ctx = useContext(ConfigContext)
+  const ctx = use(ConfigContext)
   if (!ctx) throw new Error('useUpdateConfig must be used inside <ConfigProvider>')
   return ctx.updateConfig
 }

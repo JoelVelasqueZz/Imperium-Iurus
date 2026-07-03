@@ -1,8 +1,9 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { X } from 'lucide-react'
-import { SaveButton, type SaveState } from '@/components/admin/ConfigFormControls'
+import { SaveButton } from '@/components/admin/ConfigFormControls'
+import type { SaveState } from '@/components/admin/useSave'
 
 export default function SectionEditModal<T>({
   clave,
@@ -25,15 +26,17 @@ export default function SectionEditModal<T>({
 }) {
   const [draft, setDraft] = useState(value)
   const [state, setState] = useState<SaveState>('idle')
+  const [prevOpen, setPrevOpen] = useState(open)
 
-  // Reinicia el borrador con el valor vigente cada vez que se abre el modal
-  useEffect(() => {
+  // Reinicia el borrador con el valor vigente cada vez que el modal pasa a abierto.
+  // Se hace en render (no en un efecto) para que no haya un frame con datos viejos.
+  if (open !== prevOpen) {
+    setPrevOpen(open)
     if (open) {
       setDraft(value)
       setState('idle')
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open])
+  }
 
   if (!open) return null
 
@@ -61,6 +64,9 @@ export default function SectionEditModal<T>({
   }
 
   return (
+    // El backdrop cierra al hacer click como conveniencia — el botón "Cerrar" (X)
+    // y "Cancelar" de abajo ya cubren el cierre accesible por teclado.
+    // eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events
     <div
       className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 p-4"
       onClick={onClose}

@@ -2,6 +2,7 @@ import { type NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { supabase } from '@/lib/supabase'
 import { getUser } from '@/lib/supabase-server'
+import { isAdminUser } from '@/lib/admin-auth'
 
 const schema = z.object({
   estado: z.enum(['pendiente', 'aprobado', 'rechazado']),
@@ -9,7 +10,7 @@ const schema = z.object({
 
 export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const user = await getUser()
-  if (!user) return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
+  if (!isAdminUser(user)) return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
 
   const { id } = await params
   const parsed = schema.safeParse(await request.json().catch(() => ({})))
@@ -22,7 +23,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
 
 export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const user = await getUser()
-  if (!user) return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
+  if (!isAdminUser(user)) return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
 
   const { id } = await params
   const { error } = await supabase.from('testimonios').delete().eq('id', id)

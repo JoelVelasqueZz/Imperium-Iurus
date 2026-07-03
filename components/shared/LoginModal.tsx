@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect, useRef } from 'react'
 import { createSupabaseBrowserClient } from '@/lib/supabase-browser'
 import { X } from 'lucide-react'
 
@@ -30,7 +31,16 @@ type Props = {
 export default function LoginModal({
   open, storageKey, formData, returnPath, onClose, onContinue,
 }: Props) {
-  if (!open) return null
+  const dialogRef = useRef<HTMLDialogElement>(null)
+
+  // <dialog> se controla de forma imperativa: showModal() da focus trap y
+  // Escape para cerrar de forma nativa, algo que un <div role="dialog"> no tiene.
+  useEffect(() => {
+    const dialog = dialogRef.current
+    if (!dialog) return
+    if (open && !dialog.open) dialog.showModal()
+    if (!open && dialog.open) dialog.close()
+  }, [open])
 
   async function loginConGoogle() {
     sessionStorage.setItem(storageKey, JSON.stringify(formData))
@@ -44,62 +54,53 @@ export default function LoginModal({
   }
 
   return (
-    <div
-      role="dialog"
-      aria-modal="true"
+    <dialog
+      ref={dialogRef}
       aria-labelledby="login-modal-title"
-      className="fixed inset-0 z-50 flex items-center justify-center px-4"
+      onClose={onClose}
+      onClick={(e) => { if (e.target === dialogRef.current) onClose() }}
+      className="relative m-auto w-full max-w-md border border-border bg-[#0D1624] p-8 shadow-2xl shadow-black/60 backdrop:bg-black/60 backdrop:backdrop-blur-sm"
     >
-      {/* Backdrop */}
-      <div
-        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+      <button
+        type="button"
         onClick={onClose}
-        aria-hidden="true"
-      />
+        aria-label="Cerrar"
+        className="absolute right-4 top-4 text-text-muted transition-colors hover:text-text-light"
+      >
+        <X size={18} />
+      </button>
 
-      {/* Card */}
-      <div className="relative w-full max-w-md border border-border bg-[#0D1624] p-8 shadow-2xl shadow-black/60">
-        <button
-          type="button"
-          onClick={onClose}
-          aria-label="Cerrar"
-          className="absolute right-4 top-4 text-text-muted transition-colors hover:text-text-light"
-        >
-          <X size={18} />
-        </button>
+      <p className="font-cinzel text-[10px] uppercase tracking-[0.3em] text-gold/50">
+        Portal de clientes
+      </p>
+      <h2
+        id="login-modal-title"
+        className="mt-1 font-cinzel text-xl font-bold uppercase tracking-widest text-gold"
+      >
+        Vincule su solicitud
+      </h2>
+      <p className="mt-3 font-montserrat text-sm leading-relaxed text-text-muted">
+        Inicie sesión con Google para confirmar su solicitud y acceder al seguimiento
+        desde su portal privado — incluyendo chat directo con su abogado y
+        historial de citas.
+      </p>
 
-        <p className="font-cinzel text-[10px] uppercase tracking-[0.3em] text-gold/50">
-          Portal de clientes
-        </p>
-        <h2
-          id="login-modal-title"
-          className="mt-1 font-cinzel text-xl font-bold uppercase tracking-widest text-gold"
-        >
-          Vincule su solicitud
-        </h2>
-        <p className="mt-3 font-montserrat text-sm leading-relaxed text-text-muted">
-          Inicie sesión con Google para confirmar su solicitud y acceder al seguimiento
-          desde su portal privado — incluyendo chat directo con su abogado y
-          historial de citas.
-        </p>
+      <button
+        type="button"
+        onClick={loginConGoogle}
+        className="mt-6 flex w-full items-center justify-center gap-3 border border-border bg-white/5 px-4 py-3 font-montserrat text-xs font-bold uppercase tracking-widest text-text-light transition-colors hover:bg-white/10"
+      >
+        <GoogleIcon />
+        Iniciar sesión con Google
+      </button>
 
-        <button
-          type="button"
-          onClick={loginConGoogle}
-          className="mt-6 flex w-full items-center justify-center gap-3 border border-border bg-white/5 px-4 py-3 font-montserrat text-xs font-bold uppercase tracking-widest text-text-light transition-colors hover:bg-white/10"
-        >
-          <GoogleIcon />
-          Iniciar sesión con Google
-        </button>
-
-        <button
-          type="button"
-          onClick={onContinue}
-          className="mt-4 w-full font-montserrat text-xs text-text-muted/50 transition-colors hover:text-text-muted"
-        >
-          Continuar sin cuenta →
-        </button>
-      </div>
-    </div>
+      <button
+        type="button"
+        onClick={onContinue}
+        className="mt-4 w-full font-montserrat text-xs text-text-muted/50 transition-colors hover:text-text-muted"
+      >
+        Continuar sin cuenta →
+      </button>
+    </dialog>
   )
 }

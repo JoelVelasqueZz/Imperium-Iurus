@@ -21,9 +21,16 @@ function fmtDate(iso: string) {
 }
 
 export default function ArticulosAdmin({ articulos: initial }: { articulos: Articulo[] }) {
+  const [prevInitial, setPrevInitial] = useState(initial)
   const [articulos, setArticulos] = useState(initial)
   const [updating, setUpdating]   = useState<string | null>(null)
   const router = useRouter()
+
+  // Refresca la lista si el servidor manda datos nuevos (ej. tras navegar y volver).
+  if (initial !== prevInitial) {
+    setPrevInitial(initial)
+    setArticulos(initial)
+  }
 
   async function togglePublicado(art: Articulo) {
     setUpdating(art.id)

@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -23,18 +23,16 @@ export default function LoginClientePage() {
 
   const [loadingGoogle,   setLoadingGoogle]   = useState(false)
   const [loadingPassword, setLoadingPassword] = useState(false)
-  const [error,    setError]    = useState<string | null>(null)
+  const [error,    setError]    = useState<string | null>(() =>
+    typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('error')
+      ? 'Error al iniciar sesión. Intente de nuevo.'
+      : null
+  )
   const [email,    setEmail]    = useState('')
   const [password, setPassword] = useState('')
   const [needs2FA, setNeeds2FA] = useState(false)
   const [totpCode, setTotpCode] = useState('')
   const [rememberDevice, setRememberDevice] = useState(false)
-
-  useEffect(() => {
-    if (new URLSearchParams(window.location.search).get('error')) {
-      setError('Error al iniciar sesión. Intente de nuevo.')
-    }
-  }, [])
 
   async function loginConGoogle() {
     setLoadingGoogle(true)
@@ -67,7 +65,7 @@ export default function LoginClientePage() {
     const { data: factors } = await supabase.auth.mfa.listFactors()
     const totpFactor = factors?.totp?.[0]
 
-    if (totpFactor && !isTrustedDevice(data.user?.id)) {
+    if (totpFactor && !(await isTrustedDevice())) {
       setNeeds2FA(true)
       setLoadingPassword(false)
       return
@@ -116,8 +114,7 @@ export default function LoginClientePage() {
 
     if (rememberDevice) {
       const { saveTrustedDevice } = await import('@/lib/trusted-device')
-      const { data: { user } } = await supabase.auth.getUser()
-      if (user) saveTrustedDevice(user.id)
+      await saveTrustedDevice()
     }
 
     router.push('/')

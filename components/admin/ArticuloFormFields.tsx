@@ -42,13 +42,14 @@ export function ArticuloFormFields({
             placeholder="5 min"
             className="w-full border border-border bg-card-bg px-4 py-3 text-sm text-text-light outline-none focus:border-gold" />
         </Field>
-        <Field label="Publicar">
+        <div>
+          <span className="mb-1.5 block font-montserrat text-xs font-medium uppercase tracking-widest text-text-muted">Publicar</span>
           <label className="mt-2 flex cursor-pointer items-center gap-3 text-sm text-text-muted">
             <input type="checkbox" checked={form.publicado} onChange={(e) => onChange('publicado', e.target.checked)}
               className="h-4 w-4 accent-gold" />
             Publicado (visible en el blog)
           </label>
-        </Field>
+        </div>
       </div>
       <Field label="Resumen (excerpt)">
         <textarea value={form.resumen} onChange={(e) => onChange('resumen', e.target.value)} rows={2} maxLength={500}
@@ -67,9 +68,9 @@ export function ArticuloFormFields({
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div>
-      <label className="mb-1.5 block font-montserrat text-xs font-medium uppercase tracking-widest text-text-muted">{label}</label>
+    <label className="block">
+      <span className="mb-1.5 block font-montserrat text-xs font-medium uppercase tracking-widest text-text-muted">{label}</span>
       {children}
-    </div>
+    </label>
   )
 }

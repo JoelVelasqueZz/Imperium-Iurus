@@ -80,7 +80,7 @@ export default function MetodologiaSection() {
           </Field>
           <div className="grid gap-4 md:grid-cols-2">
             {draft.pasos.map((paso, i) => (
-              <div key={i} className="space-y-2 border border-border bg-card-bg p-4">
+              <div key={paso.titulo || `paso-${i}`} className="space-y-2 border border-border bg-card-bg p-4">
                 <p className="font-montserrat text-xs font-bold uppercase tracking-widest text-gold">Paso {i + 1}</p>
                 <Input
                   value={paso.titulo}

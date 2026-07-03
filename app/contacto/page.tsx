@@ -1,6 +1,6 @@
 'use client'
 
-import { Suspense, useCallback, useEffect, useMemo, useState } from 'react'
+import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useSearchParams } from 'next/navigation'
@@ -37,7 +37,7 @@ export default function ContactoPage() {
 
   const [sent, setSent]                   = useState(false)
   const [serverError, setServerError]     = useState<string | null>(null)
-  const [isLoggedIn, setIsLoggedIn]       = useState<boolean | null>(null)
+  const isLoggedInRef = useRef<boolean | null>(null)
   const [showLoginModal, setShowLoginModal] = useState(false)
   const [pendingData, setPendingData]     = useState<ContactFormData | null>(null)
 
@@ -77,7 +77,7 @@ export default function ContactoPage() {
   // Verificar sesión al montar + auto-enviar si hay datos pendientes de antes del login OAuth
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
-      setIsLoggedIn(!!user)
+      isLoggedInRef.current = !!user
       if (!user) return
 
       const saved = sessionStorage.getItem('pending_contacto')
@@ -93,7 +93,7 @@ export default function ContactoPage() {
   }, [supabase, submitFormData])
 
   const onSubmit = handleSubmit(async (data) => {
-    if (!isLoggedIn) {
+    if (!isLoggedInRef.current) {
       setPendingData(data)
       setShowLoginModal(true)
       return
@@ -195,6 +195,7 @@ export default function ContactoPage() {
                 className="h-80 w-full grayscale"
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
+                sandbox="allow-scripts allow-popups"
               />
             </div>
           </aside>

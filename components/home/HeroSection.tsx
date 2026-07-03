@@ -123,10 +123,10 @@ export default function HeroSection() {
 
         {/* Dots del carousel */}
         <m.div variants={item} transition={{ duration: 0.7 }} className="mt-10 flex justify-center gap-2">
-          {bgImages.map((_, i) => (
+          {bgImages.map((src, i) => (
             <button
               type="button"
-              key={i}
+              key={src}
               onClick={() => setCurrent(i)}
               aria-label={`Slide ${i + 1}`}
               className={`h-1.5 rounded-full transition-all duration-500 ${

@@ -11,6 +11,8 @@ import { getUser } from '@/lib/supabase-server'
 import { isAdminUser } from '@/lib/admin-auth'
 import { BRAND } from '@/lib/constants'
 
+const DAYS_EN = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday']
+
 const trajanPro = localFont({
   src: [
     { path: '../public/fonts/trajan-pro/TrajanPro-Regular.ttf', weight: '400', style: 'normal' },
@@ -108,7 +110,6 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
   const user = await getUser()
   const isAdmin = isAdminUser(user)
 
-  const DAYS_EN = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday']
   const openDays = horario_atencion.dias.map((d: number) => DAYS_EN[d])
 
   return (
@@ -144,7 +145,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
               priceRange: '$$',
               areaServed: { '@type': 'Country', name: 'Ecuador' },
               hasMap: 'https://maps.google.com/?q=Guayaquil+Ecuador',
-            }),
+            }).replace(/</g, '\\u003c'),
           }}
         />
         <ConfigProvider config={config}>

@@ -133,10 +133,10 @@ export default function DifferentialBlock() {
 
           {/* Dots */}
           <div className="mt-6 flex justify-center gap-2">
-            {differentialItems.map((_, i) => (
+            {differentialItems.map(({ title }, i) => (
               <button
                 type="button"
-                key={i}
+                key={title}
                 onClick={() => goTo(i, current)}
                 aria-label={`Diferencial ${i + 1}`}
                 className={`h-1.5 rounded-full transition-all duration-300 ${
@@ -196,7 +196,7 @@ export default function DifferentialBlock() {
           </button>
           <div className="space-y-4">
             {draft.items.map((diff, i) => (
-              <div key={i} className="space-y-3 border border-border bg-card-bg p-4">
+              <div key={differentialItems[i]?.title ?? `diferencial-${i}`} className="space-y-3 border border-border bg-card-bg p-4">
                 <p className="font-montserrat text-xs font-bold uppercase tracking-widest text-gold">
                   {differentialItems[i]?.title ?? `Diferencial ${i + 1}`}
                 </p>
@@ -247,7 +247,7 @@ export default function DifferentialBlock() {
       {(draft, setDraft) => (
         <div className="space-y-4">
           {differentialItems.map(({ title }, i) => (
-            <div key={i} className="border border-border bg-card-bg p-4">
+            <div key={title} className="border border-border bg-card-bg p-4">
               <p className="mb-3 font-montserrat text-xs font-bold uppercase tracking-widest text-gold">
                 Slide {i + 1}: {title}
               </p>

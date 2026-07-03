@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useCallback, useContext, useState } from 'react'
+import { createContext, use, useCallback, useMemo, useState } from 'react'
 
 type EditModeContextValue = {
   isAdmin: boolean
@@ -20,15 +20,20 @@ export function EditModeProvider({
   const [editMode, setEditMode] = useState(false)
   const toggleEditMode = useCallback(() => setEditMode((v) => !v), [])
 
+  const contextValue = useMemo(
+    () => ({ isAdmin, editMode: isAdmin && editMode, toggleEditMode }),
+    [isAdmin, editMode, toggleEditMode],
+  )
+
   return (
-    <EditModeContext.Provider value={{ isAdmin, editMode: isAdmin && editMode, toggleEditMode }}>
+    <EditModeContext.Provider value={contextValue}>
       {children}
     </EditModeContext.Provider>
   )
 }
 
 export function useEditMode(): EditModeContextValue {
-  const ctx = useContext(EditModeContext)
+  const ctx = use(EditModeContext)
   if (!ctx) throw new Error('useEditMode must be used inside <EditModeProvider>')
   return ctx
 }

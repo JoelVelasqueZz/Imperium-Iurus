@@ -2,6 +2,7 @@ import { type NextRequest, NextResponse } from 'next/server'
 import { citaEstadoSchema, type ApiResponse } from '@/lib/schemas'
 import { supabase } from '@/lib/supabase'
 import { getUser } from '@/lib/supabase-server'
+import { isAdminUser } from '@/lib/admin-auth'
 
 type RouteParams = { params: Promise<{ id: string }> }
 
@@ -11,7 +12,7 @@ export async function GET(
   { params }: RouteParams,
 ): Promise<NextResponse> {
   const user = await getUser()
-  if (!user) return NextResponse.json({ success: false, error: 'No autorizado' }, { status: 401 })
+  if (!isAdminUser(user)) return NextResponse.json({ success: false, error: 'No autorizado' }, { status: 401 })
 
   const { id } = await params
   const { data, error } = await supabase.from('citas').select('*').eq('id', id).maybeSingle()
@@ -27,7 +28,7 @@ export async function PATCH(
   { params }: RouteParams,
 ): Promise<NextResponse<ApiResponse<{ id: string } | null>>> {
   const user = await getUser()
-  if (!user) return NextResponse.json({ success: false, error: 'No autorizado' }, { status: 401 })
+  if (!isAdminUser(user)) return NextResponse.json({ success: false, error: 'No autorizado' }, { status: 401 })
 
   const { id } = await params
 
@@ -65,7 +66,7 @@ export async function DELETE(
   { params }: RouteParams,
 ): Promise<NextResponse<ApiResponse>> {
   const user = await getUser()
-  if (!user) return NextResponse.json({ success: false, error: 'No autorizado' }, { status: 401 })
+  if (!isAdminUser(user)) return NextResponse.json({ success: false, error: 'No autorizado' }, { status: 401 })
 
   const { id } = await params
   const { error } = await supabase
