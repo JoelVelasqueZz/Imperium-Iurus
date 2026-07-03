@@ -15,7 +15,7 @@ export default function UrgencyBlock() {
   const [modalOpen, setModalOpen] = useState(false)
   const { contacto, urgency_block } = useSiteConfig()
   const updateConfig = useUpdateConfig()
-  const waUrl = buildWhatsAppUrl(contacto.whatsapp)
+  const waUrl = buildWhatsAppUrl(contacto.whatsapp, contacto.whatsapp_mensaje)
   return (
     <>
     <EditableSection onEdit={() => setModalOpen(true)}>

@@ -35,10 +35,10 @@ export default function ContactInfoBlock() {
   }
 
   const socialLinks = [
-    redes_sociales.linkedin && 'LinkedIn',
-    redes_sociales.instagram && 'Instagram',
-    redes_sociales.facebook && 'Facebook',
-  ].filter(Boolean)
+    { href: redes_sociales.linkedin, label: 'LinkedIn' },
+    { href: redes_sociales.instagram, label: 'Instagram' },
+    { href: redes_sociales.facebook, label: 'Facebook' },
+  ].filter((s) => s.href)
 
   async function handleCustomSave(draft: ContactoWithRedes) {
     const [res1, res2] = await Promise.all([
@@ -105,13 +105,16 @@ export default function ContactInfoBlock() {
           </div>
           {socialLinks.length > 0 && (
             <div className="mt-7 flex flex-wrap gap-3">
-              {socialLinks.map((item) => (
-                <span
-                  key={item}
-                  className="border border-gold/40 px-4 py-2 text-xs uppercase tracking-widest text-gold"
+              {socialLinks.map(({ href, label }) => (
+                <a
+                  key={label}
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="border border-gold/40 px-4 py-2 text-xs uppercase tracking-widest text-gold transition-colors hover:border-gold hover:bg-gold hover:text-primary"
                 >
-                  {item}
-                </span>
+                  {label}
+                </a>
               ))}
             </div>
           )}

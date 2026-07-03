@@ -44,7 +44,7 @@ export default function UrgencyFloatingButton() {
 
   const close = () => setOpen(false)
 
-  const waUrl = buildWhatsAppUrl(contacto.whatsapp)
+  const waUrl = buildWhatsAppUrl(contacto.whatsapp, contacto.whatsapp_mensaje)
 
   const options = [
     {

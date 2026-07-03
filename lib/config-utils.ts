@@ -5,6 +5,7 @@
 
 export type ContactoConfig = {
   whatsapp: string
+  whatsapp_mensaje: string
   telefono: string
   correo: string
   direccion: string
@@ -269,6 +270,7 @@ export type SiteConfig = {
 export const CONFIG_DEFAULTS: SiteConfig = {
   contacto: {
     whatsapp:  '+593 985 222 635',
+    whatsapp_mensaje: 'Hola, necesito asistencia legal urgente de IMPERIUM IURIS',
     telefono:  '+593 XX XXX XXXX',
     correo:    'contacto@imperiumiuris.ec',
     direccion: 'Guayaquil, Ecuador',
@@ -531,11 +533,8 @@ export const CONFIG_DEFAULTS: SiteConfig = {
 
 // ─── Helpers puros ────────────────────────────────────────────────────────────
 
-export function buildWhatsAppUrl(
-  whatsapp: string,
-  message = 'Hola, necesito asistencia legal urgente de IMPERIUM IURIS',
-): string {
-  return `https://wa.me/${whatsapp.replace(/\D/g, '')}?text=${encodeURIComponent(message)}`
+export function buildWhatsAppUrl(whatsapp: string, mensaje: string): string {
+  return `https://wa.me/${whatsapp.replace(/\D/g, '')}?text=${encodeURIComponent(mensaje)}`
 }
 
 export function generateSlots(cfg: HorarioCitasConfig): string[] {
