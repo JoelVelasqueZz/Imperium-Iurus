@@ -16,3 +16,6 @@ dev-server*.log
 
 .DS_Store
 Thumbs.db
+
+# Claude Code local config
+.claude/

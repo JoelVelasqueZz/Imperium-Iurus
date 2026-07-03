@@ -12,22 +12,105 @@ Next.js 15.3 App Router · TypeScript strict · Tailwind CSS · Framer Motion ·
 | M1 | ✅ | Sitio web público (home, nosotros, servicios, blog, contacto, agenda) |
 | M2 | ✅ | Emails con Resend — confirmación al cliente + notificación al abogado |
 | M3 | ✅ | Agenda online — formulario, disponibilidad, guardado en Supabase |
-| M4 | ✅ | Panel admin — Auth, consultas, CMS blog, testimonios |
+| M4 | ✅ | Panel admin — Auth, consultas, CMS blog, testimonios, configuración |
 | Portal cliente | ✅ | Google OAuth, chat en tiempo real, mis citas, modal login-antes-de-enviar |
+| Inline editing | ✅ | Edición en vivo de textos e imágenes desde el sitio público (modo edición) |
 
-## Funcionalidades extra (fuera del plan original M1-M4)
+---
 
-Implementadas en sesión 2026-06-29:
+## Sistema de configuración del sitio
 
-| Feature | Ruta(s) | Estado |
-|---------|---------|--------|
-| Login cliente con Google OAuth | `/login` | ✅ |
-| Chat cliente ↔ abogado (Realtime) | `/chat` · `/admin/chats` · `/admin/chats/[clienteId]` | ✅ |
-| "Mis citas" — historial por cliente | `/mis-citas` | ✅ Pendiente prueba |
-| Modal login antes de enviar formulario | `/agenda` · `/contacto` | ✅ Pendiente prueba |
-| NavAuthButton — avatar + dropdown en navbar | Navbar público | ✅ |
-| ChatInviteBanner post-envío | `/agenda` · `/contacto` (estado `sent`) | ✅ |
-| `cliente_id` en tabla `citas` | API `/api/appointments` | ✅ SQL pendiente de ejecutar |
+### Arquitectura
+
+El sitio tiene dos formas de editar contenido:
+
+1. **Panel `/admin/configuracion`** — Para configuraciones técnicas:
+   - Datos de contacto (WhatsApp, teléfono, correo, dirección)
+   - Mensaje predefinido de WhatsApp
+   - Redes sociales (LinkedIn, Instagram, Facebook)
+   - Horario de atención (controla botón flotante)
+   - Horario para citas + días festivos
+
+2. **Inline editing (modo edición)** — Para textos e imágenes:
+   - Activar con el toggle en el navbar (solo visible para admins)
+   - Click en el botón "Editar" que aparece en cada sección
+   - Los cambios se guardan en Supabase y se reflejan en todo el sitio
+
+### Flujo de datos
+
+```
+Supabase (tabla configuracion)
+    ↓
+getSiteConfig() — lib/config.ts (server-side)
+    ↓
+<ConfigProvider> — components/providers/ConfigProvider.tsx
+    ↓
+useSiteConfig() — hook para leer config en cualquier componente
+useUpdateConfig() — hook para actualizar config (usado por modales de edición)
+```
+
+### Claves de configuración
+
+| Clave | Descripción | Editable desde |
+|-------|-------------|----------------|
+| `contacto` | WhatsApp, teléfono, correo, dirección, horas, emergencia, whatsapp_mensaje | Panel admin |
+| `redes_sociales` | LinkedIn, Instagram, Facebook URLs | Panel admin |
+| `horario_atencion` | Días, hora inicio/fin, mensaje fuera de horario | Panel admin |
+| `horario_citas` | Días, hora inicio/fin, intervalo | Panel admin |
+| `festivos` | Array de fechas bloqueadas | Panel admin |
+| `hero` | Título (3 partes), subtítulo, frase emocional, botones | Inline editing |
+| `trust_block` | Eyebrow, título, subtítulo, 6 tarjetas | Inline editing |
+| `services_block` | Eyebrow, título, subtítulo, 4 áreas de práctica | Inline editing |
+| `urgency_block` | Eyebrow, título, texto, badge, CTA, footer, 3 escenarios | Inline editing |
+| `differential_block` | Eyebrow, título, subtítulo, closing, CTA, 6 diferenciales | Inline editing |
+| `testimonials_block` | Eyebrow, título, subtítulo, testimonios | Inline editing |
+| `blog_preview` | Eyebrow, título, subtítulo (bloque en home) | Inline editing |
+| `blog_page` | Eyebrow, título, subtítulo (página /blog) | Inline editing |
+| `final_cta` | Título, subtítulo, botones | Inline editing |
+| `agenda_page` | Eyebrow, título, subtítulo, textos del sidebar | Inline editing |
+| `contacto_page` | Eyebrow, título, subtítulo | Inline editing |
+| `nosotros_page` | Eyebrow, título, intro, descripción, tagline, filosofía, visión | Inline editing |
+| `por_que_block` | Título, subtítulo, items, texto, closing | Inline editing |
+| `equipo_block` | Título, subtítulo, especialistas, closing | Inline editing |
+| `metodologia_block` | Título, subtítulo, 6 pasos | Inline editing |
+| `confidencialidad_block` | Título, subtítulo, items, closing | Inline editing |
+| `cta_nosotros` | Título, subtítulo, botones | Inline editing |
+| `footer` | Descripción de la firma | Inline editing |
+| `imagenes` | Hero carousel, servicios, diferencial carousel, galería nosotros | Inline editing |
+
+### Propagación automática de datos de contacto
+
+Los datos de contacto se usan en múltiples lugares y se actualizan automáticamente:
+
+| Campo | Usado en |
+|-------|----------|
+| `contacto.whatsapp` | Botón flotante (WhatsApp), UrgencyBlock |
+| `contacto.whatsapp_mensaje` | Mensaje predefinido en todos los links wa.me |
+| `contacto.telefono` | Botón flotante (Llamada), Navbar (botón urgencia), Footer, ContactInfoBlock |
+| `contacto.correo` | Footer, ContactInfoBlock |
+| `contacto.direccion` | Footer, ContactInfoBlock, mapa en /contacto |
+| `contacto.horas` | Footer, ContactInfoBlock |
+| `contacto.emergencia` | Footer, ContactInfoBlock |
+| `redes_sociales.*` | Footer (íconos), ContactInfoBlock (badges clickeables) |
+
+### Componentes clave del sistema de edición
+
+| Componente | Descripción |
+|------------|-------------|
+| `EditableSection` | Wrapper que muestra borde dorado + botón editar en modo edición |
+| `SectionEditModal` | Modal genérico para editar cualquier clave de config |
+| `EditModeProvider` | Contexto que controla si el modo edición está activo |
+| `ConfigProvider` | Contexto que provee la config a todo el sitio |
+| `ImageUploadField` | Campo para subir imágenes a Supabase Storage |
+
+### Props de EditableSection
+
+| Prop | Descripción |
+|------|-------------|
+| `onEdit` | Callback al hacer click en editar |
+| `bottomButton` | Pone el botón abajo (para secciones bajo el navbar) |
+| `topSafe` | Agrega margen superior (para evitar navbar) |
+| `label` | Texto del botón (default: "Editar") |
 
 ---
 
@@ -92,6 +175,15 @@ ADMIN_EMAIL=              # Email del admin (fallback si app_metadata.role no es
 
 ## Tablas Supabase
 
+### `configuracion`
+Configuración del sitio. Sin RLS (acceso vía service_role).
+
+| Columna | Tipo | Notas |
+|---------|------|-------|
+| clave | text PK | Identificador único de la config |
+| valor | jsonb | Objeto con los valores |
+| updated_at | timestamptz | Última actualización |
+
 ### `citas`
 Agenda de citas. RLS habilitado.
 
@@ -106,14 +198,8 @@ Agenda de citas. RLS habilitado.
 | hora | time | |
 | mensaje | text nullable | |
 | estado | text | `pendiente` · `confirmada` · `cancelada` |
-| cliente_id | uuid nullable | FK → `auth.users(id)` ON DELETE SET NULL. Nulo si el cliente no estaba logueado al agendar |
+| cliente_id | uuid nullable | FK → `auth.users(id)` ON DELETE SET NULL |
 | created_at | timestamptz | |
-
-> `cliente_id` fue agregado en 2026-06-29. SQL ejecutado:
-> ```sql
-> alter table public.citas add column cliente_id uuid references auth.users(id) on delete set null;
-> create index citas_cliente_id_idx on public.citas(cliente_id);
-> ```
 
 ### `consultas`
 Formulario de contacto. RLS habilitado.
@@ -141,6 +227,8 @@ Blog. RLS habilitado.
 | resumen | text | |
 | contenido | text | Markdown |
 | imagen_url | text nullable | |
+| categoria | text | |
+| tiempo_lectura | text | |
 | publicado | boolean | Público solo si `true` |
 | created_at | timestamptz | |
 
@@ -169,45 +257,6 @@ Chat cliente ↔ abogado en tiempo real. RLS habilitado.
 | leido | boolean | default false |
 | created_at | timestamptz | |
 
-**SQL ejecutado para mensajes:**
-```sql
-create table public.mensajes (
-  id          uuid primary key default gen_random_uuid(),
-  cliente_id  uuid not null references auth.users(id) on delete cascade,
-  remitente   text not null check (remitente in ('cliente', 'abogado')),
-  texto       text not null,
-  leido       boolean not null default false,
-  created_at  timestamptz not null default now()
-);
-
-alter table public.mensajes enable row level security;
-
--- Grants (CRÍTICO: tablas creadas por SQL no tienen grants automáticos)
-grant select, insert, update on public.mensajes to authenticated;
-grant select on public.mensajes to anon;
-grant all on public.mensajes to service_role;
-
--- RLS policies
-create policy "cliente_select_mensajes" on public.mensajes
-  for select using (
-    auth.uid() = cliente_id
-    or (auth.jwt() -> 'app_metadata' ->> 'role') = 'admin'
-  );
-
-create policy "cliente_insert_mensajes" on public.mensajes
-  for insert with check (
-    auth.uid() = cliente_id and remitente = 'cliente'
-  );
-
-create policy "admin_update_mensajes" on public.mensajes
-  for update using (
-    (auth.jwt() -> 'app_metadata' ->> 'role') = 'admin'
-  );
-
--- Realtime
-alter publication supabase_realtime add table public.mensajes;
-```
-
 ---
 
 ## Rutas del sitio
@@ -227,136 +276,69 @@ alter publication supabase_realtime add table public.mensajes;
 | Ruta | Descripción |
 |------|-------------|
 | `/login` | Login con Google OAuth (sin contraseña) |
-| `/auth/callback` | Callback OAuth — exchange code → session, redirect a `?next=` o `/` |
+| `/auth/callback` | Callback OAuth — exchange code → session |
 | `/chat` | Chat en tiempo real cliente ↔ abogado |
 | `/mis-citas` | Historial de citas del cliente autenticado |
 
 ### Panel admin
 | Ruta | Descripción |
 |------|-------------|
-| `/admin/login` | Login admin (email/contraseña). Sin enlace visible en el sitio |
+| `/admin/login` | Login admin (email/contraseña) |
 | `/admin/agenda` | Gestión de citas |
 | `/admin/consultas` | Gestión de consultas de contacto |
 | `/admin/blog` | CMS de artículos |
 | `/admin/testimonios` | Moderación de testimonios |
 | `/admin/chats` | Lista de conversaciones de clientes |
 | `/admin/chats/[clienteId]` | Chat individual admin ↔ cliente |
-
----
-
-## Flujo de chat (arquitectura)
-
-```
-Cliente (browser)                    Admin (browser)
-    │                                      │
-    │  supabase-browser (anon key)         │  supabase-browser (anon key)
-    │  INSERT mensajes (RLS: uid=cliente_id)│  Server Action → supabase (service role)
-    │                                      │  INSERT mensajes (remitente='abogado')
-    │                                      │
-    └──── Supabase Realtime (postgres_changes) ────┘
-              filter: cliente_id=eq.<uuid>
-```
-
-- El cliente inserta mensajes directamente desde el browser (RLS valida `auth.uid() = cliente_id`).
-- El admin inserta mensajes vía **server action** (`app/admin/chats/[clienteId]/actions.ts`) para mantener el `service_role` key server-side.
-- Ambos lados escuchan Realtime con `filter: cliente_id=eq.<uuid>`.
-
----
-
-## Flujo modal de login antes de enviar formulario
-
-Cuando un usuario no autenticado completa `/agenda` o `/contacto` y hace click en enviar:
-
-1. `onSubmit` detecta `isLoggedIn === false`
-2. Guarda `data` en estado `pendingData`, muestra `<LoginModal />`
-3. **Opción A — Iniciar sesión con Google:**
-   - Guarda `JSON.stringify(data)` en `sessionStorage('pending_agenda'|'pending_contacto')`
-   - Llama `supabase.auth.signInWithOAuth({ redirectTo: '/auth/callback?next=/agenda' })`
-   - OAuth completa → callback redirige a `/agenda`
-   - Al montar, `useEffect` lee sessionStorage, llama `submitFormData(data)` directo
-   - Si la cita se guarda exitosamente, `cliente_id` queda vinculado (el usuario ya tiene sesión)
-4. **Opción B — Continuar sin cuenta:**
-   - Modal llama `onContinue()` → `submitFormData(pendingData)`
-   - La cita se guarda con `cliente_id = null`
-
-**Archivos clave:**
-- `components/shared/LoginModal.tsx` — modal reutilizable
-- `app/agenda/page.tsx` — lógica `isLoggedIn`, `pendingData`, `submitFormData`, `useEffect` sessionStorage
-- `app/contacto/page.tsx` — misma lógica, storage key `'pending_contacto'`
-
----
-
-## Panel de administración
-
-- URL de acceso: `/admin/login` — **sin enlace visible en el sitio público**
-- Crear usuario admin desde: Supabase Dashboard → Authentication → Users
-- Asignar rol admin via SQL:
-  ```sql
-  update auth.users
-  set raw_app_meta_data = raw_app_meta_data || '{"role":"admin"}'::jsonb
-  where email = 'email-del-admin@ejemplo.com';
-  ```
-- Middleware protege todas las rutas `/admin/*`
-
----
-
-## Panel de configuración del sitio (`/admin/configuracion`)
-
-Editor de contenido en vivo. Tabla `configuracion` (`clave text primary key`, `valor jsonb`, `updated_at`). Cada sección del panel hace `PATCH /api/admin/configuracion` con `{ clave, valor }` (upsert por `clave`) y llama `revalidatePath('/', 'layout')`. El sitio público lee todo vía `getSiteConfig()` (`lib/config.ts`) → `<ConfigProvider>` (contexto client-side, `lib/config-utils.ts` define tipos/defaults) → `useSiteConfig()` en cada componente consumidor.
-
-Claves actuales: `contacto` · `horario_atencion` · `horario_citas` · `festivos` · `hero` · `redes_sociales` · `agenda_page` · `nosotros_page` · `trust_block` · `urgency_block` · `final_cta` · `imagenes`.
-
-| Clave | Consumida por |
-|-------|----------------|
-| `agenda_page` | `app/agenda/page.tsx` (eyebrow/título/subtítulo del formulario) |
-| `nosotros_page` | `AperturaSection`, `FilosofiaSection` (4 pilares), `PorQueSection`, `VisionSection` |
-| `trust_block` | `components/home/TrustBlock.tsx` (título+body de las 6 tarjetas; ícono y `sub` siguen fijos en `lib/constants.ts`) |
-| `urgency_block` | `components/home/UrgencyBlock.tsx` (texto principal + 3 escenarios: título/subtítulo/items/botón) |
-| `final_cta` | `components/home/FinalCTA.tsx` (título + botón primario; subtítulo y botón "Agendar cita" fijos) |
-| `imagenes` | `HeroSection` (carrusel), `ServicesBlock` (imágenes por área de práctica), `FirmaGallery` (galería nosotros) |
-
-**Subida de imágenes:** `components/admin/ImageUploadField.tsx` sube archivos a `POST /api/admin/configuracion/upload`, que valida sesión admin y usa el `service_role` key para escribir al bucket público `site-images` (bypassa RLS de Storage). Devuelve la URL pública y el campo se guarda como string igual que cualquier otra URL. El bucket y los valores iniciales de las nuevas claves están en `scripts/sql-configuracion-nuevas-secciones.sql` — pendiente de ejecutar en Supabase.
-
-> El hostname de Supabase se agrega dinámicamente a `images.remotePatterns` en `next.config.ts` (derivado de `NEXT_PUBLIC_SUPABASE_URL`) para que `next/image` pueda servir las imágenes subidas al bucket.
+| `/admin/configuracion` | Configuración técnica del sitio |
 
 ---
 
 ## Convenciones
 
-- **Timezone Ecuador:** `America/Guayaquil` (UTC-5, sin DST). Siempre usar `Intl.DateTimeFormat.formatToParts()` para extraer componentes de fecha/hora, nunca `new Date(toLocaleString())`.
+- **Timezone Ecuador:** `America/Guayaquil` (UTC-5, sin DST). Siempre usar `Intl.DateTimeFormat.formatToParts()` para extraer componentes de fecha/hora.
 - **Emails:** `Promise.allSettled` + verificar `result.value.error` (Resend nunca lanza excepciones).
-- **RLS + GRANT:** Tablas creadas por SQL necesitan `GRANT SELECT/INSERT/UPDATE ON <tabla> TO authenticated` explícito. Sin grant → error 403 aunque la policy esté bien.
+- **RLS + GRANT:** Tablas creadas por SQL necesitan `GRANT SELECT/INSERT/UPDATE ON <tabla> TO authenticated` explícito.
 - **Blog público:** lee solo `publicado = true`.
 - **Testimonios públicos:** lee solo `estado = 'aprobado'`.
-- **`useEffect` cleanup con Realtime:** el canal debe guardarse en variable `let channel` antes del `async function init()`. El `return () => supabase.removeChannel(channel)` debe estar directamente en el `useEffect`, no dentro de `.then()`.
-- **`createSupabaseBrowserClient()`:** es un singleton — llamarlo múltiples veces en el mismo componente no crea múltiples clientes.
+- **`useEffect` cleanup con Realtime:** el canal debe guardarse en variable `let channel` antes del `async function init()`.
+- **`createSupabaseBrowserClient()`:** es un singleton — llamarlo múltiples veces no crea múltiples clientes.
+- **WhatsApp:** Formato internacional (+593) para links wa.me. El mensaje se configura en `contacto.whatsapp_mensaje`.
+- **Teléfono:** Formato local (09...) para display y llamadas. Separado del WhatsApp para flexibilidad.
+- **Inline editing:** Usar `bottomButton` en EditableSection solo para el primer bloque de cada página (que queda bajo el navbar).
 
 ---
 
-## Pendiente de probar (próxima sesión)
+## Archivos clave del sistema de configuración
 
-### Flujo modal login + autoenvío (`/agenda`)
-1. Abrir `/agenda` sin sesión
-2. Completar todos los campos (nombre, correo, teléfono, tipo, fecha, hora)
-3. Hacer click en "Confirmar cita"
-4. Verificar que aparece `<LoginModal>` con botón Google y "Continuar sin cuenta"
-5. **Ruta A:** Click en Google → login OAuth → redirige a `/agenda` → verificar que la cita se envía automáticamente y aparece pantalla de éxito → verificar en Supabase que la fila tiene `cliente_id` poblado
-6. **Ruta B:** Click en "Continuar sin cuenta" → verificar que la cita se envía normalmente → `cliente_id` es null en Supabase
+| Archivo | Descripción |
+|---------|-------------|
+| `lib/config-utils.ts` | Tipos TypeScript y defaults de toda la config |
+| `lib/config.ts` | `getSiteConfig()` — lee config de Supabase (server-side) |
+| `components/providers/ConfigProvider.tsx` | Contexto React con `useSiteConfig()` y `useUpdateConfig()` |
+| `components/providers/EditModeProvider.tsx` | Contexto para modo edición |
+| `components/admin/EditableSection.tsx` | Wrapper visual para secciones editables |
+| `components/admin/SectionEditModal.tsx` | Modal genérico de edición |
+| `components/admin/ConfigFormControls.tsx` | Inputs, campos, botón guardar reutilizables |
+| `app/api/admin/configuracion/route.ts` | API para PATCH de configuración |
 
-### Flujo modal login + autoenvío (`/contacto`)
-- Mismo test que agenda pero con el formulario de consulta
-- Verificar que `sessionStorage('pending_contacto')` se usa correctamente
+---
 
-### Página `/mis-citas`
-1. Crear al menos una cita estando logueado (para que `cliente_id` quede poblado)
-2. Ir a `/mis-citas` → verificar que muestra la cita con fecha, hora, tipo y badge de estado
-3. Ir a `/mis-citas` sin sesión → verificar que redirige a `/login`
-4. Verificar que el NavAuthButton muestra "Mis citas" en el dropdown al estar logueado
+## API de configuración
 
-### SQL pendiente de ejecutar en Supabase
-```sql
--- Columna cliente_id en citas (si no se ejecutó aún)
-alter table public.citas
-  add column cliente_id uuid references auth.users(id) on delete set null;
-create index citas_cliente_id_idx on public.citas(cliente_id);
+### `PATCH /api/admin/configuracion`
+
+```json
+{
+  "clave": "contacto",
+  "valor": { "whatsapp": "+593 985 222 635", ... }
+}
 ```
+
+**Respuestas:**
+- `200` — Guardado exitoso
+- `401` — No autorizado (requiere admin)
+- `422` — Clave inválida (no está en CLAVES_VALIDAS)
+- `502` — Error de Supabase
+
+**Claves válidas:** `contacto`, `horario_atencion`, `horario_citas`, `festivos`, `hero`, `redes_sociales`, `agenda_page`, `contacto_page`, `blog_page`, `blog_preview`, `nosotros_page`, `trust_block`, `services_block`, `urgency_block`, `differential_block`, `final_cta`, `testimonials_block`, `footer`, `por_que_block`, `equipo_block`, `metodologia_block`, `confidencialidad_block`, `cta_nosotros`, `imagenes`
