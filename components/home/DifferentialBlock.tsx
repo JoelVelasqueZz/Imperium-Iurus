@@ -3,7 +3,7 @@
 import { useState, useCallback } from 'react'
 import Image from 'next/image'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
-import { AnimatePresence, motion } from 'framer-motion'
+import { AnimatePresence, m } from 'framer-motion'
 import Button from '@/components/ui/Button'
 import SectionHeader from '@/components/ui/SectionHeader'
 import { differentialItems } from '@/lib/constants'
@@ -71,6 +71,7 @@ export default function DifferentialBlock() {
         <div className="relative mt-12 px-12 md:px-16">
           {/* Flecha anterior */}
           <button
+            type="button"
             onClick={prev}
             aria-label="Anterior"
             className="absolute left-0 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center border border-gold/60 bg-white text-gold transition-colors hover:border-gold hover:bg-gold/10"
@@ -80,6 +81,7 @@ export default function DifferentialBlock() {
 
           {/* Flecha siguiente */}
           <button
+            type="button"
             onClick={next}
             aria-label="Siguiente"
             className="absolute right-0 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center border border-gold/60 bg-white text-gold transition-colors hover:border-gold hover:bg-gold/10"
@@ -90,7 +92,7 @@ export default function DifferentialBlock() {
           {/* Slides */}
           <div className="overflow-hidden">
             <AnimatePresence mode="wait" custom={direction}>
-              <motion.article
+              <m.article
                 key={current}
                 custom={direction}
                 variants={slideVariants}
@@ -125,7 +127,7 @@ export default function DifferentialBlock() {
                     {impact}
                   </p>
                 </div>
-              </motion.article>
+              </m.article>
             </AnimatePresence>
           </div>
 
@@ -133,6 +135,7 @@ export default function DifferentialBlock() {
           <div className="mt-6 flex justify-center gap-2">
             {differentialItems.map((_, i) => (
               <button
+                type="button"
                 key={i}
                 onClick={() => goTo(i, current)}
                 aria-label={`Diferencial ${i + 1}`}

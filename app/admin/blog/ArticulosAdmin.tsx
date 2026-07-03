@@ -76,7 +76,7 @@ export default function ArticulosAdmin({ articulos: initial }: { articulos: Arti
                 <p className="text-xs text-text-muted">/{art.slug} · {fmtDate(art.created_at)}</p>
               </div>
               <div className="flex items-center gap-2">
-                <button onClick={() => togglePublicado(art)} disabled={updating === art.id} title={art.publicado ? 'Despublicar' : 'Publicar'}
+                <button type="button" onClick={() => togglePublicado(art)} disabled={updating === art.id} title={art.publicado ? 'Despublicar' : 'Publicar'}
                   className="rounded border border-border p-2 text-text-muted transition-colors hover:border-gold hover:text-gold disabled:opacity-40">
                   {art.publicado ? <EyeOff size={14} /> : <Eye size={14} />}
                 </button>
@@ -84,7 +84,7 @@ export default function ArticulosAdmin({ articulos: initial }: { articulos: Arti
                   className="rounded border border-border p-2 text-text-muted transition-colors hover:border-gold hover:text-gold">
                   <Edit2 size={14} />
                 </Link>
-                <button onClick={() => deleteArticulo(art.id)} disabled={updating === art.id}
+                <button type="button" onClick={() => deleteArticulo(art.id)} disabled={updating === art.id}
                   className="rounded border border-border p-2 text-text-muted transition-colors hover:border-red-500 hover:text-red-400 disabled:opacity-40">
                   <Trash2 size={14} />
                 </button>

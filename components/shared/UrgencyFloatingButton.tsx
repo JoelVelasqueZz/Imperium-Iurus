@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
-import { AnimatePresence, motion } from 'framer-motion'
+import { AnimatePresence, m } from 'framer-motion'
 import { Clock, FileText, Phone, Siren, X } from 'lucide-react'
 import { useSiteConfig } from '@/components/providers/ConfigProvider'
 import { buildWhatsAppUrl, isOfficeHours } from '@/lib/config-utils'
@@ -73,7 +73,7 @@ export default function UrgencyFloatingButton() {
     <div ref={containerRef} className="fixed bottom-5 right-5 z-40 flex flex-col items-end gap-3">
       <AnimatePresence>
         {open && (
-          <motion.div
+          <m.div
             role="menu"
             className="flex flex-col items-end gap-3"
             initial="hidden"
@@ -81,7 +81,7 @@ export default function UrgencyFloatingButton() {
             exit="hidden"
           >
             {/* Banner de horario */}
-            <motion.div
+            <m.div
               variants={itemVariants}
               transition={{ duration: 0.22, ease: 'easeOut' }}
               className={`flex max-w-[230px] items-start gap-2.5 rounded-2xl border px-4 py-3 text-right text-xs font-light leading-snug shadow-xl shadow-black/40 ${
@@ -98,13 +98,13 @@ export default function UrgencyFloatingButton() {
                   horario_atencion.mensaje_fuera
                 )}
               </span>
-            </motion.div>
+            </m.div>
 
             {options.map((opt, i) => {
               const Icon = opt.icon
               const transition = { duration: 0.22, delay: (i + 1) * 0.05, ease: 'easeOut' as const }
               return (
-                <motion.div key={opt.label} variants={itemVariants} transition={transition} role="none">
+                <m.div key={opt.label} variants={itemVariants} transition={transition} role="none">
                   {opt.type === 'internal' ? (
                     <Link href={opt.href} className={itemClass} role="menuitem" onClick={close}>
                       <Icon />{opt.label}
@@ -121,10 +121,10 @@ export default function UrgencyFloatingButton() {
                       <Icon />{opt.label}
                     </a>
                   )}
-                </motion.div>
+                </m.div>
               )
             })}
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
 
@@ -137,14 +137,14 @@ export default function UrgencyFloatingButton() {
         className="focus-gold relative inline-flex h-14 w-14 items-center justify-center rounded-full border border-gold-bright bg-gold text-primary shadow-2xl shadow-black/50 transition-all hover:bg-gold-bright md:h-16 md:w-16"
       >
         {!open && (
-          <motion.span
+          <m.span
             aria-hidden="true"
             className="absolute inset-0 rounded-full bg-gold-bright"
             animate={{ scale: [1, 1.7], opacity: [0.55, 0] }}
             transition={{ duration: 1.8, repeat: Infinity, ease: 'easeOut' }}
           />
         )}
-        <motion.span
+        <m.span
           key={open ? 'close' : 'open'}
           initial={{ rotate: -90, opacity: 0 }}
           animate={{ rotate: 0, opacity: 1 }}
@@ -152,7 +152,7 @@ export default function UrgencyFloatingButton() {
           className="relative flex"
         >
           {open ? <X size={26} aria-hidden="true" /> : <Siren size={28} aria-hidden="true" />}
-        </motion.span>
+        </m.span>
       </button>
     </div>
   )

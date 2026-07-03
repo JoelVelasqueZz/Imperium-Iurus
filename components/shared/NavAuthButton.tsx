@@ -132,6 +132,7 @@ export default function NavAuthButton({ mobile = false }: { mobile?: boolean }) 
                 Panel Admin
               </Link>
               <button
+                type="button"
                 onClick={toggleEditMode}
                 className="flex items-center gap-2 font-montserrat text-xs font-medium uppercase tracking-widest text-gold/80 transition-colors hover:text-gold"
               >
@@ -141,6 +142,7 @@ export default function NavAuthButton({ mobile = false }: { mobile?: boolean }) 
             </>
           )}
           <button
+            type="button"
             onClick={cerrarSesion}
             className="flex items-center gap-2 font-montserrat text-xs uppercase tracking-widest text-text-muted/70 transition-colors hover:text-red-400"
           >
@@ -155,6 +157,7 @@ export default function NavAuthButton({ mobile = false }: { mobile?: boolean }) 
   return (
     <div ref={dropdownRef} className="relative">
       <button
+        type="button"
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
         aria-haspopup="menu"
@@ -221,6 +224,7 @@ export default function NavAuthButton({ mobile = false }: { mobile?: boolean }) 
                 Panel Admin
               </Link>
               <button
+                type="button"
                 role="menuitem"
                 onClick={() => { toggleEditMode(); setOpen(false) }}
                 className="flex w-full items-center gap-3 px-4 py-3 font-montserrat text-xs uppercase tracking-widest text-gold/70 transition-colors hover:bg-gold/10 hover:text-gold"
@@ -232,6 +236,7 @@ export default function NavAuthButton({ mobile = false }: { mobile?: boolean }) 
           )}
           <div className="mx-3 border-t border-border/60" />
           <button
+            type="button"
             role="menuitem"
             onClick={cerrarSesion}
             className="flex w-full items-center gap-3 px-4 py-3 font-montserrat text-xs uppercase tracking-widest text-text-muted transition-colors hover:bg-red-950/30 hover:text-red-400"

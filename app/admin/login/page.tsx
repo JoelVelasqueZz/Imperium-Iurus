@@ -37,10 +37,11 @@ function LoginForm() {
   return (
     <form onSubmit={handleSubmit} className="mt-8 space-y-4">
       <div>
-        <label className="mb-1.5 block font-montserrat text-xs font-medium uppercase tracking-widest text-text-muted">
+        <label htmlFor="admin-login-email" className="mb-1.5 block font-montserrat text-xs font-medium uppercase tracking-widest text-text-muted">
           Correo electrónico
         </label>
         <input
+          id="admin-login-email"
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
@@ -51,10 +52,11 @@ function LoginForm() {
         />
       </div>
       <div>
-        <label className="mb-1.5 block font-montserrat text-xs font-medium uppercase tracking-widest text-text-muted">
+        <label htmlFor="admin-login-password" className="mb-1.5 block font-montserrat text-xs font-medium uppercase tracking-widest text-text-muted">
           Contraseña
         </label>
         <input
+          id="admin-login-password"
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}

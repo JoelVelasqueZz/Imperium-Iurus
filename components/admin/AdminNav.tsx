@@ -68,6 +68,7 @@ export default function AdminNav() {
           Ver sitio público
         </a>
         <button
+          type="button"
           onClick={handleLogout}
           className="flex w-full items-center gap-3 rounded px-3 py-2.5 font-montserrat text-xs font-medium uppercase tracking-widest text-text-muted transition-colors hover:bg-red-950/40 hover:text-red-400"
         >

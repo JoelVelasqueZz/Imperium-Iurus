@@ -2,7 +2,7 @@
 
 import Image from 'next/image'
 import { ArrowRight, Phone } from 'lucide-react'
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
 import { useEffect, useState } from 'react'
 import Button from '@/components/ui/Button'
 import { BRAND } from '@/lib/constants'
@@ -61,21 +61,21 @@ export default function HeroSection() {
       <div className="absolute inset-0 -z-10 bg-[#0F1115]/30" />
 
       {/* Contenido */}
-      <motion.div
+      <m.div
         className="relative mx-auto max-w-5xl text-center"
         initial="hidden"
         animate="show"
         transition={{ staggerChildren: 0.2 }}
       >
-        <motion.p
+        <m.p
           variants={item}
           transition={{ duration: 0.7 }}
           className="mb-5 font-cinzel text-xs font-semibold uppercase tracking-[0.35em] text-gold-light"
         >
           {BRAND.location}
-        </motion.p>
+        </m.p>
 
-        <motion.h1
+        <m.h1
           variants={item}
           transition={{ duration: 0.7 }}
           className="text-balance font-trajan text-4xl font-bold uppercase tracking-[0.08em] text-white sm:text-5xl lg:text-7xl"
@@ -83,31 +83,31 @@ export default function HeroSection() {
           {hero.title_before}{' '}
           <span className="text-gold">{hero.title_highlight}</span>{' '}
           {hero.title_after}
-        </motion.h1>
+        </m.h1>
 
-        <motion.div
+        <m.div
           variants={item}
           transition={{ duration: 0.7 }}
           className="mx-auto mt-6 h-px w-24 bg-gradient-to-r from-transparent via-gold to-transparent"
         />
 
-        <motion.p
+        <m.p
           variants={item}
           transition={{ duration: 0.7 }}
           className="mx-auto mt-7 max-w-2xl font-montserrat text-lg font-light leading-8 text-text-muted md:text-xl"
         >
           {hero.subtitle}
-        </motion.p>
+        </m.p>
 
-        <motion.p
+        <m.p
           variants={item}
           transition={{ duration: 0.7 }}
           className="mt-5 font-montserrat text-base italic text-gold-light/80"
         >
           {hero.emotional}
-        </motion.p>
+        </m.p>
 
-        <motion.div
+        <m.div
           variants={item}
           transition={{ duration: 0.7 }}
           className="mt-10 flex flex-col items-stretch justify-center gap-4 sm:flex-row sm:items-center"
@@ -119,12 +119,13 @@ export default function HeroSection() {
           <Button href="/agenda" variant="tertiary">
             {hero.cta_tertiary} <ArrowRight size={16} />
           </Button>
-        </motion.div>
+        </m.div>
 
         {/* Dots del carousel */}
-        <motion.div variants={item} transition={{ duration: 0.7 }} className="mt-10 flex justify-center gap-2">
+        <m.div variants={item} transition={{ duration: 0.7 }} className="mt-10 flex justify-center gap-2">
           {bgImages.map((_, i) => (
             <button
+              type="button"
               key={i}
               onClick={() => setCurrent(i)}
               aria-label={`Slide ${i + 1}`}
@@ -133,8 +134,8 @@ export default function HeroSection() {
               }`}
             />
           ))}
-        </motion.div>
-      </motion.div>
+        </m.div>
+      </m.div>
     </section>
     </EditableSection>
 

@@ -59,7 +59,7 @@ export default function TestimoniosAdmin({ testimonios: initial }: { testimonios
     <div>
       <div className="mb-6 flex flex-wrap gap-2">
         {FILTERS.map((f) => (
-          <button key={f} onClick={() => setFilter(f)}
+          <button type="button" key={f} onClick={() => setFilter(f)}
             className={`rounded-full border px-4 py-1.5 font-montserrat text-xs uppercase tracking-widest transition-colors ${filter === f ? 'border-gold bg-gold text-primary' : 'border-gold/30 text-gold/70 hover:border-gold hover:text-gold'}`}>
             {f === 'todos' ? 'Todos' : f} ({counts[f]})
           </button>
@@ -100,18 +100,18 @@ export default function TestimoniosAdmin({ testimonios: initial }: { testimonios
                 <p className="text-[10px] text-text-muted">{fmtDate(t.created_at)}</p>
                 <div className="flex gap-1.5">
                   {t.estado !== 'aprobado' && (
-                    <button onClick={() => changeEstado(t.id, 'aprobado')} disabled={updating === t.id} title="Aprobar"
+                    <button type="button" onClick={() => changeEstado(t.id, 'aprobado')} disabled={updating === t.id} title="Aprobar"
                       className="rounded border border-emerald-500/40 p-1.5 text-emerald-400 transition-colors hover:bg-emerald-500/10 disabled:opacity-40">
                       <CheckCircle size={14} />
                     </button>
                   )}
                   {t.estado !== 'rechazado' && (
-                    <button onClick={() => changeEstado(t.id, 'rechazado')} disabled={updating === t.id} title="Rechazar"
+                    <button type="button" onClick={() => changeEstado(t.id, 'rechazado')} disabled={updating === t.id} title="Rechazar"
                       className="rounded border border-red-500/40 p-1.5 text-red-400 transition-colors hover:bg-red-500/10 disabled:opacity-40">
                       <XCircle size={14} />
                     </button>
                   )}
-                  <button onClick={() => deleteTestimonio(t.id)} disabled={updating === t.id} title="Eliminar"
+                  <button type="button" onClick={() => deleteTestimonio(t.id)} disabled={updating === t.id} title="Eliminar"
                     className="rounded border border-border p-1.5 text-text-muted transition-colors hover:border-red-500 hover:text-red-400 disabled:opacity-40">
                     <Trash2 size={14} />
                   </button>

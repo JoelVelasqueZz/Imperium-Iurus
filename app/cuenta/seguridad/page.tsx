@@ -214,6 +214,7 @@ export default function SeguridadPage() {
                 Necesitará una aplicación como Google Authenticator o Authy en su teléfono.
               </p>
               <button
+                type="button"
                 onClick={startEnrollment}
                 disabled={enrolling}
                 className="w-full border border-gold bg-gold py-3 font-montserrat text-xs font-bold uppercase tracking-widest text-primary transition-colors hover:bg-gold/90 disabled:cursor-not-allowed disabled:opacity-60"
@@ -333,6 +334,7 @@ export default function SeguridadPage() {
                 Cada vez que inicie sesión desde un nuevo dispositivo, deberá ingresar un código de su aplicación autenticadora.
               </p>
               <button
+                type="button"
                 onClick={disableMFA}
                 disabled={unenrolling}
                 className="w-full border border-red-500/50 py-3 font-montserrat text-xs font-bold uppercase tracking-widest text-red-400 transition-colors hover:bg-red-950/30 disabled:cursor-not-allowed disabled:opacity-60"

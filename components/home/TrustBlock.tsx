@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
 import SectionHeader from '@/components/ui/SectionHeader'
 import { trustCards } from '@/lib/constants'
 import { useSiteConfig, useUpdateConfig } from '@/components/providers/ConfigProvider'
@@ -23,7 +23,7 @@ export default function TrustBlock() {
           title={trust_block.titulo}
           subtitle={trust_block.subtitulo}
         />
-        <motion.div
+        <m.div
           className="grid gap-5 md:grid-cols-2 lg:grid-cols-3"
           initial="hidden"
           whileInView="show"
@@ -33,7 +33,7 @@ export default function TrustBlock() {
           {trustCards.map(({ icon: Icon }, index) => {
             const { title, body, sub } = trust_block.tarjetas[index] ?? trustCards[index]
             return (
-              <motion.article
+              <m.article
                 key={title}
                 variants={{ hidden: { opacity: 0, y: 24 }, show: { opacity: 1, y: 0 } }}
                 className="group border border-border bg-card-bg p-8 shadow-lg shadow-black/40 transition-all duration-300 hover:border-gold"
@@ -42,10 +42,10 @@ export default function TrustBlock() {
                 <h3 className="font-cinzel text-lg font-semibold tracking-wide text-text-light">{title}</h3>
                 <p className="mt-4 font-inter text-sm font-light leading-7 text-text-muted">{body}</p>
                 <p className="mt-5 border-t border-border pt-4 font-inter text-xs font-medium uppercase tracking-widest text-gold">{sub}</p>
-              </motion.article>
+              </m.article>
             )
           })}
-        </motion.div>
+        </m.div>
       </div>
     </section>
     </EditableSection>

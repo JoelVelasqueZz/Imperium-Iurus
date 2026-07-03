@@ -74,6 +74,7 @@ export default function Navbar() {
 
         {/* Hamburger */}
         <button
+          type="button"
           className="focus-gold inline-flex h-10 w-10 items-center justify-center border border-gold/40 text-gold transition-colors hover:border-gold hover:bg-gold/10 md:hidden"
           onClick={() => setOpen((v) => !v)}
           aria-label={open ? 'Cerrar menú' : 'Abrir menú'}

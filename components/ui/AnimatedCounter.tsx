@@ -4,7 +4,7 @@
 // Módulo: M1 — Sitio Web Público
 // RF: RF-03
 // Desarrollado: 2026-05-19
-import { animate, useInView, useMotionValue, useTransform, motion } from 'framer-motion'
+import { animate, useInView, useMotionValue, useTransform, m } from 'framer-motion'
 import { useEffect, useRef } from 'react'
 
 export default function AnimatedCounter({ value, suffix = '' }: { value: number; suffix?: string }) {
@@ -19,5 +19,5 @@ export default function AnimatedCounter({ value, suffix = '' }: { value: number;
     }
   }, [count, inView, value])
 
-  return <motion.span ref={ref}>{rounded}</motion.span>
+  return <m.span ref={ref}>{rounded}</m.span>
 }

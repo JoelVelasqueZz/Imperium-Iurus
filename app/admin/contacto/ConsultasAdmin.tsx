@@ -60,7 +60,7 @@ export default function ConsultasAdmin({ consultas: initial }: { consultas: Cons
       {/* Filtros */}
       <div className="mb-6 flex flex-wrap gap-2">
         {(['todos', ...ESTADOS] as const).map((f) => (
-          <button key={f} onClick={() => setFilter(f)}
+          <button type="button" key={f} onClick={() => setFilter(f)}
             className={`rounded-full border px-4 py-1.5 font-montserrat text-xs uppercase tracking-widest transition-colors ${filter === f ? 'border-gold bg-gold text-primary' : 'border-gold/30 text-gold/70 hover:border-gold hover:text-gold'}`}>
             {f === 'todos' ? 'Todos' : f} ({counts[f]})
           </button>
@@ -90,12 +90,12 @@ export default function ConsultasAdmin({ consultas: initial }: { consultas: Cons
                 <div className="flex flex-col items-end gap-2">
                   <p className="text-xs text-text-muted">{fmtDate(c.created_at)}</p>
                   <div className="flex gap-1.5">
-                    <button onClick={() => setExpanded(expanded === c.id ? null : c.id)}
+                    <button type="button" onClick={() => setExpanded(expanded === c.id ? null : c.id)}
                       className="border border-gold/30 px-3 py-1 text-[10px] uppercase tracking-widest text-gold/70 hover:border-gold hover:text-gold">
                       {expanded === c.id ? 'Ocultar' : 'Ver mensaje'}
                     </button>
                     {ESTADOS.filter((e) => e !== c.estado).map((e) => (
-                      <button key={e} onClick={() => changeEstado(c.id, e)} disabled={updating === c.id}
+                      <button type="button" key={e} onClick={() => changeEstado(c.id, e)} disabled={updating === c.id}
                         className={`rounded border px-3 py-1 text-[10px] uppercase tracking-widest disabled:opacity-40 ${ESTADO_STYLES[e]} hover:opacity-80`}>
                         {updating === c.id ? '…' : e}
                       </button>

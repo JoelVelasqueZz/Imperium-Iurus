@@ -160,10 +160,11 @@ export default function LoginClientePage() {
 
             <form onSubmit={verify2FA} className="space-y-4">
               <div>
-                <label className="mb-1.5 block font-montserrat text-xs font-medium uppercase tracking-widest text-text-muted">
+                <label htmlFor="totp-code" className="mb-1.5 block font-montserrat text-xs font-medium uppercase tracking-widest text-text-muted">
                   Código de verificación
                 </label>
                 <input
+                  id="totp-code"
                   type="text"
                   inputMode="numeric"
                   pattern="[0-9]*"
@@ -199,6 +200,7 @@ export default function LoginClientePage() {
             </form>
 
             <button
+              type="button"
               onClick={() => { setNeeds2FA(false); setTotpCode(''); setError(null) }}
               className="mt-4 w-full font-montserrat text-xs text-text-muted hover:text-gold"
             >
@@ -242,6 +244,7 @@ export default function LoginClientePage() {
           )}
 
           <button
+            type="button"
             onClick={loginConGoogle}
             disabled={loading}
             className="flex w-full items-center justify-center gap-3 border border-border bg-white/5 px-4 py-3 font-montserrat text-xs font-bold uppercase tracking-widest text-text-light transition-colors hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-60"
@@ -258,10 +261,11 @@ export default function LoginClientePage() {
 
           <form onSubmit={loginConPassword} className="space-y-4">
             <div>
-              <label className="mb-1.5 block font-montserrat text-xs font-medium uppercase tracking-widest text-text-muted">
+              <label htmlFor="login-email" className="mb-1.5 block font-montserrat text-xs font-medium uppercase tracking-widest text-text-muted">
                 Correo electrónico
               </label>
               <input
+                id="login-email"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -272,10 +276,11 @@ export default function LoginClientePage() {
               />
             </div>
             <div>
-              <label className="mb-1.5 block font-montserrat text-xs font-medium uppercase tracking-widest text-text-muted">
+              <label htmlFor="login-password" className="mb-1.5 block font-montserrat text-xs font-medium uppercase tracking-widest text-text-muted">
                 Contraseña
               </label>
               <input
+                id="login-password"
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}

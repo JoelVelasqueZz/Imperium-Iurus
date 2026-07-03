@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Image from 'next/image'
 import { Check, ChevronDown } from 'lucide-react'
-import { AnimatePresence, motion } from 'framer-motion'
+import { AnimatePresence, m } from 'framer-motion'
 import SectionHeader from '@/components/ui/SectionHeader'
 import { serviceBlocks } from '@/lib/constants'
 import { useSiteConfig, useUpdateConfig } from '@/components/providers/ConfigProvider'
@@ -37,7 +37,7 @@ export default function ServicesBlock({ bottomButton = false }: { bottomButton?:
             const { title, headline, desc, services, impact } = services_block.items[index] ?? serviceBlocks[index]
             const isOpen = open === id
             return (
-              <motion.article
+              <m.article
                 key={id}
                 initial={{ opacity: 0, y: 24 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -57,6 +57,7 @@ export default function ServicesBlock({ bottomButton = false }: { bottomButton?:
                 {/* Contenido */}
                 <div className="relative z-10">
                   <button
+                    type="button"
                     className="focus-gold flex w-full items-start justify-between gap-4 text-left"
                     onClick={() => setOpen(isOpen ? '' : id)}
                     aria-expanded={isOpen}
@@ -75,7 +76,7 @@ export default function ServicesBlock({ bottomButton = false }: { bottomButton?:
                   <p className="mt-5 font-inter text-sm font-light leading-7 text-primary/65">{desc}</p>
                   <AnimatePresence initial={false}>
                     {isOpen ? (
-                      <motion.div
+                      <m.div
                         initial={{ height: 0, opacity: 0 }}
                         animate={{ height: 'auto', opacity: 1 }}
                         exit={{ height: 0, opacity: 0 }}
@@ -90,11 +91,11 @@ export default function ServicesBlock({ bottomButton = false }: { bottomButton?:
                           ))}
                         </ul>
                         <p className="mt-6 border-t border-primary/15 pt-5 font-cinzel text-sm font-semibold tracking-wide text-gold">{impact}</p>
-                      </motion.div>
+                      </m.div>
                     ) : null}
                   </AnimatePresence>
                 </div>
-              </motion.article>
+              </m.article>
             )
           })}
         </div>

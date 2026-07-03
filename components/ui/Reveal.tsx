@@ -1,6 +1,6 @@
 'use client'
 
-import { motion, useInView } from 'framer-motion'
+import { m, useInView } from 'framer-motion'
 import { useRef, type ReactNode } from 'react'
 
 export default function Reveal({
@@ -16,7 +16,7 @@ export default function Reveal({
   const isInView = useInView(ref, { once: true, margin: '-80px' })
 
   return (
-    <motion.div
+    <m.div
       ref={ref}
       className={className}
       initial={{ opacity: 0, y: 28 }}
@@ -24,6 +24,6 @@ export default function Reveal({
       transition={{ duration: 0.6, ease: 'easeOut', delay }}
     >
       {children}
-    </motion.div>
+    </m.div>
   )
 }

@@ -5,6 +5,7 @@ import './globals.css'
 import PublicShell from '@/components/layout/PublicShell'
 import { ConfigProvider } from '@/components/providers/ConfigProvider'
 import { EditModeProvider } from '@/components/providers/EditModeProvider'
+import MotionProvider from '@/components/providers/MotionProvider'
 import { getSiteConfig } from '@/lib/config'
 import { getUser } from '@/lib/supabase-server'
 import { isAdminUser } from '@/lib/admin-auth'
@@ -148,7 +149,9 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         />
         <ConfigProvider config={config}>
           <EditModeProvider isAdmin={isAdmin}>
-            <PublicShell>{children}</PublicShell>
+            <MotionProvider>
+              <PublicShell>{children}</PublicShell>
+            </MotionProvider>
           </EditModeProvider>
         </ConfigProvider>
       </body>

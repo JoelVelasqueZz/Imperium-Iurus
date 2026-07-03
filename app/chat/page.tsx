@@ -143,6 +143,7 @@ export default function ChatClientePage() {
             <span className="hidden sm:inline">Inicio</span>
           </Link>
           <button
+            type="button"
             onClick={cerrarSesion}
             className="flex items-center gap-1.5 rounded border border-border px-3 py-1.5 font-montserrat text-[10px] uppercase tracking-widest text-text-muted transition-colors hover:border-red-500/40 hover:text-red-400"
           >

@@ -186,10 +186,11 @@ export default function RegistroPage() {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="mb-1.5 block font-montserrat text-xs font-medium uppercase tracking-widest text-text-muted">
+              <label htmlFor="registro-nombre" className="mb-1.5 block font-montserrat text-xs font-medium uppercase tracking-widest text-text-muted">
                 Nombre completo
               </label>
               <input
+                id="registro-nombre"
                 type="text"
                 value={nombre}
                 onChange={(e) => setNombre(e.target.value)}
@@ -201,10 +202,11 @@ export default function RegistroPage() {
             </div>
 
             <div>
-              <label className="mb-1.5 block font-montserrat text-xs font-medium uppercase tracking-widest text-text-muted">
+              <label htmlFor="registro-email" className="mb-1.5 block font-montserrat text-xs font-medium uppercase tracking-widest text-text-muted">
                 Correo electrónico
               </label>
               <input
+                id="registro-email"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -216,11 +218,12 @@ export default function RegistroPage() {
             </div>
 
             <div>
-              <label className="mb-1.5 block font-montserrat text-xs font-medium uppercase tracking-widest text-text-muted">
+              <label htmlFor="registro-password" className="mb-1.5 block font-montserrat text-xs font-medium uppercase tracking-widest text-text-muted">
                 Contraseña
               </label>
               <div className="relative">
                 <input
+                  id="registro-password"
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -252,11 +255,12 @@ export default function RegistroPage() {
             </div>
 
             <div>
-              <label className="mb-1.5 block font-montserrat text-xs font-medium uppercase tracking-widest text-text-muted">
+              <label htmlFor="registro-confirm-password" className="mb-1.5 block font-montserrat text-xs font-medium uppercase tracking-widest text-text-muted">
                 Confirmar contraseña
               </label>
               <div className="relative">
                 <input
+                  id="registro-confirm-password"
                   type={showConfirm ? 'text' : 'password'}
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}

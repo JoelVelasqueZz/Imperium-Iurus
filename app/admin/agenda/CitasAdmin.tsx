@@ -77,6 +77,7 @@ export default function CitasAdmin({ citas: initial }: { citas: Cita[] }) {
       <div className="mb-6 flex flex-wrap gap-2">
         {(['todas', ...ESTADOS] as const).map((f) => (
           <button
+            type="button"
             key={f}
             onClick={() => setFilter(f)}
             className={`rounded-full border px-4 py-1.5 font-montserrat text-xs uppercase tracking-widest transition-colors ${
@@ -133,6 +134,7 @@ export default function CitasAdmin({ citas: initial }: { citas: Cita[] }) {
                   <div className="flex gap-1.5">
                     {ESTADOS.filter((e) => e !== cita.estado).map((e) => (
                       <button
+                        type="button"
                         key={e}
                         onClick={() => changeEstado(cita.id, e)}
                         disabled={updating === cita.id}

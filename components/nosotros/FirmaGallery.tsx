@@ -62,6 +62,7 @@ export default function FirmaGallery() {
         <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
           {galleryImages.map(({ src, alt }, i) => (
             <button
+              type="button"
               key={src}
               onClick={() => setLightbox(i)}
               className="group relative aspect-video overflow-hidden border border-border transition-colors hover:border-gold focus-visible:outline focus-visible:outline-2 focus-visible:outline-gold"
@@ -88,6 +89,7 @@ export default function FirmaGallery() {
         >
           {/* Close */}
           <button
+            type="button"
             onClick={close}
             aria-label="Cerrar"
             className="absolute right-5 top-5 flex h-10 w-10 items-center justify-center text-white/70 transition-colors hover:text-gold"
@@ -97,6 +99,7 @@ export default function FirmaGallery() {
 
           {/* Prev */}
           <button
+            type="button"
             onClick={(e) => { e.stopPropagation(); prev() }}
             aria-label="Anterior"
             className="absolute left-4 top-1/2 -translate-y-1/2 flex h-10 w-10 items-center justify-center border border-gold/40 text-gold/70 transition-colors hover:border-gold hover:text-gold"
@@ -121,6 +124,7 @@ export default function FirmaGallery() {
 
           {/* Next */}
           <button
+            type="button"
             onClick={(e) => { e.stopPropagation(); next() }}
             aria-label="Siguiente"
             className="absolute right-4 top-1/2 -translate-y-1/2 flex h-10 w-10 items-center justify-center border border-gold/40 text-gold/70 transition-colors hover:border-gold hover:text-gold"

@@ -60,6 +60,7 @@ export default function LoginModal({
       {/* Card */}
       <div className="relative w-full max-w-md border border-border bg-[#0D1624] p-8 shadow-2xl shadow-black/60">
         <button
+          type="button"
           onClick={onClose}
           aria-label="Cerrar"
           className="absolute right-4 top-4 text-text-muted transition-colors hover:text-text-light"
@@ -83,6 +84,7 @@ export default function LoginModal({
         </p>
 
         <button
+          type="button"
           onClick={loginConGoogle}
           className="mt-6 flex w-full items-center justify-center gap-3 border border-border bg-white/5 px-4 py-3 font-montserrat text-xs font-bold uppercase tracking-widest text-text-light transition-colors hover:bg-white/10"
         >
@@ -91,6 +93,7 @@ export default function LoginModal({
         </button>
 
         <button
+          type="button"
           onClick={onContinue}
           className="mt-4 w-full font-montserrat text-xs text-text-muted/50 transition-colors hover:text-text-muted"
         >
