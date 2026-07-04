@@ -9,6 +9,9 @@ create table if not exists push_subscriptions (
   created_at timestamptz not null default now()
 );
 
--- Sin políticas RLS para anon/authenticated: solo se accede vía service_role
--- (igual que la tabla `configuracion`).
 alter table push_subscriptions enable row level security;
+
+-- Sin políticas RLS para anon/authenticated: solo se accede vía service_role
+-- (igual que la tabla `configuracion`). El service_role necesita el GRANT
+-- explícito igual que cualquier tabla nueva en este proyecto.
+grant select, insert, delete on push_subscriptions to service_role;

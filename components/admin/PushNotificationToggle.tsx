@@ -16,6 +16,15 @@ function urlBase64ToUint8Array(base64String: string): Uint8Array<ArrayBuffer> {
   return array
 }
 
+async function syncSubscription(subscription: PushSubscription): Promise<boolean> {
+  const res = await fetch('/api/admin/push/subscribe', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(subscription.toJSON()),
+  })
+  return res.ok
+}
+
 export default function PushNotificationToggle() {
   const [status, setStatus] = useState<Status>('checking')
 
@@ -32,7 +41,15 @@ export default function PushNotificationToggle() {
       try {
         const registration = await navigator.serviceWorker.getRegistration()
         const sub = await registration?.pushManager?.getSubscription()
-        setStatus(sub ? 'on' : 'off')
+        if (!sub) {
+          setStatus('off')
+          return
+        }
+        // El navegador ya tiene una suscripción, pero eso no garantiza que el
+        // servidor la haya guardado (ej. si falló el guardado la primera vez).
+        // Se reintenta guardar cada vez que carga la página, para autocorregir.
+        const saved = await syncSubscription(sub)
+        setStatus(saved ? 'on' : 'off')
       } catch (err) {
         console.error('[push] Error verificando suscripción existente:', err)
         setStatus('off')
@@ -56,18 +73,14 @@ export default function PushNotificationToggle() {
         return
       }
 
-      const subscription = await registration.pushManager.subscribe({
+      const existing = await registration.pushManager.getSubscription()
+      const subscription = existing ?? await registration.pushManager.subscribe({
         userVisibleOnly: true,
         applicationServerKey: urlBase64ToUint8Array(publicKey),
       })
 
-      const res = await fetch('/api/admin/push/subscribe', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(subscription.toJSON()),
-      })
-
-      if (!res.ok) throw new Error('No se pudo guardar la suscripción')
+      const saved = await syncSubscription(subscription)
+      if (!saved) throw new Error('No se pudo guardar la suscripción')
       setStatus('on')
     } catch (err) {
       console.error('[push] Error activando notificaciones:', err)
