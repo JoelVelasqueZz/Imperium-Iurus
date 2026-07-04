@@ -3,6 +3,7 @@ import { z } from 'zod'
 import { supabase } from '@/lib/supabase'
 import { getUser } from '@/lib/supabase-server'
 import { isAdminUser } from '@/lib/admin-auth'
+import { supabaseErrorResponse } from '@/lib/api-errors'
 
 const schema = z.object({
   estado: z.enum(['pendiente', 'aprobado', 'rechazado']),
@@ -17,7 +18,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
   if (!parsed.success) return NextResponse.json({ error: 'Estado inválido' }, { status: 422 })
 
   const { error } = await supabase.from('testimonios').update({ estado: parsed.data.estado }).eq('id', id)
-  if (error) return NextResponse.json({ error: error.message }, { status: 502 })
+  if (error) return supabaseErrorResponse('admin/testimonios PATCH', error, 'Error al actualizar el testimonio.')
   return NextResponse.json({ success: true })
 }
 
@@ -27,6 +28,6 @@ export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ 
 
   const { id } = await params
   const { error } = await supabase.from('testimonios').delete().eq('id', id)
-  if (error) return NextResponse.json({ error: error.message }, { status: 502 })
+  if (error) return supabaseErrorResponse('admin/testimonios DELETE', error, 'Error al eliminar el testimonio.')
   return NextResponse.json({ success: true })
 }
