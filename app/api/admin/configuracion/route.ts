@@ -3,6 +3,7 @@ import { z } from 'zod'
 import { supabase } from '@/lib/supabase'
 import { getUser } from '@/lib/supabase-server'
 import { isAdminUser } from '@/lib/admin-auth'
+import { supabaseErrorResponse } from '@/lib/api-errors'
 import { revalidatePath } from 'next/cache'
 
 const CLAVES_VALIDAS = [
@@ -46,7 +47,7 @@ export async function GET() {
     .select('clave, valor, updated_at')
     .order('clave')
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 502 })
+  if (error) return supabaseErrorResponse('admin/configuracion GET', error, 'Error al obtener la configuración.')
   return NextResponse.json({ success: true, data })
 }
 
@@ -71,7 +72,7 @@ export async function PATCH(request: NextRequest) {
 
   console.log('[PATCH /api/admin/configuracion] supabase response:', { data, error })
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 502 })
+  if (error) return supabaseErrorResponse('admin/configuracion PATCH', error, 'Error al guardar la configuración.')
 
   // Invalidar caché del layout para que el nuevo config se propague
   revalidatePath('/', 'layout')

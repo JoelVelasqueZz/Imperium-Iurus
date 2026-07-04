@@ -3,6 +3,7 @@ import { z } from 'zod'
 import { supabase } from '@/lib/supabase'
 import { getUser } from '@/lib/supabase-server'
 import { isAdminUser } from '@/lib/admin-auth'
+import { supabaseErrorResponse } from '@/lib/api-errors'
 
 const patchSchema = z.object({
   titulo:         z.string().min(3).optional(),
@@ -38,7 +39,7 @@ export async function PATCH(request: NextRequest, { params }: Params) {
     .from('articulos')
     .update({ ...parsed.data, updated_at: new Date().toISOString() })
     .eq('id', id)
-  if (error) return NextResponse.json({ error: error.message }, { status: 502 })
+  if (error) return supabaseErrorResponse('admin/articulos PATCH', error, 'Error al actualizar el artículo.')
   return NextResponse.json({ success: true })
 }
 
@@ -48,6 +49,6 @@ export async function DELETE(_req: NextRequest, { params }: Params) {
 
   const { id } = await params
   const { error } = await supabase.from('articulos').delete().eq('id', id)
-  if (error) return NextResponse.json({ error: error.message }, { status: 502 })
+  if (error) return supabaseErrorResponse('admin/articulos DELETE', error, 'Error al eliminar el artículo.')
   return NextResponse.json({ success: true })
 }

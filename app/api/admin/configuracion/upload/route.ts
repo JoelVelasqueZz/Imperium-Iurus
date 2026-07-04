@@ -2,6 +2,7 @@ import { type NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
 import { getUser } from '@/lib/supabase-server'
 import { isAdminUser } from '@/lib/admin-auth'
+import { supabaseErrorResponse } from '@/lib/api-errors'
 
 const BUCKET = 'site-images'
 const MAX_BYTES = 5 * 1024 * 1024
@@ -33,7 +34,7 @@ export async function POST(request: NextRequest) {
     .from(BUCKET)
     .upload(path, await file.arrayBuffer(), { contentType: file.type, upsert: false })
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 502 })
+  if (error) return supabaseErrorResponse('admin/configuracion/upload POST', error, 'Error al subir la imagen.')
 
   const { data } = supabase.storage.from(BUCKET).getPublicUrl(path)
   return NextResponse.json({ success: true, url: data.publicUrl })

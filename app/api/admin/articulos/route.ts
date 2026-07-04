@@ -3,6 +3,7 @@ import { z } from 'zod'
 import { supabase } from '@/lib/supabase'
 import { getUser } from '@/lib/supabase-server'
 import { isAdminUser } from '@/lib/admin-auth'
+import { supabaseErrorResponse } from '@/lib/api-errors'
 
 const articuloSchema = z.object({
   titulo:         z.string().min(3),
@@ -19,7 +20,7 @@ export async function GET() {
   if (!isAdminUser(user)) return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
 
   const { data, error } = await supabase.from('articulos').select('*').order('created_at', { ascending: false })
-  if (error) return NextResponse.json({ error: error.message }, { status: 502 })
+  if (error) return supabaseErrorResponse('admin/articulos GET', error, 'Error al obtener los artículos.')
   return NextResponse.json({ success: true, data })
 }
 
@@ -31,6 +32,6 @@ export async function POST(request: NextRequest) {
   if (!parsed.success) return NextResponse.json({ error: 'Datos inválidos', issues: parsed.error.flatten().fieldErrors }, { status: 422 })
 
   const { data, error } = await supabase.from('articulos').insert(parsed.data).select('id').single()
-  if (error) return NextResponse.json({ error: error.message }, { status: 502 })
+  if (error) return supabaseErrorResponse('admin/articulos POST', error, 'Error al guardar el artículo.')
   return NextResponse.json({ success: true, data }, { status: 201 })
 }
