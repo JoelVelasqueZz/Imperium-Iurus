@@ -3,6 +3,7 @@ import { Resend } from 'resend'
 import { contactSchema, type ApiResponse, type ContactFormData } from '@/lib/schemas'
 import { supabase } from '@/lib/supabase'
 import { checkRateLimit, getClientIp } from '@/lib/rate-limit'
+import { sendPushToAdmin } from '@/lib/push'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
@@ -135,6 +136,12 @@ export async function POST(request: NextRequest): Promise<NextResponse<ApiRespon
     estado:        'nuevo',
   })
   if (dbError) console.error('[contact] Supabase error:', dbError.message)
+
+  await sendPushToAdmin({
+    title: `Nueva consulta de ${data.nombre}`,
+    body: data.mensaje,
+    url: '/admin/contacto',
+  })
 
   const [notif, confirm] = await Promise.allSettled([
     resend.emails.send({

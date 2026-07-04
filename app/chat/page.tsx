@@ -97,19 +97,18 @@ export default function ChatClientePage() {
   async function enviar(e: React.FormEvent) {
     e.preventDefault()
     const t = texto.trim()
-    console.log('[chat] enviar:', { texto: t, userId: user?.id, enviando })
     if (!t || !user || enviando) return
 
     setEnviando(true)
     setTexto('')
 
-    const { data, error } = await supabase
-      .from('mensajes')
-      .insert({ cliente_id: user.id, remitente: 'cliente', texto: t })
-      .select()
-      .single()
+    const res = await fetch('/api/chat/send', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ texto: t }),
+    })
 
-    console.log('[chat] insert resultado:', { data, error })
+    if (!res.ok) console.error('[chat] Error al enviar mensaje')
     setEnviando(false)
   }
 

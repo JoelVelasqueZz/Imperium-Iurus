@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { CalendarDays, ExternalLink, LogOut, MessageCircle, MessageSquare, Newspaper, Settings, Star } from 'lucide-react'
 import { createSupabaseBrowserClient } from '@/lib/supabase-browser'
+import PushNotificationToggle from '@/components/admin/PushNotificationToggle'
 
 const NAV = [
   { href: '/admin/agenda',        label: 'Agenda',        icon: CalendarDays },
@@ -58,6 +59,7 @@ export default function AdminNav() {
 
       {/* Ver sitio + Logout */}
       <div className="space-y-0.5 border-t border-border p-3">
+        <PushNotificationToggle />
         <a
           href="/"
           target="_blank"

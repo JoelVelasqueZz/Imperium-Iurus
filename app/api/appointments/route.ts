@@ -6,6 +6,7 @@ import { createSupabaseServerClient } from '@/lib/supabase-server'
 import { CONFIG_DEFAULTS, generateSlots, isDateAvailable } from '@/lib/config'
 import type { HorarioCitasConfig, FestivosConfig } from '@/lib/config'
 import { checkRateLimit, getClientIp } from '@/lib/rate-limit'
+import { sendPushToAdmin } from '@/lib/push'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
@@ -222,6 +223,12 @@ export async function POST(request: NextRequest): Promise<NextResponse<ApiRespon
     console.error('[appointments] Supabase error:', dbError)
     return NextResponse.json({ success: false, error: 'Error al guardar la cita.' }, { status: 502 })
   }
+
+  await sendPushToAdmin({
+    title: `Nueva cita de ${data.nombre}`,
+    body: `${TIPO_LABEL[data.tipoConsulta]} — ${data.fecha} ${data.hora}`,
+    url: '/admin/agenda',
+  })
 
   // Enviar emails
   const toEmail = process.env.RESEND_TO_EMAIL
