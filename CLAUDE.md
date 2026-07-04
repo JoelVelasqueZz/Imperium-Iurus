@@ -15,6 +15,7 @@ Next.js 15.3 App Router · TypeScript strict · Tailwind CSS · Framer Motion ·
 | M4 | ✅ | Panel admin — Auth, consultas, CMS blog, testimonios, configuración |
 | Portal cliente | ✅ | Google OAuth, chat en tiempo real, mis citas, modal login-antes-de-enviar |
 | Inline editing | ✅ | Edición en vivo de textos e imágenes desde el sitio público (modo edición) |
+| Notificaciones push | ✅ | Web Push al admin cuando llega mensaje de chat, cita o consulta nueva |
 
 ---
 
@@ -114,6 +115,43 @@ Los datos de contacto se usan en múltiples lugares y se actualizan automáticam
 
 ---
 
+## Sistema de notificaciones push
+
+### Arquitectura
+
+Web Push API nativa del navegador (sin Firebase/OneSignal). El admin activa notificaciones desde un toggle en `AdminNav`; a partir de ahí, el navegador mantiene una suscripción push que el servidor usa para avisarle de eventos nuevos aunque el panel no esté abierto.
+
+```
+PushNotificationToggle (admin nav)
+    ↓ activar() → registra /sw.js → pide permiso → pushManager.subscribe()
+    ↓ syncSubscription() → POST /api/admin/push/subscribe
+Supabase (tabla push_subscriptions)
+    ↑ leída por
+lib/push.ts → sendPushToAdmin({ title, body, url })
+    ↑ invocada desde (después de guardar el registro principal, nunca bloquea la respuesta)
+    - app/api/chat/send/route.ts       (mensaje nuevo de un cliente)
+    - app/api/appointments/route.ts    (cita nueva)
+    - app/api/contact/route.ts         (consulta nueva)
+```
+
+`sendPushToAdmin()` nunca lanza excepciones (todo envuelto en try/catch): un fallo al notificar no debe romper el flujo principal. Si el envío a una suscripción falla con `404`/`410` (suscripción caducada), la borra automáticamente de `push_subscriptions`.
+
+`public/sw.js` (service worker) escucha `push` (muestra la notificación con `title`/`body`/`icon`) y `notificationclick` (enfoca una pestaña ya abierta en la `url` del payload, o abre una nueva — fallback `/admin/agenda`).
+
+### Componentes/archivos clave
+
+| Archivo | Descripción |
+|---------|-------------|
+| `lib/push.ts` | `sendPushToAdmin()` — configura VAPID, lee todas las suscripciones y envía con `Promise.allSettled`; auto-limpia suscripciones caducadas |
+| `components/admin/PushNotificationToggle.tsx` | Toggle en `AdminNav` — máquina de estados `checking · unsupported · off · on · denied` |
+| `public/sw.js` | Service worker — listeners `push` y `notificationclick` |
+| `app/api/admin/push/subscribe/route.ts` | `POST` — guarda/actualiza (`upsert` por `endpoint`) la suscripción del navegador. Solo admin |
+| `docs/sql/push_subscriptions.sql` | DDL de la tabla + GRANT a `service_role` |
+
+**Estado del toggle:** no confía solo en si el navegador tiene una `PushSubscription` local — en cada carga hace `syncSubscription()` (POST a `/api/admin/push/subscribe`) y solo marca `on` si el servidor confirma el guardado (`res.ok`). Esto evita que quede en "activo" en la UI mientras el guardado en Supabase falla silenciosamente (bug real corregido en `48742d9`, causado por un `GRANT` incompleto).
+
+---
+
 ## Arquitectura de autenticación
 
 El proyecto usa **un solo proyecto Supabase Auth** para admin y clientes. Se distinguen por `app_metadata`:
@@ -169,7 +207,14 @@ RESEND_TO_EMAIL=          # Email del abogado para notificaciones
 
 # Auth
 ADMIN_EMAIL=              # Email del admin (fallback si app_metadata.role no está seteado)
+
+# Web Push — notificaciones al admin (chat, consultas, citas)
+NEXT_PUBLIC_VAPID_PUBLIC_KEY=
+VAPID_PRIVATE_KEY=
+VAPID_SUBJECT=mailto:contacto@imperiumiuris.ec
 ```
+
+Generar el par de claves VAPID con `npx web-push generate-vapid-keys`.
 
 ---
 
@@ -257,6 +302,19 @@ Chat cliente ↔ abogado en tiempo real. RLS habilitado.
 | leido | boolean | default false |
 | created_at | timestamptz | |
 
+### `push_subscriptions`
+Suscripciones Web Push del navegador del admin. RLS habilitado sin políticas — acceso solo vía `service_role` (mismo patrón que `configuracion`).
+
+| Columna | Tipo | Notas |
+|---------|------|-------|
+| id | uuid PK | |
+| endpoint | text unique | Clave de conflicto del `upsert` al (re)suscribir |
+| p256dh | text | Clave pública de cifrado de la suscripción |
+| auth | text | Secreto de autenticación de la suscripción |
+| created_at | timestamptz | |
+
+> El endpoint que guarda esta tabla hace `upsert(..., { onConflict: 'endpoint' })`, así que el GRANT a `service_role` necesita `UPDATE` además de `INSERT`/`SELECT`/`DELETE` (ver convención de GRANT más abajo).
+
 ---
 
 ## Rutas del sitio
@@ -298,7 +356,8 @@ Chat cliente ↔ abogado en tiempo real. RLS habilitado.
 
 - **Timezone Ecuador:** `America/Guayaquil` (UTC-5, sin DST). Siempre usar `Intl.DateTimeFormat.formatToParts()` para extraer componentes de fecha/hora.
 - **Emails:** `Promise.allSettled` + verificar `result.value.error` (Resend nunca lanza excepciones).
-- **RLS + GRANT:** Tablas creadas por SQL necesitan `GRANT SELECT/INSERT/UPDATE ON <tabla> TO authenticated` explícito.
+- **RLS + GRANT:** Tablas creadas por SQL necesitan `GRANT SELECT/INSERT/UPDATE ON <tabla> TO authenticated` explícito. Si el código hace `.upsert(...)`, el GRANT necesita `UPDATE` aunque el flujo normal solo inserte — Postgres lo exige para resolver el `ON CONFLICT DO UPDATE`.
+- **Notificaciones best-effort:** funciones como `sendPushToAdmin()` nunca deben lanzar — un fallo al notificar (push, email) no debe romper el guardado del registro principal.
 - **Blog público:** lee solo `publicado = true`.
 - **Testimonios públicos:** lee solo `estado = 'aprobado'`.
 - **`useEffect` cleanup con Realtime:** el canal debe guardarse en variable `let channel` antes del `async function init()`.
