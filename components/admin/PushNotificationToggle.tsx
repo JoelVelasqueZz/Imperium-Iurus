@@ -29,9 +29,14 @@ export default function PushNotificationToggle() {
         setStatus('denied')
         return
       }
-      const registration = await navigator.serviceWorker.getRegistration('/sw.js')
-      const sub = await registration?.pushManager.getSubscription()
-      setStatus(sub ? 'on' : 'off')
+      try {
+        const registration = await navigator.serviceWorker.getRegistration()
+        const sub = await registration?.pushManager?.getSubscription()
+        setStatus(sub ? 'on' : 'off')
+      } catch (err) {
+        console.error('[push] Error verificando suscripción existente:', err)
+        setStatus('off')
+      }
     }
     check()
   }, [])
