@@ -3,6 +3,7 @@ import { z } from 'zod'
 import { supabase } from '@/lib/supabase'
 import { getUser } from '@/lib/supabase-server'
 import { isAdminUser } from '@/lib/admin-auth'
+import { supabaseErrorResponse } from '@/lib/api-errors'
 
 const subscribeSchema = z.object({
   endpoint: z.string().url(),
@@ -25,6 +26,6 @@ export async function POST(request: NextRequest) {
     .from('push_subscriptions')
     .upsert({ endpoint, p256dh: keys.p256dh, auth: keys.auth }, { onConflict: 'endpoint' })
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 502 })
+  if (error) return supabaseErrorResponse('admin/push/subscribe POST', error, 'Error al guardar la suscripción.')
   return NextResponse.json({ success: true })
 }
