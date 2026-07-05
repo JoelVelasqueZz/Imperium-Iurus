@@ -1,5 +1,7 @@
 # ENTREGA — IMPERIUM IURIS Portal
 
+> ⚠️ **Snapshot histórico de la entrega v1.0.0 (26/06/2026, M1–M4).** El proyecto avanzó bastante desde entonces (portal de clientes, notificaciones push, edición inline, etc.) — para el estado y la arquitectura actuales, ver `CLAUDE.md`. Este archivo se mantiene como referencia y será reemplazado por una guía de onboarding completa.
+
 **Proyecto:** Portal web de defensa penal estratégica  
 **Cliente:** Imperium Iuris  
 **Versión entregada:** 1.0.0 — Módulos M1–M4  
