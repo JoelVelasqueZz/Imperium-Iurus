@@ -37,8 +37,15 @@ export function checkRateLimit(key: string, limit: number, windowMs: number): bo
   return true
 }
 
+/**
+ * IP de origen confiable. Nunca lee `x-forwarded-for` directamente: ese header
+ * puede llegar con un valor arbitrario puesto por el propio cliente, lo que
+ * permitía resetear el bucket de rate limit en cada request. `x-vercel-forwarded-for`
+ * y `x-real-ip` los establece la infraestructura (Vercel/proxy de confianza),
+ * no la petición entrante — no son spoofeables por el cliente.
+ */
 export function getClientIp(request: Request): string {
-  const forwarded = request.headers.get('x-forwarded-for')
-  if (forwarded) return forwarded.split(',')[0].trim()
+  const vercelIp = request.headers.get('x-vercel-forwarded-for')
+  if (vercelIp) return vercelIp.split(',')[0].trim()
   return request.headers.get('x-real-ip') ?? 'unknown'
 }
