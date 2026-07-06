@@ -135,3 +135,72 @@ Configuraciones técnicas del sitio que no son parte de la edición inline: dato
 ![Panel — Configuración](attachments/admin-configuracion.png)
 
 > El resto del contenido del sitio (textos, imágenes de hero, testimonios destacados, etc.) no se edita aquí — se edita directamente sobre el sitio público con el modo de edición inline. Ver la siguiente sección.
+
+---
+
+## Arquitectura y flujos clave
+
+### Dos formas de editar el sitio
+
+El contenido del sitio se edita de dos maneras distintas, según qué tan "técnico" sea el campo:
+
+1. **Panel `/admin/configuracion`** — para datos de contacto, redes sociales, horarios y festivos: configuración que no tiene sentido editar visualmente sobre la página.
+2. **Edición inline** — para todo lo demás (títulos, textos, imágenes de cada sección del sitio). El admin activa un toggle de "modo edición" en el navbar, aparece un botón "Editar" sobre cada sección, y los cambios se guardan directo en Supabase y se reflejan en todo el sitio al instante.
+
+Ambas formas terminan escribiendo en la misma tabla `configuracion` (columnas `clave` / `valor jsonb`), y el sitio siempre lee de ahí — no hay contenido hardcodeado en el código para lo que es editable.
+
+**El flujo de lectura**, de servidor a componente:
+
+```
+Supabase (tabla configuracion)
+    ↓
+getSiteConfig() — lib/config.ts (se ejecuta en el servidor, ej. en app/layout.tsx)
+    ↓
+<ConfigProvider config={config}> — components/providers/ConfigProvider.tsx (Contexto de React)
+    ↓
+useSiteConfig() — hook para leer la config en cualquier componente cliente
+useUpdateConfig() — hook para reflejar un cambio guardado sin esperar un refresh completo
+```
+
+`ConfigProvider` envuelve toda la app desde `app/layout.tsx`. Cualquier componente, sin importar qué tan anidado esté, puede llamar a `useSiteConfig()` y leer la config actual sin pasarla por props manualmente en cada nivel — es exactamente para eso que existe un Context de React.
+
+### Notificaciones push al admin
+
+El admin puede activar notificaciones del navegador (sin depender de Firebase ni de un servicio externo, usando la Web Push API nativa) desde un toggle en la barra de navegación del panel. Una vez activado, el navegador queda suscrito y el servidor le avisa de eventos nuevos aunque el panel no esté abierto: mensaje de chat, cita nueva, consulta nueva.
+
+```
+Toggle en el panel → pide permiso al navegador → se suscribe → guarda la suscripción en Supabase
+                                                                        ↓
+                                          Evento nuevo (chat / cita / consulta)
+                                                                        ↓
+                                          sendPushToAdmin() — lib/push.ts → notificación en el navegador del admin
+```
+
+Si el envío a una suscripción falla porque expiró, se borra automáticamente — y un fallo al notificar nunca bloquea el guardado del registro principal (cita, consulta o mensaje), es siempre "mejor esfuerzo".
+
+### Autenticación: un solo proyecto para admin y clientes
+
+Imperium Iuris no tiene dos sistemas de auth separados — usa un único proyecto de Supabase Auth, y distingue quién es admin por metadata:
+
+```
+Admin:    user.app_metadata.role === 'admin'  (o su correo coincide con ADMIN_EMAIL)
+Cliente:  cualquier otro usuario autenticado (Google OAuth, sin ese rol)
+```
+
+El `middleware.ts` es el único punto que aplica esta regla: exige sesión de admin para `/admin/*`, exige cualquier sesión para `/chat` y `/mis-citas`, y redirige a login si falta.
+
+### Los tres clientes de Supabase
+
+El proyecto usa tres formas distintas de hablar con Supabase, cada una con un propósito distinto:
+
+| Cliente | Dónde vive | Para qué |
+|---------|-----------|----------|
+| Service role | `lib/supabase.ts` | Operaciones de admin que necesitan saltarse RLS — solo se usa en el servidor |
+| Servidor (anon) | `lib/supabase-server.ts` | Verificar sesión en Server Components y Route Handlers |
+| Navegador (anon) | `lib/supabase-browser.ts` | Login/logout y Realtime desde componentes de cliente (singleton) |
+
+### Mapa de llamadas del código
+
+Para entender rápidamente qué archivo llama a qué sin leer todo el repo, hay un análisis de call-graph generado con la herramienta `noodles` (MCP): **https://fascinating-dasik-c50921.netlify.app/**
+
+Es un snapshot estático del código al 2026-07-06 — si el código cambió mucho desde entonces, puede estar desactualizado. Además tiene una limitación conocida: no resuelve el alias de TypeScript `@/*` que usa casi todo el código del proyecto, así que varias funciones muy usadas (como `getSiteConfig` o `ConfigProvider`) aparecen ahí como "sin conexiones" aunque en la realidad se usan en decenas de archivos. Ver `CLAUDE.md`, sección "Análisis de call graph con noodles", para el detalle completo de esta limitación.
