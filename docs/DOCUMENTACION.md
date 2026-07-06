@@ -97,3 +97,41 @@ Mensajería en tiempo real entre el cliente y el abogado, usando Supabase Realti
 Historial de las citas agendadas por el cliente autenticado (se asocian por `cliente_id`, la columna que conecta `citas` con `auth.users`).
 
 ![Mis citas](attachments/mis-citas.png)
+
+---
+
+## Panel de administración
+
+Todas las rutas bajo `/admin/*` requieren sesión con `role === 'admin'` (o el correo configurado en `ADMIN_EMAIL`) — el `middleware.ts` redirige a `/admin/login` si no hay sesión válida.
+
+### Agenda (`/admin/agenda`)
+
+Ver y gestionar todas las citas agendadas: cambiar su estado entre `pendiente`, `confirmada` y `cancelada`.
+
+![Panel — Agenda](attachments/admin-agenda.png)
+
+### Consultas (`/admin/contacto`)
+
+Leer los mensajes recibidos por el formulario de contacto y marcarlos como `nueva`, `revisada` o `respondida`.
+
+### Blog (`/admin/blog`)
+
+CMS del blog: crear, editar y publicar/despublicar artículos, con un editor de texto enriquecido (TipTap).
+
+![Panel — Blog](attachments/admin-blog.png)
+
+### Testimonios (`/admin/testimonios`)
+
+Aprobar o rechazar los testimonios enviados por clientes antes de que aparezcan en el sitio público (solo se muestran los que tienen `estado = 'aprobado'`).
+
+### Chats (`/admin/chats` y `/admin/chats/[clienteId]`)
+
+Lista de conversaciones de clientes y la vista de chat individual para responder — la contraparte de `/chat` en el portal de cliente.
+
+### Configuración (`/admin/configuracion`)
+
+Configuraciones técnicas del sitio que no son parte de la edición inline: datos de contacto (WhatsApp, teléfono, correo, dirección), redes sociales, horario de atención (controla el botón flotante) y horario de citas + días festivos.
+
+![Panel — Configuración](attachments/admin-configuracion.png)
+
+> El resto del contenido del sitio (textos, imágenes de hero, testimonios destacados, etc.) no se edita aquí — se edita directamente sobre el sitio público con el modo de edición inline. Ver la siguiente sección.
