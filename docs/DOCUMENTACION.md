@@ -204,3 +204,21 @@ El proyecto usa tres formas distintas de hablar con Supabase, cada una con un pr
 Para entender rápidamente qué archivo llama a qué sin leer todo el repo, hay un análisis de call-graph generado con la herramienta `noodles` (MCP): **https://fascinating-dasik-c50921.netlify.app/**
 
 Es un snapshot estático del código al 2026-07-06 — si el código cambió mucho desde entonces, puede estar desactualizado. Además tiene una limitación conocida: no resuelve el alias de TypeScript `@/*` que usa casi todo el código del proyecto, así que varias funciones muy usadas (como `getSiteConfig` o `ConfigProvider`) aparecen ahí como "sin conexiones" aunque en la realidad se usan en decenas de archivos. Ver `CLAUDE.md`, sección "Análisis de call graph con noodles", para el detalle completo de esta limitación.
+
+---
+
+## Modelo de datos
+
+Todo vive en un único proyecto de Supabase. Siete tablas:
+
+| Tabla | Qué guarda |
+|-------|-----------|
+| `configuracion` | Todo el contenido editable del sitio (ver "Arquitectura y flujos clave"). Sin RLS — solo se accede vía `service_role`. |
+| `citas` | Citas agendadas desde `/agenda`. Cada una puede o no estar asociada a un cliente autenticado (`cliente_id`, se pone en `NULL` si el cliente borra su cuenta). |
+| `consultas` | Mensajes del formulario de `/contacto`. Algunas están marcadas `confidencial` — hay que tratarlas con cuidado (ver la nota de privacidad en el anexo de capturas). |
+| `articulos` | Artículos del blog. Solo los `publicado = true` son visibles públicamente. |
+| `testimonios` | Testimonios de clientes. Solo los `estado = 'aprobado'` aparecen en el sitio. |
+| `mensajes` | Chat en tiempo real entre cliente y abogado. Cada mensaje pertenece a un `cliente_id` y tiene un `remitente` (`'cliente'` o `'abogado'`). |
+| `push_subscriptions` | Suscripciones de Web Push del navegador del admin. Sin políticas de RLS — acceso solo vía `service_role`, mismo patrón que `configuracion`. |
+
+Todas menos `configuracion` y `push_subscriptions` tienen RLS (Row Level Security) habilitado. Una convención importante del proyecto: cualquier tabla nueva necesita un `GRANT` explícito a `service_role` (o `authenticated`, según el caso) — Supabase no da acceso por defecto solo por tener RLS habilitado, y si el código hace `upsert(...)`, el `GRANT` necesita incluir `UPDATE` además de `INSERT`/`SELECT`, porque Postgres lo exige para resolver el `ON CONFLICT DO UPDATE`. El detalle completo de columnas está en `CLAUDE.md`, sección "Tablas Supabase".
