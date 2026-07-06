@@ -67,3 +67,33 @@ Formulario de consulta general. Al enviarse, guarda el registro en la tabla `con
 Formulario de reserva de citas. Calcula disponibilidad en tiempo real según el horario de citas configurado (`horario_citas`) y los días festivos (`festivos`), respetando la zona horaria de Ecuador (`America/Guayaquil`, sin horario de verano). Igual que Contacto, guarda en Supabase (tabla `citas`) y dispara los emails correspondientes.
 
 ![Agenda](attachments/agenda.png)
+
+---
+
+## Portal de cliente
+
+A diferencia del sitio público, estas páginas requieren que el visitante inicie sesión. El proyecto usa un único proyecto de Supabase Auth tanto para clientes como para el admin (ver "Arquitectura y flujos clave" para cómo se distinguen).
+
+### Ingreso (`/login`)
+
+Login sin contraseña vía Google OAuth. El callback de OAuth (`/auth/callback`) intercambia el código de Google por una sesión de Supabase.
+
+![Login cliente](attachments/login-cliente.png)
+
+### Verificación en dos pasos (`/cuenta/seguridad`)
+
+El cliente puede activar opcionalmente un segundo factor de autenticación (TOTP, usando el soporte nativo de MFA de Supabase Auth — compatible con apps como Google Authenticator) desde `/cuenta/seguridad`: generar el código QR/secreto, verificar el primer código para activarlo, o desactivarlo.
+
+Para no pedir el código en cada inicio de sesión desde el mismo navegador, existe un mecanismo de **dispositivo confiable** (`lib/trusted-device.ts` y `lib/trusted-device-server.ts`): al verificar el 2FA una vez, el servidor emite un token firmado que el navegador guarda en `localStorage`; en logins posteriores, el navegador manda ese token a `/api/auth/trusted-device/verify` y, si es válido, se salta el paso del código.
+
+### Chat con el abogado (`/chat`)
+
+Mensajería en tiempo real entre el cliente y el abogado, usando Supabase Realtime sobre la tabla `mensajes`. El admin ve y responde estos chats desde `/admin/chats`.
+
+![Chat cliente](attachments/chat-cliente.png)
+
+### Mis citas (`/mis-citas`)
+
+Historial de las citas agendadas por el cliente autenticado (se asocian por `cliente_id`, la columna que conecta `citas` con `auth.users`).
+
+![Mis citas](attachments/mis-citas.png)
