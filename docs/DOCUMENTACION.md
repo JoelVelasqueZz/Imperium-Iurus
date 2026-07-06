@@ -76,13 +76,13 @@ A diferencia del sitio público, estas páginas requieren que el visitante inici
 
 ### Ingreso (`/login`)
 
-Login sin contraseña vía Google OAuth. El callback de OAuth (`/auth/callback`) intercambia el código de Google por una sesión de Supabase.
+Dos formas de iniciar sesión: con Google OAuth (el callback en `/auth/callback` intercambia el código de Google por una sesión de Supabase), o con correo y contraseña, con un enlace a `/registro` para crear cuenta nueva. Solo el login por contraseña pasa por la verificación en dos pasos descrita abajo — el login con Google no la dispara.
 
 ![Login cliente](attachments/login-cliente.png)
 
 ### Verificación en dos pasos (`/cuenta/seguridad`)
 
-El cliente puede activar opcionalmente un segundo factor de autenticación (TOTP, usando el soporte nativo de MFA de Supabase Auth — compatible con apps como Google Authenticator) desde `/cuenta/seguridad`: generar el código QR/secreto, verificar el primer código para activarlo, o desactivarlo.
+El cliente puede activar opcionalmente un segundo factor de autenticación (TOTP, usando el soporte nativo de MFA de Supabase Auth — compatible con apps como Google Authenticator) desde `/cuenta/seguridad`. Si lo activa, el login por correo y contraseña pide el código de 6 dígitos después de validar la contraseña (a menos que el dispositivo ya esté marcado como confiable); el login con Google no pasa por esta verificación. Permite generar el código QR/secreto, verificar el primer código para activarlo, o desactivarlo.
 
 Para no pedir el código en cada inicio de sesión desde el mismo navegador, existe un mecanismo de **dispositivo confiable** (`lib/trusted-device.ts` y `lib/trusted-device-server.ts`): al verificar el 2FA una vez, el servidor emite un token firmado que el navegador guarda en `localStorage`; en logins posteriores, el navegador manda ese token a `/api/auth/trusted-device/verify` y, si es válido, se salta el paso del código.
 
