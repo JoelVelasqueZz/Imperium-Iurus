@@ -112,7 +112,7 @@ Ver y gestionar todas las citas agendadas: cambiar su estado entre `pendiente`, 
 
 ### Consultas (`/admin/contacto`)
 
-Leer los mensajes recibidos por el formulario de contacto y marcarlos como `nueva`, `revisada` o `respondida`.
+Leer los mensajes recibidos por el formulario de contacto y marcarlos como `nuevo`, `leido`, `respondido` o `archivado`.
 
 ### Blog (`/admin/blog`)
 
