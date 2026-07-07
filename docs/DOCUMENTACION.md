@@ -227,18 +227,6 @@ Todas tienen RLS (Row Level Security) habilitado excepto `configuracion`; `push_
 
 ## Módulos y estado del proyecto
 
-### Completado
-
-| Módulo | Descripción |
-|--------|-------------|
-| M1 — Sitio web público | Home, Nosotros, Servicios, Blog, Contacto, Agenda |
-| M2 — Emails automáticos | Confirmación al cliente + notificación al abogado (Resend) |
-| M3 — Agenda online | Reserva de citas con disponibilidad en tiempo real |
-| M4 — Panel de administración | Auth, gestión de citas/consultas, CMS de blog, moderación de testimonios |
-| Portal de cliente | Login Google OAuth, 2FA opcional + dispositivo confiable, chat en tiempo real, historial de citas |
-| Edición inline | Edición en vivo de textos e imágenes desde el sitio público |
-| Notificaciones push | Web Push nativo al admin ante cita/consulta/mensaje nuevo |
-
 ### Parcial
 
 | Módulo | Qué falta |
