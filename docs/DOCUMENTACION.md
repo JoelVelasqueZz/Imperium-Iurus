@@ -222,3 +222,36 @@ Todo vive en un único proyecto de Supabase. Siete tablas:
 | `push_subscriptions` | Suscripciones de Web Push del navegador del admin. Sin políticas de RLS — acceso solo vía `service_role`, mismo patrón que `configuracion`. |
 
 Todas tienen RLS (Row Level Security) habilitado excepto `configuracion`; `push_subscriptions` lo tiene habilitado pero sin políticas propias, por lo que en la práctica solo `service_role` puede acceder. Una convención importante del proyecto: cualquier tabla nueva necesita un `GRANT` explícito a `service_role` (o `authenticated`, según el caso) — Supabase no da acceso por defecto solo por tener RLS habilitado, y si el código hace `upsert(...)`, el `GRANT` necesita incluir `UPDATE` además de `INSERT`/`SELECT`, porque Postgres lo exige para resolver el `ON CONFLICT DO UPDATE`. El detalle completo de columnas está en `CLAUDE.md`, sección "Tablas Supabase".
+
+---
+
+## Módulos y estado del proyecto
+
+### Completado
+
+| Módulo | Descripción |
+|--------|-------------|
+| M1 — Sitio web público | Home, Nosotros, Servicios, Blog, Contacto, Agenda |
+| M2 — Emails automáticos | Confirmación al cliente + notificación al abogado (Resend) |
+| M3 — Agenda online | Reserva de citas con disponibilidad en tiempo real |
+| M4 — Panel de administración | Auth, gestión de citas/consultas, CMS de blog, moderación de testimonios |
+| Portal de cliente | Login Google OAuth, 2FA opcional + dispositivo confiable, chat en tiempo real, historial de citas |
+| Edición inline | Edición en vivo de textos e imágenes desde el sitio público |
+| Notificaciones push | Web Push nativo al admin ante cita/consulta/mensaje nuevo |
+
+### Parcial
+
+| Módulo | Qué falta |
+|--------|-----------|
+| Webhook de WhatsApp Business (`/api/whatsapp/webhook`) | La verificación de firma de Meta (`X-Hub-Signature-256`) **ya está implementada** (HMAC-SHA256 + comparación segura). Lo que falta es procesar el mensaje entrante: hoy el endpoint valida la firma, hace `console.log` del payload y responde 200 — extraer el mensaje, clasificar la intención y responder con una plantilla aprobada por Meta sigue pendiente (son los `TODO M2` dentro de `route.ts`). |
+| Portal de cliente — expediente | Lo construido cubre login, chat y ver el historial de citas propio. **No** incluye ver el estado del caso en tiempo real ni subir/descargar documentos del expediente — eso seguía planificado para una fase posterior en la entrega original y no se llegó a implementar. |
+
+### Pendiente
+
+| # | Descripción | Prioridad |
+|---|-------------|-----------|
+| P1 | Actualizar el número de teléfono real en `lib/constants.ts` — actualmente sigue con el placeholder `+593 XX XXX XXXX` | Alta |
+| P3 | Regenerar `og-image.jpg` con las dimensiones correctas — hoy es 1024×1024, debe ser 1200×630 para verse bien al compartir el link en redes sociales | Baja |
+| P4 | Implementar cabecera Content-Security-Policy (CSP) una vez estabilizada la URL de producción | Baja |
+
+> El favicon (P2 en la entrega original) ya está resuelto — existe `app/icon.png`, que Next.js usa automáticamente por convención del App Router.
