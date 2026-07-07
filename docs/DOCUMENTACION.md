@@ -20,7 +20,7 @@ Imperium Iuris es el portal web de un despacho de defensa penal estratégica: si
 | Emails automáticos | ✅ | Confirmación al cliente + notificación al abogado (Resend) |
 | Agenda online | ✅ | Reserva de citas con disponibilidad en tiempo real |
 | Panel de administración | ✅ | Auth, gestión de citas/consultas, CMS de blog, moderación de testimonios |
-| Portal de cliente | ✅ | Login con Google, chat en tiempo real, historial de citas, 2FA opcional |
+| Portal de cliente | ✅ | Login con Google o correo/contraseña, chat en tiempo real, historial de citas, 2FA opcional |
 | Edición inline | ✅ | El admin edita textos e imágenes del sitio público sin tocar código |
 | Notificaciones push | ✅ | El admin recibe una notificación del navegador ante cita/consulta/mensaje nuevo |
 
@@ -226,6 +226,8 @@ Todas tienen RLS (Row Level Security) habilitado excepto `configuracion`; `push_
 ---
 
 ## Módulos y estado del proyecto
+
+Lo ya completado está en la tabla **"Estado actual"** al inicio de este documento; aquí queda lo que se construyó a medias y lo que todavía falta.
 
 ### Parcial
 
