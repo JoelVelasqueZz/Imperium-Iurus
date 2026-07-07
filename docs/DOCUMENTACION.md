@@ -243,3 +243,33 @@ Todas tienen RLS (Row Level Security) habilitado excepto `configuracion`; `push_
 | P4 | Implementar cabecera Content-Security-Policy (CSP) una vez estabilizada la URL de producción | Baja |
 
 > El favicon (P2 en la entrega original) ya está resuelto — existe `app/icon.png`, que Next.js usa automáticamente por convención del App Router.
+
+---
+
+## Créditos y continuidad
+
+Este documento fue redactado como parte del traspaso del proyecto a nuevos contribuidores estudiantes. Los otros dos documentos de la entrega son:
+
+- **Guía del programador** (`docs/GUIA_PROGRAMADOR.md`) — cómo configurar el entorno de desarrollo: GitHub, Supabase, variables de entorno, deploy en Vercel, comandos de desarrollo. (Pendiente de redactar por separado.)
+- **Manual de usuario** — cómo operar el panel de administración día a día, a cargo de otra persona del equipo.
+
+Para dudas técnicas de arquitectura no cubiertas aquí, `CLAUDE.md` en la raíz del repo es la referencia de trabajo más detallada y actualizada.
+
+## Anexo — Capturas de pantalla pendientes
+
+Recomendaciones generales: viewport 1440×900, zoom 100%, formato PNG (página completa cuando el navegador lo permita), guardadas en `docs/attachments/` con el nombre exacto de la columna "Archivo". **Privacidad:** en cualquier pantalla de `/admin/agenda`, `/admin/contacto` o `/admin/chats` que muestre citas, consultas o chats reales, usar registros de prueba creados para la captura, o tapar/difuminar nombre, teléfono, correo y mensaje — varias consultas están marcadas `confidencial` y corresponden a clientes reales.
+
+| # | Archivo | URL | Estado a mostrar |
+|---|---------|-----|-------------------|
+| 1 | `home-hero.png` | `/` | Above the fold: hero + trust block. Sin sesión iniciada. |
+| 2 | `nosotros.png` | `/nosotros` | Sección de apertura/misión, scroll arriba. |
+| 3 | `servicios.png` | `/servicios` | Listado de las 4 áreas de práctica visibles. |
+| 4 | `blog-listado.png` | `/blog` | Grid con artículos publicados reales (`publicado=true`). |
+| 5 | `contacto.png` | `/contacto` | Formulario vacío, sin llenar. |
+| 6 | `agenda.png` | `/agenda` | Formulario con el selector de fecha/hora abierto si es posible. |
+| 7 | `login-cliente.png` | `/login` | Pantalla de login con botón de Google, sin sesión. |
+| 8 | `chat-cliente.png` | `/chat` | Cuenta de prueba con 2-3 mensajes de ejemplo (no cliente real). |
+| 9 | `mis-citas.png` | `/mis-citas` | Cuenta de prueba con 1 cita de ejemplo. |
+| 10 | `admin-agenda.png` | `/admin/agenda` | Lista de citas — solo datos de prueba o campos sensibles tapados. |
+| 11 | `admin-blog.png` | `/admin/blog` | Listado de artículos del CMS. |
+| 12 | `admin-configuracion.png` | `/admin/configuracion` | Sección "Contacto" expandida (muestra el estilo del formulario técnico). |
