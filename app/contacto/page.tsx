@@ -127,7 +127,7 @@ export default function ContactoPage() {
           {/* ─── Formulario — fondo marfil ─── */}
           <form onSubmit={onSubmit} className="border border-primary/20 bg-stone p-6 md:p-8">
             <div className="grid gap-5 md:grid-cols-2">
-              <Field label="Nombre completo" error={errors.nombre?.message}>
+              <Field label="Nombre completooo" error={errors.nombre?.message}>
                 <input {...register('nombre')} className="input-light" placeholder=" " />
               </Field>
               <Field label="Correo electrónico" error={errors.correo?.message}>
