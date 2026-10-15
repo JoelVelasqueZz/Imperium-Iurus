@@ -72,7 +72,7 @@ export default async function BlogPage({ searchParams }: { searchParams: Promise
                 <h2 className="mt-5 font-cinzel text-xl font-semibold tracking-wide text-text-light">{art.titulo}</h2>
                 <p className="mt-4 text-sm font-light leading-7 text-text-muted">{art.resumen}</p>
                 <Link href={`/blog/${art.slug}`} className="focus-gold mt-6 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-gold">
-                  Leer articulo <ArrowRight size={16} />
+                  Leer artículo <ArrowRight size={16} />
                 </Link>
               </article>
             ))}
