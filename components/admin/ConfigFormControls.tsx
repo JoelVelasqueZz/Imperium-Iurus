@@ -104,7 +104,7 @@ export function ListEditor({
               type="button"
               onClick={() => onChange(items.filter((_, idx) => idx !== i))}
               className="text-text-muted hover:text-red-400"
-              aria-label={`Eliminar ${item}`} 
+              aria-label={`Eliminar ${item}`}
               title="Eliminar"
             >
               <Trash2 size={11} />
