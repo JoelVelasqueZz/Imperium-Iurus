@@ -96,7 +96,7 @@ export default function Footer() {
       <div className="border-t border-gold/10 px-4 py-5">
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 sm:flex-row">
           <span className="text-xs font-light uppercase tracking-[0.2em] text-text-muted">
-            © 2026 {BRAND.name}. Todos los derechos reservados.
+            © {new Date().getFullYear()} {BRAND.name}. Todos los derechos reservados.
           </span>
           <div className="flex flex-wrap justify-center gap-x-6 gap-y-1">
             <Link
