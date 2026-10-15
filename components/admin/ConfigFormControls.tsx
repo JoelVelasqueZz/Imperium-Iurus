@@ -87,6 +87,8 @@ export function ListEditor({
           type="button"
           onClick={add}
           className="flex items-center gap-1 border border-gold/50 px-3 py-2 text-xs font-bold uppercase tracking-widest text-gold hover:border-gold"
+          aria-label="Agregar elemento"
+          title="Agregar elemento"
         >
           <Plus size={13} />
         </button>
@@ -102,6 +104,8 @@ export function ListEditor({
               type="button"
               onClick={() => onChange(items.filter((_, idx) => idx !== i))}
               className="text-text-muted hover:text-red-400"
+              aria-label={`Eliminar ${item}`} 
+              title="Eliminar"
             >
               <Trash2 size={11} />
             </button>
