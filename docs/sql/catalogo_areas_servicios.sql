@@ -1,9 +1,13 @@
 -- IMPERIUM IURIS — Catálogo de áreas de práctica y servicios
 --
--- Word Abogados Asociados, sección 3 - 15 áreas de práctica y 150 servicios. 
+-- Word Abogados Asociados, sección 3 - 15 áreas de práctica y 150 servicios.
+--
+-- SOLO DESARROLLO: no ejecutar en producción sin revisión previa.
+-- Ejecuta el archivo COMPLETO, sin texto seleccionado.
+-- Si ocurre un error ("current transaction is aborted"), ejecuta solo: ROLLBACK;
 --
 -- Seguridad:
---   RLS activado y sin políticas para impedir el acceso directo de anon authenticated.
+--   RLS activado y sin políticas para impedir el acceso directo de anon y authenticated.
 --   REVOKE ALL a public, anon, authenticated y service_role.
 --   GRANT mínimo a service_role para las operaciones necesarias del servidor.
 --   El administrador se valida en la API mediante isAdminUser().
@@ -11,10 +15,9 @@
 --
 -- Como dependencia requiere public.set_updated_at(), creada en M1.
 
-
 begin;
 
--- Verifica que exista la función set_updated_at() y que las tablas areas_practica 
+-- Verifica que exista la función set_updated_at() y que las tablas areas_practica
 -- y servicios todavía no existan en el esquema public.
 do $$
 begin
@@ -33,7 +36,7 @@ $$;
 create table public.areas_practica (
   id         uuid        not null default gen_random_uuid(),
   slug       text        not null,
-  numero     integer     not null,          
+  numero     integer     not null,
   nombre     text        not null,
   orden      integer     not null default 0,
   activo     boolean     not null default true,
@@ -45,19 +48,21 @@ create table public.areas_practica (
   constraint areas_practica_slug_check
     check (slug ~ '^[a-z0-9]+(-[a-z0-9]+)*$'),
   constraint areas_practica_numero_check
-    check (numero between 1 and 15)
+    check (numero > 0),
+  constraint areas_practica_nombre_check
+    check (btrim(nombre) <> '')
 );
 
 -- Crea el catálogo de servicios asociados a cada área.
--- Mantiene separado el contenido fuente de la descripción pública. 
+-- Mantiene separado el contenido fuente de la descripción pública.
 create table public.servicios (
   id                  uuid        not null default gen_random_uuid(),
   area_id             uuid        not null,
   slug                text        not null,
-  numero              integer     not null,   
-  nombre              text        not null,   
-  objeto_actuacion    text,                   
-  servicio_ofrecido   text        not null,   
+  numero              integer     not null,
+  nombre              text        not null,
+  objeto_actuacion    text,
+  servicio_ofrecido   text        not null,
   descripcion_publica text,
   orden               integer     not null default 0,
   activo              boolean     not null default true,
@@ -69,15 +74,18 @@ create table public.servicios (
   constraint servicios_slug_check
     check (slug ~ '^[a-z0-9]+(-[a-z0-9]+)*$'),
   constraint servicios_numero_check
-    check (numero between 1 and 10),
+    check (numero > 0),
+  constraint servicios_nombre_check
+    check (btrim(nombre) <> ''),
+  constraint servicios_servicio_ofrecido_check
+    check (btrim(servicio_ofrecido) <> ''),
   constraint servicios_area_id_fkey
     foreign key (area_id) references public.areas_practica (id) on delete restrict
 );
 
--- Crea un índice para acelerar las consultas de servicios por área.
-create index servicios_area_id_idx on public.servicios using btree (area_id);
+-- Sin índice adicional en area_id: los UNIQUE (area_id, ...) ya lo cubren.
 
--- Actualizar updated_at automáticamente antes de modificar un área 
+-- Actualiza updated_at automáticamente antes de modificar un área
 -- o un servicio, reutilizando la función definida en M1.
 create trigger areas_practica_updated_at
   before update on public.areas_practica
@@ -88,7 +96,7 @@ create trigger servicios_updated_at
   for each row execute function public.set_updated_at();
 
 -- Activa RLS en ambas tablas.
--- el acceso se gestiona desde las rutas del servidor, siguiendo el patrón de seguridad de M2.
+-- El acceso se gestiona desde las rutas del servidor, siguiendo el patrón de seguridad de M2.
 alter table public.areas_practica enable row level security;
 alter table public.servicios      enable row level security;
 
@@ -99,8 +107,8 @@ revoke all on table public.areas_practica, public.servicios
 
 -- Concede permisos mínimos a service_role para las rutas del servidor.
 -- isAdminUser() debe validar al administrador antes de ejecutar operaciones.
--- No se concede DELETE en areas_practica, la FK usa RESTRICT y las áreas
--- se desactivan mediante activo = false en lugar de eliminarlas.
+-- No se concede DELETE: la FK usa RESTRICT y las áreas y servicios
+-- se desactivan mediante activo = false en lugar de eliminarlos.
 grant select, insert, update on table public.areas_practica to service_role;
 grant select, insert, update on table public.servicios      to service_role;
 
