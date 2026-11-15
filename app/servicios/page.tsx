@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 }
 import FinalCTA from '@/components/home/FinalCTA'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 300
 
 export default async function ServiciosPage() {
   const areas = await getCatalogo()

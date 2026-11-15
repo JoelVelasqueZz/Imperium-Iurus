@@ -1,6 +1,8 @@
 // Solo servidor — importa lib/supabase que usa SUPABASE_SERVICE_ROLE_KEY.
 // No importar este archivo desde client components.
 
+import { cache } from 'react'
+import { unstable_cache } from 'next/cache'
 import { supabase } from '@/lib/supabase'
 
 // Solo columnas públicas.
@@ -25,8 +27,8 @@ export type AreaConServicios = {
 type AreaFila = Omit<AreaConServicios, 'servicios'> & { id: string }
 type ServicioFila = ServicioPublico & { area_id: string }
 
-// Áreas activas con sus servicios activos.
-export async function getCatalogo(): Promise<AreaConServicios[]> {
+// Si la consulta falla lanza el error, así unstable_cache no guarda un resultado vacío.
+async function consultarCatalogo(): Promise<AreaConServicios[]> {
   const { data: areas, error: areasError } = await supabase
     .from('areas_practica')
     .select(`id, ${AREA_COLUMNS}`)
@@ -34,10 +36,7 @@ export async function getCatalogo(): Promise<AreaConServicios[]> {
     .order('orden', { ascending: true })
     .order('numero', { ascending: true })
 
-  if (areasError) {
-    console.error('[catalogo] getCatalogo (áreas):', areasError)
-    return []
-  }
+  if (areasError) throw new Error(`áreas: ${areasError.message}`)
 
   const { data: servicios, error: serviciosError } = await supabase
     .from('servicios')
@@ -46,10 +45,7 @@ export async function getCatalogo(): Promise<AreaConServicios[]> {
     .order('orden', { ascending: true })
     .order('numero', { ascending: true })
 
-  if (serviciosError) {
-    console.error('[catalogo] getCatalogo (servicios):', serviciosError)
-    return []
-  }
+  if (serviciosError) throw new Error(`servicios: ${serviciosError.message}`)
 
   // id y area_id solo sirven para agrupar, no se devuelven
   const porArea = new Map<string, ServicioPublico[]>()
@@ -65,35 +61,25 @@ export async function getCatalogo(): Promise<AreaConServicios[]> {
   }))
 }
 
-// Un área activa por slug con sus servicios activos, o null si no existe.
-export async function getAreaConServicios(slug: string): Promise<AreaConServicios | null> {
-  const { data: area, error: areaError } = await supabase
-    .from('areas_practica')
-    .select(`id, ${AREA_COLUMNS}`)
-    .eq('slug', slug)
-    .eq('activo', true)
-    .maybeSingle()
+// Se guarda 5 minutos, el tag permite refrescarlo desde el admin con revalidateTag('catalogo').
+const catalogoEnCache = unstable_cache(consultarCatalogo, ['catalogo'], {
+  revalidate: 300,
+  tags: ['catalogo'],
+})
 
-  if (areaError) {
-    console.error('[catalogo] getAreaConServicios (área):', areaError)
-    return null
+// Áreas activas con sus servicios activos.
+export async function getCatalogo(): Promise<AreaConServicios[]> {
+  try {
+    return await catalogoEnCache()
+  } catch (error) {
+    console.error('[catalogo] getCatalogo:', error)
+    return []
   }
-  if (!area) return null
-
-  const { id, ...datosArea } = area as AreaFila
-
-  const { data: servicios, error: serviciosError } = await supabase
-    .from('servicios')
-    .select(SERVICIO_COLUMNS)
-    .eq('area_id', id)
-    .eq('activo', true)
-    .order('orden', { ascending: true })
-    .order('numero', { ascending: true })
-
-  if (serviciosError) {
-    console.error('[catalogo] getAreaConServicios (servicios):', serviciosError)
-    return null
-  }
-
-  return { ...datosArea, servicios: (servicios ?? []) as ServicioPublico[] }
 }
+
+// Un área activa por slug, o null si no existe.
+// cache() evita repetir la búsqueda entre generateMetadata y la página.
+export const getAreaConServicios = cache(async (slug: string): Promise<AreaConServicios | null> => {
+  const catalogo = await getCatalogo()
+  return catalogo.find((area) => area.slug === slug) ?? null
+})

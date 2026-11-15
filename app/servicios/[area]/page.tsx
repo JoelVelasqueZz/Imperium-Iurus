@@ -6,7 +6,7 @@ import FinalCTA from '@/components/home/FinalCTA'
 import { getAreaConServicios } from '@/lib/catalogo'
 import { SITE_URL } from '@/lib/site'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 300
 
 type Props = { params: Promise<{ area: string }> }
 
