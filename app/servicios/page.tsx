@@ -1,5 +1,7 @@
 import type { Metadata } from 'next'
 import ServicesBlock from '@/components/home/ServicesBlock'
+import CatalogoServicios from '@/components/servicios/CatalogoServicios'
+import { getCatalogo } from '@/lib/catalogo'
 import { SITE_URL } from '@/lib/site'
 
 export const metadata: Metadata = {
@@ -14,9 +16,14 @@ export const metadata: Metadata = {
 }
 import FinalCTA from '@/components/home/FinalCTA'
 
-export default function ServiciosPage() {
+export const dynamic = 'force-dynamic'
+
+export default async function ServiciosPage() {
+  const areas = await getCatalogo()
+
   return (
     <main className="pt-20">
+      <CatalogoServicios areas={areas} />
       <ServicesBlock bottomButton />
       <FinalCTA />
     </main>
